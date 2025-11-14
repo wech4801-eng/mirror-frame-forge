@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
+
 const Hero = () => {
   const navigate = useNavigate();
   
-  return <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
+  return (
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
       {/* Background Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img src={heroBg} alt="" className="w-full h-full object-cover opacity-50 animate-zoom-slow" />
@@ -15,9 +16,9 @@ const Hero = () => {
       {/* Grid overlay */}
       <div className="absolute inset-0 z-0 opacity-20">
         <div className="absolute inset-0" style={{
-        backgroundImage: `linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)`,
-        backgroundSize: '50px 50px'
-      }} />
+          backgroundImage: `linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }} />
       </div>
 
       {/* Gradient glow */}
@@ -28,23 +29,22 @@ const Hero = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           
-          
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight px-4">
-            Introducing the Industry's{" "}
+            Transformez vos prospects en{" "}
             <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-              First Truly Automated
+              clients fidèles
             </span>{" "}
-            Cloud Forensics Solution
+            avec CRM Pro
           </h1>
           
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto px-4">
-            Détectez et répondez aux menaces en temps réel avec l'IA de pointe qui apprend votre entreprise
+            La plateforme tout-en-un pour gérer vos prospects, campagnes email et webinaires en toute simplicité
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4">
             <Button 
               size="lg" 
-              className="bg-accent hover:bg-accent/90 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto"
+              className="bg-primary hover:bg-primary/90 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto"
               onClick={() => navigate("/auth")}
             >
               Commencer Gratuitement
@@ -62,31 +62,33 @@ const Hero = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 pt-8 md:pt-12 border-t border-border/50 px-4">
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                9,700
+                10K+
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">Clients</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Prospects gérés</div>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                110
+                98%
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">Pays</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Taux d&apos;ouverture</div>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                2,400
+                5K+
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">Brevets</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Campagnes lancées</div>
             </div>
             <div className="space-y-1 md:space-y-2">
               <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                200
+                24/7
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">Employés IA</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Support actif</div>
             </div>
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Hero;

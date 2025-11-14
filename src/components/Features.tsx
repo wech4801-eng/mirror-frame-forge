@@ -1,27 +1,27 @@
 import { Card } from "@/components/ui/card";
-import { Shield, Cloud, Brain, Lock } from "lucide-react";
+import { Users, Mail, Video, BarChart } from "lucide-react";
 
 const Features = () => {
   const features = [
     {
-      icon: Cloud,
-      title: "Sécurisez votre cloud en temps réel",
-      description: "Détection automatique des menaces dans tous vos environnements cloud avec une réponse instantanée"
+      icon: Users,
+      title: "Gestion Intelligente des Prospects",
+      description: "Organisez, suivez et convertissez vos prospects avec un système de gestion intuitif et des groupes personnalisables"
     },
     {
-      icon: Brain,
-      title: "IA Auto-Apprenante",
-      description: "L'IA qui apprend constamment les patterns uniques de votre entreprise pour une précision maximale"
+      icon: Mail,
+      title: "Campagnes Email Automatisées",
+      description: "Créez et planifiez des campagnes email personnalisées avec suivi des ouvertures et des clics en temps réel"
     },
     {
-      icon: Shield,
-      title: "Protection Continue",
-      description: "Surveillance 24/7 avec réponse autonome aux menaces émergentes et attaques zero-day"
+      icon: Video,
+      title: "Webinaires Intégrés",
+      description: "Gérez vos webinaires et capturez automatiquement les participants comme nouveaux prospects qualifiés"
     },
     {
-      icon: Lock,
-      title: "Forensics Automatisés",
-      description: "Investigation et analyse automatique des incidents pour une résolution rapide"
+      icon: BarChart,
+      title: "Analytics & Rapports",
+      description: "Visualisez vos performances avec des tableaux de bord détaillés et des statistiques en temps réel"
     }
   ];
 
@@ -32,11 +32,11 @@ const Features = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-            Une IA responsable au service de l'innovation
+            Tout ce dont vous avez besoin pour réussir
           </h2>
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground">
-            Darktrace utilise l'IA pour comprendre le comportement normal de votre organisation 
-            et détecter les menaces qui passent inaperçues
+            CRM Pro vous offre tous les outils nécessaires pour gérer efficacement vos prospects 
+            et maximiser vos conversions
           </p>
         </div>
 
