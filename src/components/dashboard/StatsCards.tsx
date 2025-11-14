@@ -46,25 +46,25 @@ const StatsCards = () => {
       title: "Total Prospects",
       value: stats.totalProspects,
       icon: Users,
-      gradient: "from-blue-500 to-cyan-500",
+      gradient: "from-primary to-pink",
     },
     {
       title: "Nouveaux Prospects",
       value: stats.newProspects,
       icon: TrendingUp,
-      gradient: "from-purple-500 to-pink-500",
+      gradient: "from-pink to-orange",
     },
     {
       title: "Campagnes",
       value: stats.totalCampaigns,
       icon: Mail,
-      gradient: "from-orange-500 to-red-500",
+      gradient: "from-orange to-primary",
     },
     {
       title: "Clics Totaux",
       value: stats.totalClicks,
       icon: MousePointerClick,
-      gradient: "from-green-500 to-emerald-500",
+      gradient: "from-purple to-primary",
     },
   ];
 

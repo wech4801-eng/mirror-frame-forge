@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import ProspectsTable from "@/components/dashboard/ProspectsTable";
+import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
 import StatsCards from "@/components/dashboard/StatsCards";
+import ProspectGroupsGrid from "@/components/dashboard/ProspectGroupsGrid";
+import ProspectsTable from "@/components/dashboard/ProspectsTable";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -45,13 +47,9 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Vue d'ensemble de vos prospects et campagnes
-          </p>
-        </div>
+        <WelcomeBanner />
         <StatsCards />
+        <ProspectGroupsGrid />
         <ProspectsTable />
       </div>
     </DashboardLayout>
