@@ -39,10 +39,10 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent>
-        <div className="px-6 py-8">
-          <h2 className={`font-bold transition-all ${open ? "text-2xl" : "text-lg"}`}>
+        <div className="px-4 py-6">
+          <h2 className={`font-bold transition-all ${open ? "text-xl" : "text-sm"}`}>
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               {open ? "CRM Pro" : "CP"}
             </span>
@@ -50,7 +50,7 @@ export function AppSidebar() {
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel className={open ? "" : "sr-only"}>
+          <SidebarGroupLabel className={open ? "px-4 text-xs text-muted-foreground" : "sr-only"}>
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -61,11 +61,11 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                       activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >
-                      <item.icon className="h-5 w-5" />
-                      {open && <span>{item.title}</span>}
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {open && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -75,13 +75,13 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="p-2">
         <Button
           variant="ghost"
-          className="w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+          className={`w-full ${open ? 'justify-start' : 'justify-center'} text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent text-sm`}
           onClick={handleLogout}
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut className="h-5 w-5 flex-shrink-0" />
           {open && <span className="ml-3">Déconnexion</span>}
         </Button>
       </SidebarFooter>
