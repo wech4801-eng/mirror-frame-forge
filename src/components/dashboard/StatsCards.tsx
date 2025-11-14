@@ -69,17 +69,23 @@ const StatsCards = () => {
   ];
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-      {cards.map((card) => (
-        <Card key={card.title} className="shadow-sm border-border bg-card hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {cards.map((card, index) => (
+        <Card
+          key={card.title}
+          className="relative overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm shadow-card hover:shadow-glow transition-all duration-300 group"
+        >
+          <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-5 transition-opacity" />
+          <CardHeader className="flex flex-row items-center justify-between pb-3 relative">
+            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
               {card.title}
             </CardTitle>
-            <card.icon className="h-5 w-5 text-muted-foreground" />
+            <div className={`p-2.5 rounded-xl bg-gradient-to-br ${card.gradient} opacity-90`}>
+              <card.icon className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-foreground">{card.value}</div>
+          <CardContent className="relative">
+            <div className="text-3xl font-bold tracking-tight">{card.value}</div>
           </CardContent>
         </Card>
       ))}

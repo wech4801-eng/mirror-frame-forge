@@ -44,18 +44,18 @@ const ProspectsTable = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      nouveau: "bg-info/10 text-info border-info/20",
-      contacte: "bg-warning/10 text-warning border-warning/20",
-      qualifie: "bg-status-progress/10 text-status-progress border-status-progress/20",
-      converti: "bg-success/10 text-success border-success/20",
+      nouveau: "bg-primary/10 text-primary border-primary/20",
+      contacte: "bg-orange/10 text-orange border-orange/20",
+      qualifie: "bg-pink/10 text-pink border-pink/20",
+      converti: "bg-purple/10 text-purple border-purple/20",
       perdu: "bg-destructive/10 text-destructive border-destructive/20",
     };
-    return colors[status] || "bg-muted text-muted-foreground";
+    return colors[status] || "bg-muted/50 text-muted-foreground border-muted";
   };
 
   if (loading) {
     return (
-      <Card>
+      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
         <CardContent className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </CardContent>
@@ -64,21 +64,30 @@ const ProspectsTable = () => {
   }
 
   return (
-    <Card className="shadow-sm border-border">
-      <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-card pb-4">
-        <CardTitle className="text-lg font-semibold">Prospects Récents</CardTitle>
-        <Button onClick={() => navigate("/prospects")} size="sm" className="bg-success hover:bg-success/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau Prospect
-        </Button>
+    <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-card">
+      <CardHeader className="border-b border-border/50 pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold">Prospects Récents</CardTitle>
+          <Button 
+            onClick={() => navigate("/prospects")} 
+            size="sm"
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nouveau Prospect
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         {prospects.length === 0 ? (
-          <div className="text-center py-12 px-4">
+          <div className="text-center py-16 px-4">
             <p className="text-muted-foreground mb-4">
               Aucun prospect pour le moment
             </p>
-            <Button onClick={() => navigate("/prospects")} className="bg-success hover:bg-success/90">
+            <Button 
+              onClick={() => navigate("/prospects")}
+              className="bg-primary hover:bg-primary/90"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Ajouter votre premier prospect
             </Button>
@@ -87,33 +96,33 @@ const ProspectsTable = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left p-4 font-medium text-muted-foreground">Nom</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Entreprise</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Statut</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Clics</th>
+                <tr className="border-b border-border/50">
+                  <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Nom</th>
+                  <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+                  <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Entreprise</th>
+                  <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Statut</th>
+                  <th className="text-right p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Clics</th>
                 </tr>
               </thead>
               <tbody>
                 {prospects.map((prospect) => (
-                  <tr key={prospect.id} className="border-b border-border hover:bg-muted/50">
-                    <td className="p-4 font-medium text-foreground">{prospect.full_name}</td>
-                    <td className="p-4 text-muted-foreground">
-                      {prospect.email}
+                  <tr key={prospect.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                    <td className="p-4 font-medium">
+                      {prospect.full_name}
                     </td>
-                    <td className="p-4 text-muted-foreground">{prospect.company || "-"}</td>
+                    <td className="p-4 text-muted-foreground text-sm">{prospect.email}</td>
+                    <td className="p-4 text-muted-foreground text-sm">{prospect.company || "-"}</td>
                     <td className="p-4">
                       <Badge
                         variant="outline"
-                        className={`${getStatusColor(
-                          prospect.status
-                        )} font-medium`}
+                        className={`${getStatusColor(prospect.status || "nouveau")} text-xs`}
                       >
-                        {prospect.status}
+                        {prospect.status || "nouveau"}
                       </Badge>
                     </td>
-                    <td className="p-4 font-medium text-foreground">{prospect.click_count}</td>
+                    <td className="p-4 text-right font-medium">
+                      {prospect.click_count || 0}
+                    </td>
                   </tr>
                 ))}
               </tbody>
