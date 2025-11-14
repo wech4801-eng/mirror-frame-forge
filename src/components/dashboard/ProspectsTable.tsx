@@ -44,13 +44,13 @@ const ProspectsTable = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      nouveau: "bg-blue-500",
-      contacte: "bg-yellow-500",
-      qualifie: "bg-purple-500",
-      converti: "bg-green-500",
-      perdu: "bg-red-500",
+      nouveau: "bg-info/10 text-info border-info/20",
+      contacte: "bg-warning/10 text-warning border-warning/20",
+      qualifie: "bg-status-progress/10 text-status-progress border-status-progress/20",
+      converti: "bg-success/10 text-success border-success/20",
+      perdu: "bg-destructive/10 text-destructive border-destructive/20",
     };
-    return colors[status] || "bg-gray-500";
+    return colors[status] || "bg-muted text-muted-foreground";
   };
 
   if (loading) {
@@ -64,23 +64,22 @@ const ProspectsTable = () => {
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Prospects Récents</CardTitle>
-        <Button onClick={() => navigate("/prospects")}>
+    <Card className="shadow-sm border-border">
+      <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-card pb-4">
+        <CardTitle className="text-lg font-semibold">Prospects Récents</CardTitle>
+        <Button onClick={() => navigate("/prospects")} size="sm" className="bg-success hover:bg-success/90">
           <Plus className="mr-2 h-4 w-4" />
           Nouveau Prospect
         </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {prospects.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>Aucun prospect pour le moment</p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => navigate("/prospects")}
-            >
+          <div className="text-center py-12 px-4">
+            <p className="text-muted-foreground mb-4">
+              Aucun prospect pour le moment
+            </p>
+            <Button onClick={() => navigate("/prospects")} className="bg-success hover:bg-success/90">
+              <Plus className="mr-2 h-4 w-4" />
               Ajouter votre premier prospect
             </Button>
           </div>
@@ -88,32 +87,33 @@ const ProspectsTable = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-medium">Nom</th>
-                  <th className="text-left p-4 font-medium">Email</th>
-                  <th className="text-left p-4 font-medium">Entreprise</th>
-                  <th className="text-left p-4 font-medium">Statut</th>
-                  <th className="text-left p-4 font-medium">Clics</th>
+                <tr className="border-b border-border">
+                  <th className="text-left p-4 font-medium text-muted-foreground">Nom</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Entreprise</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Statut</th>
+                  <th className="text-left p-4 font-medium text-muted-foreground">Clics</th>
                 </tr>
               </thead>
               <tbody>
                 {prospects.map((prospect) => (
-                  <tr key={prospect.id} className="border-b hover:bg-muted/50">
-                    <td className="p-4">{prospect.full_name}</td>
+                  <tr key={prospect.id} className="border-b border-border hover:bg-muted/50">
+                    <td className="p-4 font-medium text-foreground">{prospect.full_name}</td>
                     <td className="p-4 text-muted-foreground">
                       {prospect.email}
                     </td>
-                    <td className="p-4">{prospect.company || "-"}</td>
+                    <td className="p-4 text-muted-foreground">{prospect.company || "-"}</td>
                     <td className="p-4">
                       <Badge
+                        variant="outline"
                         className={`${getStatusColor(
                           prospect.status
-                        )} text-white`}
+                        )} font-medium`}
                       >
                         {prospect.status}
                       </Badge>
                     </td>
-                    <td className="p-4">{prospect.click_count}</td>
+                    <td className="p-4 font-medium text-foreground">{prospect.click_count}</td>
                   </tr>
                 ))}
               </tbody>
