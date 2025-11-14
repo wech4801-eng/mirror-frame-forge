@@ -57,10 +57,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
             <div className="flex items-center gap-6">
               <SidebarTrigger className="-ml-1" />
@@ -70,7 +70,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <div className="flex items-center gap-3">
               <Button variant="outline" size="sm" className="gap-2">
                 <Zap className="h-4 w-4" />
-                Upgrade Now
+                <span className="hidden sm:inline">Upgrade Now</span>
               </Button>
 
               <Button variant="ghost" size="icon" className="relative">
@@ -87,11 +87,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                         {userName.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col items-start text-sm">
+                    <div className="hidden md:flex flex-col items-start text-sm">
                       <span className="font-medium">{userName}</span>
                       <span className="text-xs text-muted-foreground">{userEmail}</span>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -111,7 +111,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </DropdownMenu>
             </div>
           </header>
-          <main className="flex-1 p-6 lg:p-8">
+          <main className="flex-1 p-6 lg:p-8 overflow-auto">
             {children}
           </main>
         </div>
