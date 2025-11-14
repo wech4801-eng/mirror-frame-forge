@@ -3,10 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import EmailTemplateSelector from "./EmailTemplateSelector";
+import EmailEditor from "./EmailEditor";
 
 interface CreateCampaignDialogProps {
   open: boolean;
@@ -17,6 +19,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -63,51 +66,63 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nouvelle campagne email</DialogTitle>
           <DialogDescription>
-            Créez une nouvelle campagne d'emailing pour vos prospects
+            Créez une campagne professionnelle avec nos templates pré-définis
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nom de la campagne</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Newsletter Mars 2024"
-                required
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="info">Informations</TabsTrigger>
+              <TabsTrigger value="template">Template</TabsTrigger>
+              <TabsTrigger value="editor">Éditeur</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="info" className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom de la campagne</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ex: Newsletter Mars 2024"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subject">Objet de l'email</Label>
+                <Input
+                  id="subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Ex: Découvrez nos nouvelles fonctionnalités"
+                  required
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="template" className="py-4">
+              <EmailTemplateSelector 
+                onSelectTemplate={(template) => {
+                  setSelectedTemplate(template.id);
+                  setContent(template.html);
+                }}
+                selectedTemplate={selectedTemplate}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="subject">Objet de l'email</Label>
-              <Input
-                id="subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ex: Découvrez nos nouvelles fonctionnalités"
-                required
+            </TabsContent>
+
+            <TabsContent value="editor" className="py-4">
+              <EmailEditor 
+                content={content}
+                onChange={setContent}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="content">Contenu de l'email</Label>
-              <Textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Écrivez votre message ici..."
-                className="min-h-[200px]"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Vous pouvez utiliser des variables : {"{nom}"}, {"{email}"}, {"{entreprise}"}
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
+            </TabsContent>
+          </Tabs>
+
+          <DialogFooter className="mt-6">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
