@@ -117,13 +117,13 @@ const ProspectsList = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      nouveau: "bg-blue-500",
-      contacte: "bg-yellow-500",
-      qualifie: "bg-purple-500",
-      converti: "bg-green-500",
-      perdu: "bg-red-500",
+      nouveau: "bg-info/10 text-info border-info/20",
+      contacte: "bg-warning/10 text-warning border-warning/20",
+      qualifie: "bg-status-progress/10 text-status-progress border-status-progress/20",
+      converti: "bg-success/10 text-success border-success/20",
+      perdu: "bg-destructive/10 text-destructive border-destructive/20",
     };
-    return colors[status] || "bg-gray-500";
+    return colors[status] || "bg-muted text-muted-foreground";
   };
 
   if (loading) {
@@ -138,7 +138,7 @@ const ProspectsList = () => {
 
   return (
     <>
-      <Card>
+      <Card className="shadow-sm border-border">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
@@ -147,11 +147,11 @@ const ProspectsList = () => {
                 placeholder="Rechercher un prospect..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-border"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[200px]">
+              <SelectTrigger className="w-full md:w-[200px] border-border">
                 <SelectValue placeholder="Filtrer par statut" />
               </SelectTrigger>
               <SelectContent>
@@ -173,40 +173,41 @@ const ProspectsList = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-medium">Nom</th>
-                    <th className="text-left p-4 font-medium">Email</th>
-                    <th className="text-left p-4 font-medium">Téléphone</th>
-                    <th className="text-left p-4 font-medium">Entreprise</th>
-                    <th className="text-left p-4 font-medium">Statut</th>
-                    <th className="text-left p-4 font-medium">Clics</th>
-                    <th className="text-left p-4 font-medium">Actions</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left p-4 font-medium text-muted-foreground">Nom</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Téléphone</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Entreprise</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Statut</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Clics</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProspects.map((prospect) => (
-                    <tr key={prospect.id} className="border-b hover:bg-muted/50">
-                      <td className="p-4 font-medium">{prospect.full_name}</td>
+                    <tr key={prospect.id} className="border-b border-border hover:bg-muted/50">
+                      <td className="p-4 font-medium text-foreground">{prospect.full_name}</td>
                       <td className="p-4 text-muted-foreground">
                         {prospect.email}
                       </td>
-                      <td className="p-4">{prospect.phone || "-"}</td>
-                      <td className="p-4">{prospect.company || "-"}</td>
+                      <td className="p-4 text-muted-foreground">{prospect.phone || "-"}</td>
+                      <td className="p-4 text-muted-foreground">{prospect.company || "-"}</td>
                       <td className="p-4">
                         <Badge
+                          variant="outline"
                           className={`${getStatusColor(
                             prospect.status
-                          )} text-white`}
+                          )} font-medium`}
                         >
                           {prospect.status}
                         </Badge>
                       </td>
-                      <td className="p-4">{prospect.click_count}</td>
+                      <td className="p-4 text-foreground font-medium">{prospect.click_count || 0}</td>
                       <td className="p-4">
                         <div className="flex gap-2">
                           <Button
-                            variant="outline"
-                            size="icon"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => {
                               setSelectedProspect(prospect);
                               setGroupsDialogOpen(true);
@@ -215,8 +216,8 @@ const ProspectsList = () => {
                             <Users className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="outline"
-                            size="icon"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => {
                               setSelectedProspect(prospect);
                               setEditDialogOpen(true);
@@ -225,11 +226,11 @@ const ProspectsList = () => {
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="outline"
-                            size="icon"
+                            variant="ghost"
+                            size="sm"
                             onClick={() => deleteProspect(prospect.id)}
                           >
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </td>

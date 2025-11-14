@@ -24,12 +24,12 @@ const Prospects = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Gestion des Prospects</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-semibold text-foreground">Gestion des Prospects</h1>
+            <p className="text-muted-foreground text-sm">
               Gérez tous vos prospects et organisez-les en groupes
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)}>
+          <Button onClick={() => setDialogOpen(true)} className="bg-success hover:bg-success/90">
             <Plus className="mr-2 h-4 w-4" />
             Nouveau Prospect
           </Button>
