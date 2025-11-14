@@ -117,13 +117,13 @@ const ProspectsList = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      nouveau: "bg-info/10 text-info border-info/20",
-      contacte: "bg-warning/10 text-warning border-warning/20",
-      qualifie: "bg-status-progress/10 text-status-progress border-status-progress/20",
-      converti: "bg-success/10 text-success border-success/20",
+      nouveau: "bg-primary/10 text-primary border-primary/20",
+      contacte: "bg-orange/10 text-orange border-orange/20",
+      qualifie: "bg-pink/10 text-pink border-pink/20",
+      converti: "bg-purple/10 text-purple border-purple/20",
       perdu: "bg-destructive/10 text-destructive border-destructive/20",
     };
-    return colors[status] || "bg-muted text-muted-foreground";
+    return colors[status] || "bg-muted/50 text-muted-foreground border-muted";
   };
 
   if (loading) {
@@ -138,7 +138,7 @@ const ProspectsList = () => {
 
   return (
     <>
-      <Card className="shadow-sm border-border">
+      <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-card">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
@@ -147,11 +147,11 @@ const ProspectsList = () => {
                 placeholder="Rechercher un prospect..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 border-border"
+                className="pl-10 bg-background/50 border-border/50"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[200px] border-border">
+              <SelectTrigger className="w-full md:w-[200px] bg-background/50 border-border/50">
                 <SelectValue placeholder="Filtrer par statut" />
               </SelectTrigger>
               <SelectContent>
@@ -166,48 +166,49 @@ const ProspectsList = () => {
           </div>
 
           {filteredProspects.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-center py-16 text-muted-foreground">
               <p>Aucun prospect trouvé</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left p-4 font-medium text-muted-foreground">Nom</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Téléphone</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Entreprise</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Statut</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Clics</th>
-                    <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Nom</th>
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Téléphone</th>
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Entreprise</th>
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Statut</th>
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Clics</th>
+                    <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProspects.map((prospect) => (
-                    <tr key={prospect.id} className="border-b border-border hover:bg-muted/50">
-                      <td className="p-4 font-medium text-foreground">{prospect.full_name}</td>
-                      <td className="p-4 text-muted-foreground">
+                    <tr key={prospect.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                      <td className="p-4 font-medium">{prospect.full_name}</td>
+                      <td className="p-4 text-muted-foreground text-sm">
                         {prospect.email}
                       </td>
-                      <td className="p-4 text-muted-foreground">{prospect.phone || "-"}</td>
-                      <td className="p-4 text-muted-foreground">{prospect.company || "-"}</td>
+                      <td className="p-4 text-muted-foreground text-sm">{prospect.phone || "-"}</td>
+                      <td className="p-4 text-muted-foreground text-sm">{prospect.company || "-"}</td>
                       <td className="p-4">
                         <Badge
                           variant="outline"
                           className={`${getStatusColor(
                             prospect.status
-                          )} font-medium`}
+                          )} text-xs`}
                         >
                           {prospect.status}
                         </Badge>
                       </td>
-                      <td className="p-4 text-foreground font-medium">{prospect.click_count || 0}</td>
+                      <td className="p-4 font-medium">{prospect.click_count || 0}</td>
                       <td className="p-4">
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
+                            className="h-8 w-8"
                             onClick={() => {
                               setSelectedProspect(prospect);
                               setGroupsDialogOpen(true);
@@ -217,7 +218,8 @@ const ProspectsList = () => {
                           </Button>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
+                            className="h-8 w-8"
                             onClick={() => {
                               setSelectedProspect(prospect);
                               setEditDialogOpen(true);
@@ -227,7 +229,8 @@ const ProspectsList = () => {
                           </Button>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
+                            className="h-8 w-8"
                             onClick={() => deleteProspect(prospect.id)}
                           >
                             <Trash2 className="h-4 w-4" />
