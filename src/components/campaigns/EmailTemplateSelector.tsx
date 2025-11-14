@@ -220,7 +220,7 @@ const EmailTemplateSelector = ({ onSelectTemplate, selectedTemplate }: EmailTemp
       <p className="text-sm text-muted-foreground">
         Choisissez un template professionnel pour votre campagne
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-6">
         {templates.map((template) => (
           <Card
             key={template.id}
@@ -231,18 +231,37 @@ const EmailTemplateSelector = ({ onSelectTemplate, selectedTemplate }: EmailTemp
             }`}
             onClick={() => onSelectTemplate(template)}
           >
-            <div className="p-4 space-y-3">
-              <div className={`h-32 rounded-md ${template.preview} relative flex items-center justify-center`}>
+            <div className="p-6 space-y-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="font-semibold text-lg text-foreground">{template.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{template.description}</p>
+                </div>
                 {selectedTemplate === template.id && (
-                  <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
-                    <Check className="h-4 w-4" />
+                  <div className="bg-primary text-primary-foreground rounded-full p-2">
+                    <Check className="h-5 w-5" />
                   </div>
                 )}
-                <span className="text-5xl opacity-20">📧</span>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground">{template.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{template.description}</p>
+              
+              {/* Preview iframe */}
+              <div className="border-2 rounded-lg overflow-hidden bg-muted/30">
+                <div className="bg-background p-2 border-b flex items-center gap-2">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  </div>
+                  <span className="text-xs text-muted-foreground ml-2">Aperçu du template</span>
+                </div>
+                <div className="h-80 overflow-auto bg-white">
+                  <iframe
+                    srcDoc={template.html.replace('{nom}', 'Jean Dupont').replace('{email}', 'jean@exemple.com').replace('{entreprise}', 'Votre Entreprise').replace('{entreprise}', 'Votre Entreprise')}
+                    className="w-full h-full border-0"
+                    title={`Preview ${template.name}`}
+                    sandbox="allow-same-origin"
+                  />
+                </div>
               </div>
             </div>
           </Card>
