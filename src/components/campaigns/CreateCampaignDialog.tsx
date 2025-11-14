@@ -112,13 +112,26 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                 }}
                 selectedTemplate={selectedTemplate}
               />
+              {selectedTemplate && (
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg border">
+                  <p className="text-sm text-foreground">
+                    ✓ Template sélectionné ! Passez à l'onglet <strong>"Éditeur"</strong> pour personnaliser votre email.
+                  </p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="editor" className="py-4">
-              <EmailEditor 
-                content={content}
-                onChange={setContent}
-              />
+              {content ? (
+                <EmailEditor 
+                  content={content}
+                  onChange={setContent}
+                />
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p>Veuillez d'abord sélectionner un template dans l'onglet "Template"</p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
 

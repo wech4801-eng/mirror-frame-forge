@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
 interface EmailTemplate {
@@ -215,33 +216,48 @@ interface EmailTemplateSelectorProps {
 }
 
 const EmailTemplateSelector = ({ onSelectTemplate, selectedTemplate }: EmailTemplateSelectorProps) => {
+  const getPreviewHtml = (html: string) => {
+    return html
+      .replace(/\{nom\}/g, 'Jean Dupont')
+      .replace(/\{email\}/g, 'jean@exemple.com')
+      .replace(/\{entreprise\}/g, 'Votre Entreprise');
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Choisissez un template professionnel pour votre campagne
+        Choisissez un template professionnel pour votre campagne. Cliquez sur "Utiliser ce template" pour l'éditer.
       </p>
       <div className="grid grid-cols-1 gap-6">
         {templates.map((template) => (
           <Card
             key={template.id}
-            className={`cursor-pointer transition-all hover:shadow-lg ${
+            className={`transition-all hover:shadow-lg ${
               selectedTemplate === template.id
                 ? "ring-2 ring-primary"
                 : "hover:border-primary/50"
             }`}
-            onClick={() => onSelectTemplate(template)}
           >
             <div className="p-6 space-y-4">
               <div className="flex items-start justify-between">
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-lg text-foreground">{template.name}</h3>
                   <p className="text-sm text-muted-foreground mt-1">{template.description}</p>
                 </div>
-                {selectedTemplate === template.id && (
-                  <div className="bg-primary text-primary-foreground rounded-full p-2">
-                    <Check className="h-5 w-5" />
-                  </div>
-                )}
+                <Button
+                  onClick={() => onSelectTemplate(template)}
+                  variant={selectedTemplate === template.id ? "default" : "outline"}
+                  size="sm"
+                >
+                  {selectedTemplate === template.id ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Sélectionné
+                    </>
+                  ) : (
+                    "Utiliser ce template"
+                  )}
+                </Button>
               </div>
               
               {/* Preview iframe */}
@@ -256,10 +272,10 @@ const EmailTemplateSelector = ({ onSelectTemplate, selectedTemplate }: EmailTemp
                 </div>
                 <div className="h-80 overflow-auto bg-white">
                   <iframe
-                    srcDoc={template.html.replace('{nom}', 'Jean Dupont').replace('{email}', 'jean@exemple.com').replace('{entreprise}', 'Votre Entreprise').replace('{entreprise}', 'Votre Entreprise')}
-                    className="w-full h-full border-0"
+                    srcDoc={getPreviewHtml(template.html)}
+                    className="w-full h-full border-0 scale-[0.8] origin-top-left"
+                    style={{ width: '125%', height: '125%' }}
                     title={`Preview ${template.name}`}
-                    sandbox="allow-same-origin"
                   />
                 </div>
               </div>
