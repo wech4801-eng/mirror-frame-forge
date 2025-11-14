@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 const Hero = () => {
+  const navigate = useNavigate();
+  
   return <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
       {/* Background Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -39,12 +42,20 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4">
-            <Button size="lg" className="bg-accent hover:bg-accent/90 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto">
-              Demander une démo
+            <Button 
+              size="lg" 
+              className="bg-accent hover:bg-accent/90 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto"
+              onClick={() => navigate("/auth")}
+            >
+              Commencer Gratuitement
             </Button>
-            <Button size="lg" variant="outline" className="text-base md:text-lg px-6 md:px-8 border-primary/50 hover:bg-primary/10 w-full sm:w-auto">
-              <Play className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-              Voir la vidéo
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-base md:text-lg px-6 md:px-8 border-primary/50 hover:bg-primary/10 w-full sm:w-auto"
+              onClick={() => navigate("/auth")}
+            >
+              Se Connecter
             </Button>
           </div>
 
