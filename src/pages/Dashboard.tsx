@@ -7,6 +7,9 @@ import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ProspectGroupsGrid from "@/components/dashboard/ProspectGroupsGrid";
 import ProspectsTable from "@/components/dashboard/ProspectsTable";
+import ProspectsChart from "@/components/dashboard/ProspectsChart";
+import CampaignsPerformance from "@/components/dashboard/CampaignsPerformance";
+import ActiveWorkflows from "@/components/dashboard/ActiveWorkflows";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Dashboard = () => {
@@ -47,11 +50,23 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         <OnboardingProgress />
         <WelcomeBanner />
         <StatsCards />
-        <ProspectGroupsGrid />
+        
+        <div className="grid gap-6 lg:grid-cols-2">
+          <ProspectsChart />
+          <CampaignsPerformance />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <ProspectGroupsGrid />
+          </div>
+          <ActiveWorkflows />
+        </div>
+
         <ProspectsTable />
       </div>
     </DashboardLayout>
