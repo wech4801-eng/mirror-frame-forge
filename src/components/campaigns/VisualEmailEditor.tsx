@@ -20,6 +20,7 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
       height: "600px",
       width: "100%",
       storageManager: false,
+      fromElement: false,
       plugins: [
         (editor) => gjsPresetNewsletter(editor, {
           modalTitleImport: "Importer du contenu",
@@ -27,14 +28,6 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
           modalLabelExport: "Copier le code ci-dessous",
           modalLabelImport: "Coller votre code HTML ici",
           importPlaceholder: "<div>Votre HTML ici</div>",
-          cellStyle: {
-            "font-size": "12px",
-            "font-weight": "300",
-            "vertical-align": "top",
-            color: "rgb(111, 119, 125)",
-            margin: "0",
-            padding: "0",
-          },
         })
       ],
       canvas: {
@@ -45,27 +38,56 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
       blockManager: {
         appendOnClick: true,
       },
+      panels: {
+        defaults: [
+          {
+            id: "basic-actions",
+            el: ".panel__basic-actions",
+            buttons: [
+              {
+                id: "visibility",
+                active: true,
+                className: "btn-toggle-borders",
+                label: '<i class="fa fa-clone"></i>',
+                command: "sw-visibility",
+              },
+            ],
+          },
+          {
+            id: "panel-devices",
+            el: ".panel__devices",
+            buttons: [
+              {
+                id: "device-desktop",
+                label: '<i class="fa fa-desktop"></i>',
+                command: "set-device-desktop",
+                active: true,
+              },
+              {
+                id: "device-mobile",
+                label: '<i class="fa fa-mobile"></i>',
+                command: "set-device-mobile",
+              },
+            ],
+          },
+        ],
+      },
       styleManager: {
         sectors: [
           {
-            name: "Général",
+            name: "Texte",
             open: true,
-            buildProps: ["float", "display", "position", "top", "right", "left", "bottom"],
+            buildProps: ["font-family", "font-size", "font-weight", "color", "text-align"],
           },
           {
-            name: "Dimensions",
-            open: false,
-            buildProps: ["width", "height", "max-width", "min-height", "margin", "padding"],
+            name: "Couleurs",
+            open: true,
+            buildProps: ["background-color", "border-color"],
           },
           {
-            name: "Typographie",
+            name: "Espacement",
             open: false,
-            buildProps: ["font-family", "font-size", "font-weight", "letter-spacing", "color", "line-height", "text-align", "text-decoration", "text-shadow"],
-          },
-          {
-            name: "Décorations",
-            open: false,
-            buildProps: ["background-color", "border-radius", "border", "box-shadow", "background"],
+            buildProps: ["margin", "padding"],
           },
         ],
       },
@@ -77,12 +99,6 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
             width: "",
           },
           {
-            id: "tablet",
-            name: "Tablette",
-            width: "768px",
-            widthMedia: "992px",
-          },
-          {
             id: "mobile",
             name: "Mobile",
             width: "320px",
@@ -90,6 +106,36 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
           },
         ],
       },
+    });
+
+    // Désactiver les blocs complexes pour garder seulement l'édition de texte
+    editor.on("load", () => {
+      const blockManager = editor.BlockManager;
+      const blocksToRemove = [
+        "sect100",
+        "sect50",
+        "sect30",
+        "sect37",
+        "button",
+        "divider",
+        "image",
+        "quote",
+        "link",
+        "link-block",
+        "grid-items",
+        "list-items",
+      ];
+      
+      blocksToRemove.forEach((blockId) => {
+        blockManager.remove(blockId);
+      });
+
+      // Masquer le panneau des blocs par défaut
+      const panels = editor.Panels;
+      const viewsPanel = panels.getPanel("views");
+      if (viewsPanel) {
+        viewsPanel.set("visible", false);
+      }
     });
 
     // Charger le contenu initial
@@ -129,9 +175,8 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
       <div className="bg-muted/50 p-4 rounded-md">
         <p className="text-xs font-semibold text-foreground mb-2">💡 Comment utiliser l'éditeur :</p>
         <ul className="text-xs text-muted-foreground space-y-1">
-          <li>• Glissez-déposez des blocs depuis la barre latérale</li>
-          <li>• Cliquez sur un élément pour le modifier dans le panneau de droite</li>
-          <li>• Pour modifier un lien : cliquez sur le bouton/texte → panneau "Paramètres" → champ "Lien"</li>
+          <li>• Cliquez sur n'importe quel texte pour le modifier directement</li>
+          <li>• Utilisez le panneau de droite pour changer les couleurs et polices</li>
           <li>• Variables disponibles : {"{nom}"}, {"{email}"}, {"{entreprise}"}</li>
         </ul>
       </div>
