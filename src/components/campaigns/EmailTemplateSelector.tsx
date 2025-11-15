@@ -245,7 +245,11 @@ const EmailTemplateSelector = ({ onSelectTemplate, selectedTemplate }: EmailTemp
                   <p className="text-sm text-muted-foreground mt-1">{template.description}</p>
                 </div>
                 <Button
-                  onClick={() => onSelectTemplate(template)}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectTemplate(template);
+                  }}
                   variant={selectedTemplate === template.id ? "default" : "outline"}
                   size="sm"
                 >
