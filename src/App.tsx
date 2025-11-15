@@ -13,6 +13,7 @@ import WebinarRoom from "./pages/WebinarRoom";
 import Branding from "./pages/Branding";
 import Mail from "./pages/Mail";
 import Workflow from "./pages/Workflow";
+import WorkflowEditor from "./pages/WorkflowEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/branding" element={<Branding />} />
           <Route path="/mail" element={<Mail />} />
           <Route path="/workflow" element={<Workflow />} />
+          <Route path="/workflow/:id" element={<WorkflowEditor />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
