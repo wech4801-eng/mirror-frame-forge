@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import grapesjs from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
 import gjsPresetNewsletter from "grapesjs-preset-newsletter";
-import "grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css";
 
 interface VisualEmailEditorProps {
   content: string;
