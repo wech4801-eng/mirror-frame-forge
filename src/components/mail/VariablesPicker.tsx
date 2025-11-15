@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EMAIL_VARIABLES } from "@/lib/emailVariables";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check } from "@phosphor-icons/react";
 import { useState } from "react";
 
 interface VariablesPickerProps {

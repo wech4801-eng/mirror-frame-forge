@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check } from "@phosphor-icons/react";
 
 interface EmailTemplate {
   id: string;

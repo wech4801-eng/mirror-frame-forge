@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import VisualEmailEditor from "../campaigns/VisualEmailEditor";
-import { Plus, Sparkles, Send } from "lucide-react";
+import { Plus, Sparkle, PaperPlaneTilt } from "@phosphor-icons/react";
 import { predefinedTemplates } from "./predefinedTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BrandingSelector } from "./BrandingSelector";

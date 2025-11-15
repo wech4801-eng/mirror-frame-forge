@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Mail, TrendingUp, Zap, Eye, MousePointerClick } from "lucide-react";
+import { UsersThree, EnvelopeSimple, TrendUp, Lightning, Eye, CursorClick } from "@phosphor-icons/react";
 
 const StatsCards = () => {
   const [stats, setStats] = useState({
@@ -59,21 +59,21 @@ const StatsCards = () => {
     {
       title: "Total Prospects",
       value: stats.totalProspects,
-      icon: Users,
+      icon: UsersThree,
       gradient: "from-primary to-pink",
       subtitle: "contacts",
     },
     {
       title: "Workflows Actifs",
       value: stats.activeWorkflows,
-      icon: Zap,
+      icon: Lightning,
       gradient: "from-pink to-orange",
       subtitle: "automatisations",
     },
     {
       title: "Campagnes",
       value: stats.totalCampaigns,
-      icon: Mail,
+      icon: EnvelopeSimple,
       gradient: "from-orange to-primary",
       subtitle: "envoyées",
     },
@@ -87,14 +87,14 @@ const StatsCards = () => {
     {
       title: "Taux de Clic",
       value: `${stats.clickRate}%`,
-      icon: MousePointerClick,
+      icon: CursorClick,
       gradient: "from-primary to-secondary",
       subtitle: "moyen",
     },
     {
       title: "Templates",
       value: stats.templates,
-      icon: TrendingUp,
+      icon: TrendUp,
       gradient: "from-secondary to-accent",
       subtitle: "créés",
     },

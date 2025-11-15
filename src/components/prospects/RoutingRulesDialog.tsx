@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Trash2, Plus, GripVertical } from "lucide-react";
+import { ArrowRight, Trash, Plus, DotsSixVertical } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 
 interface Group {

@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, AlertTriangle } from "lucide-react";
+import { WarningCircle, Warning } from "@phosphor-icons/react";
 import { validateVariables } from "@/lib/emailVariables";
 
 interface TemplateValidationBannerProps {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Mail, MousePointerClick, Eye } from "lucide-react";
+import { EnvelopeSimple, CursorClick, Eye } from "@phosphor-icons/react";
 
 const CampaignsPerformance = () => {
   const [data, setData] = useState<any[]>([]);
@@ -73,7 +73,7 @@ const CampaignsPerformance = () => {
         <div className="grid grid-cols-3 gap-4">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
             <div className="p-2 rounded-lg bg-primary/10">
-              <Mail className="h-4 w-4 text-primary" />
+              <EnvelopeSimple className="h-4 w-4 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.sent}</p>
@@ -91,7 +91,7 @@ const CampaignsPerformance = () => {
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
             <div className="p-2 rounded-lg bg-accent/10">
-              <MousePointerClick className="h-4 w-4 text-accent" />
+              <CursorClick className="h-4 w-4 text-accent" />
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.clicked}</p>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Eye, Sparkles } from "lucide-react";
+import { Check, Eye, Sparkle } from "@phosphor-icons/react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { predefinedTemplates } from "../mail/predefinedTemplates";

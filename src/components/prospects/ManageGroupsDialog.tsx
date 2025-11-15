@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus } from "lucide-react";
+import { Plus } from "@phosphor-icons/react";
 import CreateGroupDialog from "./CreateGroupDialog";
 
 interface Group {

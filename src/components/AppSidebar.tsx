@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Mail, Video, Palette, Settings, Workflow, LogOut, User } from "lucide-react";
+import { Layout, UsersThree, EnvelopeSimple, VideoCamera, Palette, Gear, FlowArrow, SignOut, User } from "@phosphor-icons/react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,13 +18,13 @@ import {
 import { Button } from "@/components/ui/button";
 
 const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "1. Prospects", url: "/prospects", icon: Users },
+  { title: "Dashboard", url: "/dashboard", icon: Layout },
+  { title: "1. Prospects", url: "/prospects", icon: UsersThree },
   { title: "2. Branding", url: "/branding", icon: Palette },
-  { title: "3. Templates Mail", url: "/mail", icon: Settings },
-  { title: "4. Workflows", url: "/workflow", icon: Workflow },
-  { title: "5. Campagnes", url: "/campaigns", icon: Mail },
-  { title: "Webinaires", url: "/webinars", icon: Video },
+  { title: "3. Templates Mail", url: "/mail", icon: Gear },
+  { title: "4. Workflows", url: "/workflow", icon: FlowArrow },
+  { title: "5. Campagnes", url: "/campaigns", icon: EnvelopeSimple },
+  { title: "Webinaires", url: "/webinars", icon: VideoCamera },
 ];
 
 export function AppSidebar() {
@@ -85,7 +85,7 @@ export function AppSidebar() {
           className={`w-full ${open ? 'justify-start px-3' : 'justify-center px-0'} text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent text-sm h-9`}
           onClick={handleLogout}
         >
-          <LogOut className="h-4 w-4 flex-shrink-0" />
+          <SignOut className="h-4 w-4 flex-shrink-0" />
           {open && <span className="ml-2.5 text-sm">Déconnexion</span>}
         </Button>
       </SidebarFooter>
