@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ProspectsList from "@/components/prospects/ProspectsList";
 import AddProspectDialog from "@/components/prospects/AddProspectDialog";
+import { RoutingRulesDialog } from "@/components/prospects/RoutingRulesDialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
@@ -11,6 +12,7 @@ import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Prospects = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [routingDialogOpen, setRoutingDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,13 +36,21 @@ const Prospects = () => {
                 Gérez tous vos prospects et organisez-les en groupes
               </p>
             </div>
-            <Button 
-              onClick={() => setDialogOpen(true)} 
-              className="bg-primary hover:bg-primary/90"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Nouveau Prospect
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setRoutingDialogOpen(true)}
+              >
+                Règles de routage
+              </Button>
+              <Button 
+                onClick={() => setDialogOpen(true)} 
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nouveau Prospect
+              </Button>
+            </div>
           </div>
 
           <ProspectsList />
@@ -48,6 +58,11 @@ const Prospects = () => {
           <AddProspectDialog 
             open={dialogOpen} 
             onOpenChange={setDialogOpen}
+          />
+          
+          <RoutingRulesDialog
+            open={routingDialogOpen}
+            onOpenChange={setRoutingDialogOpen}
           />
         </div>
       </DashboardLayout>

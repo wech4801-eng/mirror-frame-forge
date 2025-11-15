@@ -380,6 +380,66 @@ export type Database = {
           },
         ]
       }
+      routing_rules: {
+        Row: {
+          company_condition: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          priority: number
+          source_condition: string | null
+          status_condition: string | null
+          tags_to_add: string[] | null
+          target_group_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_condition?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number
+          source_condition?: string | null
+          status_condition?: string | null
+          tags_to_add?: string[] | null
+          target_group_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_condition?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number
+          source_condition?: string | null
+          status_condition?: string | null
+          tags_to_add?: string[] | null
+          target_group_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routing_rules_target_group_id_fkey"
+            columns: ["target_group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routing_rules_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webinar_invitations: {
         Row: {
           created_at: string | null
@@ -563,7 +623,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      apply_routing_rules: {
+        Args: { prospect_id_param: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
