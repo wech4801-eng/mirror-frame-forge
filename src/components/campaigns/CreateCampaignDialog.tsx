@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,23 +7,35 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EmailTemplateSelector from "./EmailTemplateSelector";
-import VisualEmailEditor from "./VisualEmailEditor";
+import TemplateSelector from "./TemplateSelector";
 
 interface CreateCampaignDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+}
+
 const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps) => {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"info" | "template" | "editor">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "template">("info");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const handleTemplateSelect = (template: EmailTemplate) => {
+    setSelectedTemplate(template);
+    setSubject(template.subject);
+    setContent(template.content);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,13 +43,14 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error("Non authentifié");
 
       const { error } = await supabase.from("email_campaigns").insert({
         user_id: user.id,
         name,
         subject,
         content,
+        template_id: selectedTemplate?.id || null,
         status: "brouillon",
       });
 
@@ -54,6 +67,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
       setName("");
       setSubject("");
       setContent("");
+      setSelectedTemplate(null);
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -71,15 +85,14 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
         <DialogHeader>
           <DialogTitle>Nouvelle campagne email</DialogTitle>
           <DialogDescription>
-            Créez une campagne professionnelle avec nos templates pré-définis
+            Créez une campagne en utilisant vos templates
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "template" | "editor")} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "template")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="info">Informations</TabsTrigger>
-              <TabsTrigger value="template">Template</TabsTrigger>
-              <TabsTrigger value="editor">Éditeur</TabsTrigger>
+              <TabsTrigger value="template">Choisir un template</TabsTrigger>
             </TabsList>
             
             <TabsContent value="info" className="space-y-4 py-4">
@@ -103,48 +116,30 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                   required
                 />
               </div>
+              {selectedTemplate && (
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-sm font-semibold mb-2">Template sélectionné :</p>
+                  <p className="text-sm text-muted-foreground">{selectedTemplate.name}</p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="template" className="py-4">
-              <EmailTemplateSelector 
-                onSelectTemplate={(template) => {
-                  setSelectedTemplate(template.id);
-                  setContent(template.html);
-                  setActiveTab("editor");
-                }}
-                selectedTemplate={selectedTemplate}
+              <TemplateSelector
+                selectedTemplateId={selectedTemplate?.id || null}
+                onSelect={handleTemplateSelect}
               />
-              {selectedTemplate && (
-                <div className="mt-4 p-4 bg-muted/50 rounded-lg border">
-                  <p className="text-sm text-foreground">
-                    ✓ Template sélectionné ! Passez à l'onglet <strong>"Éditeur"</strong> pour personnaliser votre email.
-                  </p>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="editor" className="py-4">
-              {content ? (
-                <VisualEmailEditor 
-                  content={content}
-                  onChange={setContent}
-                />
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  <p>Veuillez d'abord sélectionner un template dans l'onglet "Template"</p>
-                </div>
-              )}
             </TabsContent>
           </Tabs>
 
-          <DialogFooter className="mt-6">
+          <div className="flex items-center justify-between mt-6 pt-4 border-t">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || !selectedTemplate}>
               {loading ? "Création..." : "Créer la campagne"}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
