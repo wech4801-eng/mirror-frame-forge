@@ -13,8 +13,9 @@ interface WebinarHostViewProps {
 }
 
 const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps) => {
-  const [isVideoOn, setIsVideoOn] = useState(false);
-  const [isAudioOn, setIsAudioOn] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [viewerCount] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -24,6 +25,9 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const { toast } = useToast();
 
   useEffect(() => {
+    // Start stream on mount
+    startStream();
+    
     return () => {
       // Cleanup streams on unmount
       if (streamRef.current) {
@@ -35,103 +39,84 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
     };
   }, []);
 
-  const toggleVideo = async () => {
+  const startStream = async () => {
     try {
-      if (isVideoOn) {
-        console.log("Arrêt de la vidéo");
-        if (streamRef.current) {
-          streamRef.current.getVideoTracks().forEach((track) => {
-            track.stop();
-            streamRef.current?.removeTrack(track);
-          });
+      console.log("Démarrage du stream vidéo et audio");
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: "user"
+        },
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
         }
-        if (videoRef.current) {
-          videoRef.current.srcObject = null;
-        }
-        setIsVideoOn(false);
-      } else {
-        console.log("Démarrage de la vidéo");
-        const constraints = {
-          video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            facingMode: "user"
-          },
-          audio: false
-        };
-        
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        console.log("Stream vidéo obtenu:", stream.getVideoTracks());
-        
-        if (!streamRef.current) {
-          streamRef.current = stream;
-        } else {
-          stream.getVideoTracks().forEach((track) => {
-            streamRef.current?.addTrack(track);
-          });
-        }
-        
-        if (videoRef.current) {
-          videoRef.current.srcObject = streamRef.current;
-          await videoRef.current.play();
-          console.log("Vidéo en lecture");
-        }
-        setIsVideoOn(true);
+      });
+      
+      console.log("Stream obtenu:", {
+        video: mediaStream.getVideoTracks(),
+        audio: mediaStream.getAudioTracks()
+      });
+      
+      streamRef.current = mediaStream;
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        await videoRef.current.play();
+        console.log("Vidéo en lecture");
       }
+      
+      setIsStreaming(true);
+      setIsVideoEnabled(true);
+      setIsAudioEnabled(true);
+      
+      toast({
+        title: "Stream démarré",
+        description: "Caméra et micro activés",
+      });
     } catch (error: any) {
-      console.error("Erreur caméra:", error);
+      console.error("Erreur stream:", error);
+      let message = "Impossible d'accéder aux périphériques. ";
+      
+      if (error.name === 'NotAllowedError') {
+        message += "Permission refusée. Autorisez l'accès à la webcam et au micro.";
+      } else if (error.name === 'NotFoundError') {
+        message += "Aucune webcam ou micro détecté.";
+      } else if (error.name === 'NotReadableError') {
+        message += "La webcam ou le micro est utilisé par une autre application.";
+      } else {
+        message += error.message;
+      }
+      
       toast({
         title: "Erreur",
-        description: `Impossible d'accéder à la caméra: ${error.message}`,
+        description: message,
         variant: "destructive",
       });
     }
   };
 
-  const toggleAudio = async () => {
-    try {
-      if (isAudioOn) {
-        console.log("Arrêt du micro");
-        if (streamRef.current) {
-          streamRef.current.getAudioTracks().forEach((track) => {
-            track.stop();
-            streamRef.current?.removeTrack(track);
-          });
-        }
-        setIsAudioOn(false);
-      } else {
-        console.log("Démarrage du micro");
-        const audioStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        });
-        console.log("Stream audio obtenu:", audioStream.getAudioTracks());
-        
-        if (!streamRef.current) {
-          streamRef.current = audioStream;
-          if (videoRef.current && isVideoOn) {
-            videoRef.current.srcObject = streamRef.current;
-          }
-        } else {
-          audioStream.getAudioTracks().forEach((track) => {
-            streamRef.current?.addTrack(track);
-          });
-          if (videoRef.current) {
-            videoRef.current.srcObject = streamRef.current;
-          }
-        }
-        setIsAudioOn(true);
+  const toggleVideo = () => {
+    if (streamRef.current) {
+      const videoTrack = streamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setIsVideoEnabled(videoTrack.enabled);
+        console.log("Vidéo:", videoTrack.enabled ? "activée" : "désactivée");
       }
-    } catch (error: any) {
-      console.error("Erreur micro:", error);
-      toast({
-        title: "Erreur",
-        description: `Impossible d'accéder au microphone: ${error.message}`,
-        variant: "destructive",
-      });
+    }
+  };
+
+  const toggleAudio = () => {
+    if (streamRef.current) {
+      const audioTrack = streamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setIsAudioEnabled(audioTrack.enabled);
+        console.log("Audio:", audioTrack.enabled ? "activé" : "désactivé");
+      }
     }
   };
 
@@ -226,28 +211,33 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
               </Card>
             )}
             
-            {isVideoOn && (
+            {isStreaming && (
               <Card className="relative aspect-video bg-black overflow-hidden">
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  muted={!isAudioOn}
+                  muted
                   className="w-full h-full object-cover"
                   style={{ transform: "scaleX(-1)" }}
                 />
+                {!isVideoEnabled && (
+                  <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+                    <VideoOff className="h-24 w-24 text-gray-600" />
+                  </div>
+                )}
                 <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse flex items-center gap-2">
                   <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                   EN DIRECT
                 </div>
                 <div className="absolute bottom-4 right-4 flex gap-2">
-                  {isVideoOn && (
+                  {isVideoEnabled && (
                     <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
                       <Video className="h-3 w-3" />
                       Caméra
                     </div>
                   )}
-                  {isAudioOn && (
+                  {isAudioEnabled && (
                     <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
                       <Mic className="h-3 w-3" />
                       Micro
@@ -257,11 +247,11 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
               </Card>
             )}
 
-            {!isVideoOn && !isScreenSharing && (
+            {!isStreaming && !isScreenSharing && (
               <Card className="aspect-video bg-muted flex items-center justify-center">
                 <div className="text-center space-y-2">
                   <VideoOff className="h-16 w-16 text-muted-foreground mx-auto" />
-                  <p className="text-muted-foreground">Activez votre caméra ou partagez votre écran pour commencer</p>
+                  <p className="text-muted-foreground">Chargement de la caméra...</p>
                 </div>
               </Card>
             )}
@@ -271,20 +261,22 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
           <Card className="p-4">
             <div className="flex items-center justify-center gap-4">
               <Button
-                variant={isVideoOn ? "default" : "outline"}
+                variant={isVideoEnabled ? "default" : "outline"}
                 size="lg"
                 onClick={toggleVideo}
                 className="w-16 h-16"
+                disabled={!isStreaming}
               >
-                {isVideoOn ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
+                {isVideoEnabled ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
               </Button>
               <Button
-                variant={isAudioOn ? "default" : "outline"}
+                variant={isAudioEnabled ? "default" : "outline"}
                 size="lg"
                 onClick={toggleAudio}
                 className="w-16 h-16"
+                disabled={!isStreaming}
               >
-                {isAudioOn ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+                {isAudioEnabled ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
               </Button>
               <Button
                 variant={isScreenSharing ? "default" : "outline"}
