@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { workflowTemplates } from "@/lib/workflowTemplates";
+import { workflowTemplates, WorkflowTemplate } from "@/lib/workflowTemplates";
 import * as Icons from "lucide-react";
 import { Loader2 } from "lucide-react";
+import { WorkflowWizard } from "@/components/workflow/WorkflowWizard";
 
 const WorkflowLibrary = () => {
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<WorkflowTemplate | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -25,49 +27,9 @@ const WorkflowLibrary = () => {
     compliance: { label: "Conformité", color: "bg-gray-500/10 text-gray-700 dark:text-gray-300" }
   };
 
-  const handleUseTemplate = async (template: typeof workflowTemplates[0], index: number) => {
-    setLoadingId(`${index}`);
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/auth");
-        return;
-      }
-
-      // Create a new workflow from template
-      const { data: workflow, error } = await supabase
-        .from("workflows")
-        .insert({
-          user_id: user.id,
-          name: template.name,
-          description: template.description,
-          nodes: [],
-          edges: [],
-          is_active: false
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast({
-        title: "Workflow créé",
-        description: `Le template "${template.name}" a été ajouté à vos workflows. Vous pouvez maintenant le personnaliser.`,
-      });
-
-      // Navigate to workflow editor
-      navigate(`/workflow/${workflow.id}`);
-    } catch (error) {
-      console.error("Error creating workflow from template:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de créer le workflow. Veuillez réessayer.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingId(null);
-    }
+  const handleUseTemplate = (template: WorkflowTemplate) => {
+    setSelectedTemplate(template);
+    setWizardOpen(true);
   };
 
   const getIcon = (iconName: string) => {
@@ -160,17 +122,9 @@ const WorkflowLibrary = () => {
 
                       <Button
                         className="w-full"
-                        onClick={() => handleUseTemplate(template, index)}
-                        disabled={loadingId === `${index}`}
+                        onClick={() => handleUseTemplate(template)}
                       >
-                        {loadingId === `${index}` ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Création...
-                          </>
-                        ) : (
-                          "Utiliser ce workflow"
-                        )}
+                        Utiliser ce workflow
                       </Button>
                     </CardContent>
                   </Card>
@@ -179,6 +133,14 @@ const WorkflowLibrary = () => {
             </TabsContent>
           ))}
         </Tabs>
+
+        {selectedTemplate && (
+          <WorkflowWizard
+            open={wizardOpen}
+            onOpenChange={setWizardOpen}
+            template={selectedTemplate}
+          />
+        )}
       </div>
     </DashboardLayout>
   );
