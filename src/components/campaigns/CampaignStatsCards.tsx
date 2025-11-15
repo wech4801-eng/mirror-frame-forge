@@ -66,13 +66,13 @@ const CampaignStatsCards = () => {
     {
       title: "Total Campagnes",
       value: stats?.totalCampaigns || 0,
-      icon: Mail,
+      icon: EnvelopeSimple,
       description: `${stats?.sentCampaigns || 0} envoyées`,
     },
     {
       title: "Emails Envoyés",
       value: stats?.totalRecipients || 0,
-      icon: Send,
+      icon: PaperPlaneTilt,
       description: "Total des destinataires",
     },
     {
@@ -84,7 +84,7 @@ const CampaignStatsCards = () => {
     {
       title: "Taux de Clic",
       value: `${stats?.clickRate || 0}%`,
-      icon: MousePointerClick,
+      icon: CursorClick,
       description: `${stats?.clickedEmails || 0} clics`,
     },
   ];

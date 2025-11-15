@@ -103,7 +103,7 @@ export const PopulationSelector = ({
   return (
     <div className="space-y-4">
       <Label className="flex items-center gap-2">
-        <Users className="h-4 w-4" />
+        <UsersThree className="h-4 w-4" />
         Sélectionner la population cible
       </Label>
       

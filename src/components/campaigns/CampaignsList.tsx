@@ -105,7 +105,7 @@ const CampaignsList = () => {
         {campaigns?.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <Mail className="h-12 w-12 text-muted-foreground mb-4" />
+              <EnvelopeSimple className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">Aucune campagne</h3>
               <p className="text-sm text-muted-foreground">
                 Créez votre première campagne d'emailing
@@ -163,7 +163,7 @@ const CampaignsList = () => {
                       size="sm"
                       onClick={() => setEditingCampaign(campaign)}
                     >
-                      <Edit className="h-4 w-4" />
+                      <PencilSimple className="h-4 w-4" />
                     </Button>
                     {campaign.status === "brouillon" && (
                       <Button
@@ -171,7 +171,7 @@ const CampaignsList = () => {
                         size="sm"
                         onClick={() => setSelectingProspects(campaign)}
                       >
-                        <Users className="h-4 w-4 mr-2" />
+                        <UsersThree className="h-4 w-4 mr-2" />
                         Destinataires ({totalRecipients})
                       </Button>
                     )}
@@ -181,14 +181,14 @@ const CampaignsList = () => {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <UsersThree className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="font-medium">{totalRecipients}</p>
                       <p className="text-xs text-muted-foreground">Destinataires</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Send className="h-4 w-4 text-muted-foreground" />
+                    <PaperPlaneTilt className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="font-medium">{sentCount}</p>
                       <p className="text-xs text-muted-foreground">Envoyés</p>
@@ -202,14 +202,14 @@ const CampaignsList = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MousePointerClick className="h-4 w-4 text-muted-foreground" />
+                    <CursorClick className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="font-medium">{clickRate}%</p>
                       <p className="text-xs text-muted-foreground">Clics</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <CalendarBlank className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="font-medium text-xs">
                         {format(new Date(campaign.created_at), "dd MMM yyyy", { locale: fr })}

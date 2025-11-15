@@ -17,7 +17,7 @@ export const TemplateValidationBanner = ({ content }: TemplateValidationBannerPr
     <div className="space-y-2">
       {validation.missing.length > 0 && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+          <WarningCircle className="h-4 w-4" />
           <AlertTitle>Variables obligatoires manquantes</AlertTitle>
           <AlertDescription>
             <ul className="list-disc list-inside mt-2">
@@ -33,7 +33,7 @@ export const TemplateValidationBanner = ({ content }: TemplateValidationBannerPr
 
       {validation.invalid.length > 0 && (
         <Alert>
-          <AlertTriangle className="h-4 w-4" />
+          <Warning className="h-4 w-4" />
           <AlertTitle>Variables non reconnues</AlertTitle>
           <AlertDescription>
             <p className="mb-2">Les variables suivantes ne sont pas valides :</p>
