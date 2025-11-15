@@ -285,12 +285,12 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
               </div>
               <div className="space-y-2">
                 <Label>Statut (optionnel)</Label>
-                <Select value={formStatusCondition} onValueChange={setFormStatusCondition}>
+                <Select value={formStatusCondition || "all"} onValueChange={(val) => setFormStatusCondition(val === "all" ? "" : val)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Tous" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover">
-                    <SelectItem value="">Tous</SelectItem>
+                    <SelectItem value="all">Tous</SelectItem>
                     <SelectItem value="nouveau">Nouveau</SelectItem>
                     <SelectItem value="qualifie">Qualifié</SelectItem>
                     <SelectItem value="client">Client</SelectItem>
