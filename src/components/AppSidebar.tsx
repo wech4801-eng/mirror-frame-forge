@@ -20,10 +20,10 @@ import { Button } from "@/components/ui/button";
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Prospects", url: "/prospects", icon: Users },
+  { title: "Mail", url: "/mail", icon: Settings },
+  { title: "Workflow", url: "/workflow", icon: Workflow },
   { title: "Campagnes", url: "/campaigns", icon: Mail },
   { title: "Webinaires", url: "/webinars", icon: Video },
-  { title: "Workflow", url: "/workflow", icon: Workflow },
-  { title: "Mail", url: "/mail", icon: Settings },
   { title: "Branding", url: "/branding", icon: Palette },
 ];
 
