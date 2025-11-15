@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Video, VideoOff, Mic, MicOff, Monitor, MonitorOff, Users } from "lucide-react";
@@ -24,78 +24,70 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const screenStreamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Start stream on mount
-    startStream();
+  const startStream = () => {
+    console.log("Démarrage du stream - fonction appelée");
     
-    return () => {
-      // Cleanup streams on unmount
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-      if (screenStreamRef.current) {
-        screenStreamRef.current.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, []);
-
-  const startStream = async () => {
-    try {
-      console.log("Démarrage du stream vidéo et audio");
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: "user"
-        },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      });
-      
-      console.log("Stream obtenu:", {
-        video: mediaStream.getVideoTracks(),
-        audio: mediaStream.getAudioTracks()
-      });
-      
+    navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: true
+    }).then((mediaStream) => {
+      console.log("Stream obtenu:", mediaStream);
       streamRef.current = mediaStream;
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
-        await videoRef.current.play();
-        console.log("Vidéo en lecture");
+        console.log("srcObject assigné");
+        
+        videoRef.current.play().then(() => {
+          console.log("play() réussi");
+          setIsStreaming(true);
+          setIsVideoEnabled(true);
+          setIsAudioEnabled(true);
+          
+          toast({
+            title: "Stream démarré",
+            description: "Caméra et micro activés",
+          });
+        }).catch((err) => {
+          console.error("Erreur play():", err);
+        });
       }
+    }).catch((err) => {
+      console.error("Erreur getUserMedia:", err);
+      let msg = "Erreur d'accès à la webcam. ";
       
-      setIsStreaming(true);
-      setIsVideoEnabled(true);
-      setIsAudioEnabled(true);
-      
-      toast({
-        title: "Stream démarré",
-        description: "Caméra et micro activés",
-      });
-    } catch (error: any) {
-      console.error("Erreur stream:", error);
-      let message = "Impossible d'accéder aux périphériques. ";
-      
-      if (error.name === 'NotAllowedError') {
-        message += "Permission refusée. Autorisez l'accès à la webcam et au micro.";
-      } else if (error.name === 'NotFoundError') {
-        message += "Aucune webcam ou micro détecté.";
-      } else if (error.name === 'NotReadableError') {
-        message += "La webcam ou le micro est utilisé par une autre application.";
+      if (err.name === 'NotAllowedError') {
+        msg += "Permission refusée. Autorisez l'accès à la webcam.";
+      } else if (err.name === 'NotFoundError') {
+        msg += "Aucune webcam détectée.";
+      } else if (err.name === 'NotReadableError') {
+        msg += "La webcam est utilisée par une autre application.";
       } else {
-        message += error.message;
+        msg += err.message;
       }
       
       toast({
         title: "Erreur",
-        description: message,
+        description: msg,
         variant: "destructive",
       });
+    });
+  };
+
+  const stopStream = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+      streamRef.current = null;
     }
+    
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    
+    setIsStreaming(false);
+    console.log("Stream arrêté");
   };
 
   const toggleVideo = () => {
@@ -148,7 +140,6 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
         }
         setIsScreenSharing(true);
 
-        // Stop screen sharing when user stops it from browser
         screenStream.getVideoTracks()[0].onended = () => {
           console.log("Partage d'écran arrêté par l'utilisateur");
           setIsScreenSharing(false);
@@ -177,7 +168,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
           <Card className="p-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-foreground">{webinar.title}</h2>
-              <p className="text-sm text-muted-foreground">Vue hôte - Vous êtes en direct</p>
+              <p className="text-sm text-muted-foreground">Vue hôte</p>
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -211,81 +202,101 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
               </Card>
             )}
             
-            {isStreaming && (
-              <Card className="relative aspect-video bg-black overflow-hidden">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                  style={{ transform: "scaleX(-1)" }}
-                />
-                {!isVideoEnabled && (
-                  <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                    <VideoOff className="h-24 w-24 text-gray-600" />
+            <Card className="relative aspect-video bg-black overflow-hidden">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover"
+                style={{ transform: "scaleX(-1)" }}
+              />
+              
+              {!isStreaming && (
+                <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center text-white">
+                  <VideoOff className="h-24 w-24 mb-4 opacity-50" />
+                  <p className="opacity-50">Cliquez sur Démarrer pour commencer</p>
+                </div>
+              )}
+              
+              {isStreaming && !isVideoEnabled && (
+                <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+                  <VideoOff className="h-24 w-24 text-white opacity-50" />
+                </div>
+              )}
+              
+              {isStreaming && (
+                <>
+                  <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse flex items-center gap-2">
+                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                    EN DIRECT
                   </div>
-                )}
-                <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse flex items-center gap-2">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  EN DIRECT
-                </div>
-                <div className="absolute bottom-4 right-4 flex gap-2">
-                  {isVideoEnabled && (
-                    <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
-                      <Video className="h-3 w-3" />
-                      Caméra
-                    </div>
-                  )}
-                  {isAudioEnabled && (
-                    <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
-                      <Mic className="h-3 w-3" />
-                      Micro
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
-
-            {!isStreaming && !isScreenSharing && (
-              <Card className="aspect-video bg-muted flex items-center justify-center">
-                <div className="text-center space-y-2">
-                  <VideoOff className="h-16 w-16 text-muted-foreground mx-auto" />
-                  <p className="text-muted-foreground">Chargement de la caméra...</p>
-                </div>
-              </Card>
-            )}
+                  <div className="absolute bottom-4 right-4 flex gap-2">
+                    {isVideoEnabled && (
+                      <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
+                        <Video className="h-3 w-3" />
+                        Caméra
+                      </div>
+                    )}
+                    {isAudioEnabled && (
+                      <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
+                        <Mic className="h-3 w-3" />
+                        Micro
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </Card>
           </div>
 
           {/* Controls */}
           <Card className="p-4">
             <div className="flex items-center justify-center gap-4">
-              <Button
-                variant={isVideoEnabled ? "default" : "outline"}
-                size="lg"
-                onClick={toggleVideo}
-                className="w-16 h-16"
-                disabled={!isStreaming}
-              >
-                {isVideoEnabled ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
-              </Button>
-              <Button
-                variant={isAudioEnabled ? "default" : "outline"}
-                size="lg"
-                onClick={toggleAudio}
-                className="w-16 h-16"
-                disabled={!isStreaming}
-              >
-                {isAudioEnabled ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
-              </Button>
-              <Button
-                variant={isScreenSharing ? "default" : "outline"}
-                size="lg"
-                onClick={toggleScreenShare}
-                className="w-16 h-16"
-              >
-                {isScreenSharing ? <Monitor className="h-6 w-6" /> : <MonitorOff className="h-6 w-6" />}
-              </Button>
+              {!isStreaming ? (
+                <Button
+                  onClick={startStream}
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Video className="h-5 w-5 mr-2" />
+                  Démarrer
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant={isVideoEnabled ? "default" : "outline"}
+                    size="lg"
+                    onClick={toggleVideo}
+                    className="w-16 h-16"
+                  >
+                    {isVideoEnabled ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
+                  </Button>
+                  <Button
+                    variant={isAudioEnabled ? "default" : "outline"}
+                    size="lg"
+                    onClick={toggleAudio}
+                    className="w-16 h-16"
+                  >
+                    {isAudioEnabled ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+                  </Button>
+                  <Button
+                    variant={isScreenSharing ? "default" : "outline"}
+                    size="lg"
+                    onClick={toggleScreenShare}
+                    className="w-16 h-16"
+                  >
+                    {isScreenSharing ? <Monitor className="h-6 w-6" /> : <MonitorOff className="h-6 w-6" />}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    onClick={stopStream}
+                  >
+                    Arrêter
+                  </Button>
+                </>
+              )}
             </div>
           </Card>
         </div>
