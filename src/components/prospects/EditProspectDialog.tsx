@@ -68,25 +68,34 @@ const EditProspectDialog = ({
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase
-      .from("prospects")
-      .update(formData)
-      .eq("id", prospect.id);
+    try {
+      const { error } = await supabase
+        .from("prospects")
+        .update(formData)
+        .eq("id", prospect.id);
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de mettre à jour le prospect",
+      if (error) throw error;
+
+      // Appliquer automatiquement les règles de routage après modification
+      await supabase.rpc("apply_routing_rules", {
+        prospect_id_param: prospect.id
       });
-    } else {
+
       toast({
         title: "Succès",
         description: "Prospect mis à jour avec succès",
       });
+      
       onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message || "Impossible de mettre à jour le prospect",
+      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

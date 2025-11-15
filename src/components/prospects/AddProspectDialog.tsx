@@ -41,25 +41,33 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
     e.preventDefault();
     setLoading(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { error } = await supabase.from("prospects").insert({
-      user_id: user.id,
-      ...formData,
-    });
+      const { data: newProspect, error } = await supabase
+        .from("prospects")
+        .insert({
+          user_id: user.id,
+          ...formData,
+        })
+        .select()
+        .single();
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible d'ajouter le prospect",
-      });
-    } else {
+      if (error) throw error;
+
+      // Appliquer automatiquement les règles de routage
+      if (newProspect) {
+        await supabase.rpc("apply_routing_rules", {
+          prospect_id_param: newProspect.id
+        });
+      }
+
       toast({
         title: "Succès",
         description: "Prospect ajouté avec succès",
       });
+      
       setFormData({
         full_name: "",
         email: "",
@@ -69,9 +77,17 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
         source: "",
         notes: "",
       });
+      
       onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message || "Impossible d'ajouter le prospect",
+      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
