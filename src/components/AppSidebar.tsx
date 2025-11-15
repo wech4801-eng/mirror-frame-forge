@@ -19,11 +19,11 @@ import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Layout },
-  { title: "1. Prospects", url: "/prospects", icon: UsersThree },
-  { title: "2. Branding", url: "/branding", icon: Palette },
-  { title: "3. Templates Mail", url: "/mail", icon: Gear },
-  { title: "4. Workflows", url: "/workflow", icon: FlowArrow },
-  { title: "5. Campagnes", url: "/campaigns", icon: EnvelopeSimple },
+  { title: "Prospects", url: "/prospects", icon: UsersThree },
+  { title: "Branding", url: "/branding", icon: Palette },
+  { title: "Templates Mail", url: "/mail", icon: Gear },
+  { title: "Workflows", url: "/workflow", icon: FlowArrow },
+  { title: "Campagnes", url: "/campaigns", icon: EnvelopeSimple },
   { title: "Webinaires", url: "/webinars", icon: VideoCamera },
 ];
 
@@ -53,9 +53,6 @@ export function AppSidebar() {
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel className={open ? "px-3 text-[10px] text-muted-foreground uppercase tracking-wide" : "sr-only"}>
-            Navigation
-          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
