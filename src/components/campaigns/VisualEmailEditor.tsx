@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import grapesjs from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
-import "grapesjs-preset-newsletter";
+import gjsPresetNewsletter from "grapesjs-preset-newsletter";
+import "grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css";
 
 interface VisualEmailEditorProps {
   content: string;
@@ -20,9 +21,8 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
       height: "600px",
       width: "100%",
       storageManager: false,
-      plugins: ["gjs-preset-newsletter"],
-      pluginsOpts: {
-        "gjs-preset-newsletter": {
+      plugins: [
+        (editor) => gjsPresetNewsletter(editor, {
           modalTitleImport: "Importer du contenu",
           modalTitleExport: "Exporter le code",
           modalLabelExport: "Copier le code ci-dessous",
@@ -30,14 +30,14 @@ const VisualEmailEditor = ({ content, onChange }: VisualEmailEditorProps) => {
           importPlaceholder: "<div>Votre HTML ici</div>",
           cellStyle: {
             "font-size": "12px",
-            "font-weight": 300,
+            "font-weight": "300",
             "vertical-align": "top",
             color: "rgb(111, 119, 125)",
-            margin: 0,
-            padding: 0,
+            margin: "0",
+            padding: "0",
           },
-        },
-      },
+        })
+      ],
       canvas: {
         styles: [
           "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
