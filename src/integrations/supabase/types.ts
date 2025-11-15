@@ -117,6 +117,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          is_active: boolean | null
           name: string
           scheduled_at: string | null
           sent_at: string | null
@@ -125,11 +126,13 @@ export type Database = {
           template_id: string | null
           updated_at: string
           user_id: string
+          workflow_id: string | null
         }
         Insert: {
           content: string
           created_at?: string
           id?: string
+          is_active?: boolean | null
           name: string
           scheduled_at?: string | null
           sent_at?: string | null
@@ -138,11 +141,13 @@ export type Database = {
           template_id?: string | null
           updated_at?: string
           user_id: string
+          workflow_id?: string | null
         }
         Update: {
           content?: string
           created_at?: string
           id?: string
+          is_active?: boolean | null
           name?: string
           scheduled_at?: string | null
           sent_at?: string | null
@@ -151,6 +156,7 @@ export type Database = {
           template_id?: string | null
           updated_at?: string
           user_id?: string
+          workflow_id?: string | null
         }
         Relationships: [
           {
@@ -165,6 +171,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_campaigns_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
             referencedColumns: ["id"]
           },
         ]

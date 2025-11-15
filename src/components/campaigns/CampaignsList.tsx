@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Users, Eye, MousePointerClick, Edit, Send, Calendar } from "lucide-react";
+import { Mail, Users, Eye, MousePointerClick, Edit, Send, Calendar, Play, Pause } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
@@ -50,6 +50,31 @@ const CampaignsList = () => {
     };
     const config = variants[status] || variants.brouillon;
     return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const handleToggleCampaign = async (campaign: any) => {
+    try {
+      const { error } = await supabase
+        .from("email_campaigns")
+        .update({ is_active: !campaign.is_active })
+        .eq("id", campaign.id);
+
+      if (error) throw error;
+
+      toast({
+        title: campaign.is_active ? "Campagne pausée" : "Campagne activée",
+        description: campaign.is_active 
+          ? "La campagne a été mise en pause" 
+          : "La campagne est maintenant active",
+      });
+      refetch();
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSendCampaign = async (campaign: any) => {
@@ -106,10 +131,33 @@ const CampaignsList = () => {
                     <CardTitle className="flex items-center gap-2">
                       {campaign.name}
                       {getStatusBadge(campaign.status)}
+                      {campaign.is_active && (
+                        <Badge variant="default" className="bg-green-600">
+                          Actif
+                        </Badge>
+                      )}
                     </CardTitle>
                     <CardDescription>{campaign.subject}</CardDescription>
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      variant={campaign.is_active ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleToggleCampaign(campaign)}
+                      className={campaign.is_active ? "bg-green-600 hover:bg-green-700" : ""}
+                    >
+                      {campaign.is_active ? (
+                        <>
+                          <Pause className="h-4 w-4 mr-2" />
+                          Pause
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4 mr-2" />
+                          Activer
+                        </>
+                      )}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -125,15 +173,6 @@ const CampaignsList = () => {
                       >
                         <Users className="h-4 w-4 mr-2" />
                         Destinataires ({totalRecipients})
-                      </Button>
-                    )}
-                    {campaign.status === "brouillon" && totalRecipients > 0 && (
-                      <Button
-                        size="sm"
-                        onClick={() => handleSendCampaign(campaign)}
-                      >
-                        <Send className="h-4 w-4 mr-2" />
-                        Envoyer
                       </Button>
                     )}
                   </div>

@@ -9,6 +9,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TemplateSelector from "./TemplateSelector";
 import { BrandingSelector } from "../mail/BrandingSelector";
+import { WorkflowSelector } from "./WorkflowSelector";
+import { PopulationSelector } from "./PopulationSelector";
 import { applyBrandingToEmailContent } from "@/lib/emailBrandingUtils";
 
 interface CreateCampaignDialogProps {
@@ -39,8 +41,11 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
   const [content, setContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
   const [selectedBranding, setSelectedBranding] = useState<Branding | null>(null);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
+  const [selectedPopulation, setSelectedPopulation] = useState<string[]>([]);
+  const [populationType, setPopulationType] = useState<'prospects' | 'groups'>('prospects');
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"info" | "template">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "population" | "template">("info");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -63,24 +68,83 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
     }
   };
 
+  const handlePopulationChange = (ids: string[], type: 'prospects' | 'groups') => {
+    setSelectedPopulation(ids);
+    setPopulationType(type);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (selectedPopulation.length === 0) {
+      toast({
+        title: "Population requise",
+        description: "Veuillez sélectionner au moins un prospect ou groupe",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
-      const { error } = await supabase.from("email_campaigns").insert({
-        user_id: user.id,
-        name,
-        subject,
-        content,
-        template_id: selectedTemplate?.id || null,
-        status: "brouillon",
-      });
+      // Create campaign
+      const { data: campaign, error: campaignError } = await supabase
+        .from("email_campaigns")
+        .insert({
+          user_id: user.id,
+          name,
+          subject,
+          content,
+          template_id: selectedTemplate?.id || null,
+          workflow_id: selectedWorkflow || null,
+          status: "brouillon",
+          is_active: false,
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (campaignError) throw campaignError;
+
+      // Add recipients based on population selection
+      if (populationType === 'prospects') {
+        const recipients = selectedPopulation.map(prospectId => ({
+          campaign_id: campaign.id,
+          prospect_id: prospectId,
+          status: 'en_attente',
+        }));
+        
+        const { error: recipientsError } = await supabase
+          .from("email_campaign_recipients")
+          .insert(recipients);
+        
+        if (recipientsError) throw recipientsError;
+      } else {
+        // For groups, fetch all prospects in selected groups
+        const { data: prospectGroups, error: groupsError } = await supabase
+          .from("prospect_groups")
+          .select("prospect_id")
+          .in("group_id", selectedPopulation);
+        
+        if (groupsError) throw groupsError;
+        
+        const uniqueProspectIds = [...new Set(prospectGroups?.map(pg => pg.prospect_id) || [])];
+        
+        const recipients = uniqueProspectIds.map(prospectId => ({
+          campaign_id: campaign.id,
+          prospect_id: prospectId,
+          status: 'en_attente',
+        }));
+        
+        const { error: recipientsError } = await supabase
+          .from("email_campaign_recipients")
+          .insert(recipients);
+        
+        if (recipientsError) throw recipientsError;
+      }
 
       toast({
         title: "Campagne créée",
@@ -90,10 +154,16 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       queryClient.invalidateQueries({ queryKey: ["campaign-stats"] });
       onOpenChange(false);
+      
+      // Reset form
       setName("");
       setSubject("");
       setContent("");
       setSelectedTemplate(null);
+      setSelectedBranding(null);
+      setSelectedWorkflow(null);
+      setSelectedPopulation([]);
+      setActiveTab("info");
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -115,10 +185,11 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "template")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="info">Informations</TabsTrigger>
-              <TabsTrigger value="template">Choisir un template</TabsTrigger>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "population" | "template")} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="info">1. Informations</TabsTrigger>
+              <TabsTrigger value="population">2. Population</TabsTrigger>
+              <TabsTrigger value="template">3. Contenu</TabsTrigger>
             </TabsList>
             
             <TabsContent value="info" className="space-y-4 py-4">
@@ -132,6 +203,31 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                   required
                 />
               </div>
+              
+              <WorkflowSelector 
+                onWorkflowChange={setSelectedWorkflow}
+                selectedWorkflowId={selectedWorkflow || undefined}
+              />
+              
+              <div className="bg-muted p-4 rounded-lg text-sm">
+                <p className="font-medium mb-2">Étapes suivantes :</p>
+                <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                  <li>Sélectionnez votre population cible</li>
+                  <li>Choisissez un template et personnalisez le contenu</li>
+                  <li>Activez la campagne pour démarrer l'envoi</li>
+                </ol>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="population" className="space-y-4 py-4">
+              <PopulationSelector 
+                onSelectionChange={handlePopulationChange}
+                selectedIds={selectedPopulation}
+                selectionType={populationType}
+              />
+            </TabsContent>
+
+            <TabsContent value="template" className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="subject">Objet de l'email</Label>
                 <Input
@@ -148,6 +244,11 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                 selectedBrandingId={selectedBranding?.id}
               />
 
+              <TemplateSelector
+                selectedTemplateId={selectedTemplate?.id || null}
+                onSelect={handleTemplateSelect}
+              />
+
               {selectedTemplate && (
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <p className="text-sm font-semibold mb-2">Template sélectionné :</p>
@@ -155,20 +256,13 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                 </div>
               )}
             </TabsContent>
-
-            <TabsContent value="template" className="py-4">
-              <TemplateSelector
-                selectedTemplateId={selectedTemplate?.id || null}
-                onSelect={handleTemplateSelect}
-              />
-            </TabsContent>
           </Tabs>
 
           <div className="flex items-center justify-between mt-6 pt-4 border-t">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
-            <Button type="submit" disabled={loading || !selectedTemplate}>
+            <Button type="submit" disabled={loading || !selectedTemplate || selectedPopulation.length === 0}>
               {loading ? "Création..." : "Créer la campagne"}
             </Button>
           </div>
