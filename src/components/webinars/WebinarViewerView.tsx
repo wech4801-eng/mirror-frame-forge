@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { VideoOff, Users } from "lucide-react";
 import WebinarChat from "./WebinarChat";
 import CommercialBanner from "./CommercialBanner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface WebinarViewerViewProps {
   webinar: any;
@@ -16,6 +17,8 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
   const [viewerEmail, setViewerEmail] = useState("");
   const [hasJoined, setHasJoined] = useState(false);
   const [viewerCount] = useState(12);
+  const [currentFrame, setCurrentFrame] = useState<string | null>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +26,28 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
       setHasJoined(true);
     }
   };
+
+  // Subscribe to video broadcast from host
+  useEffect(() => {
+    if (!hasJoined) return;
+
+    console.log("Viewer: Subscribing to webinar", webinar.id);
+    const channel = supabase.channel(`webinar-${webinar.id}`);
+
+    channel
+      .on("broadcast", { event: "video-frame" }, (payload) => {
+        console.log("Viewer: Received frame");
+        setCurrentFrame(payload.payload.frame);
+      })
+      .subscribe((status) => {
+        console.log("Viewer: Subscription status:", status);
+      });
+
+    return () => {
+      console.log("Viewer: Unsubscribing");
+      supabase.removeChannel(channel);
+    };
+  }, [hasJoined, webinar.id]);
 
   if (!hasJoined) {
     return (
@@ -98,20 +123,35 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
             />
           )}
 
-          {/* Video stream placeholder */}
-          <Card className="aspect-video bg-black flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="relative">
-                <VideoOff className="h-20 w-20 text-white/50 mx-auto" />
-                <div className="absolute -top-2 -right-2 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse">
+          {/* Video stream */}
+          <Card className="relative aspect-video bg-black overflow-hidden">
+            {currentFrame ? (
+              <>
+                <img
+                  ref={imgRef}
+                  src={currentFrame}
+                  alt="Live stream"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse flex items-center gap-2">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                   EN DIRECT
                 </div>
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center space-y-4">
+                  <div className="relative">
+                    <VideoOff className="h-20 w-20 text-white/50 mx-auto" />
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-white/80 font-medium">En attente du stream</p>
+                    <p className="text-white/50 text-sm">L'hôte n'a pas encore démarré la diffusion</p>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <p className="text-white text-lg font-semibold">Le webinaire va bientôt commencer</p>
-                <p className="text-white/70 text-sm">L&apos;hôte va activer sa webcam dans quelques instants</p>
-              </div>
-            </div>
+            )}
           </Card>
 
           {/* Info message */}

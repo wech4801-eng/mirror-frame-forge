@@ -5,6 +5,7 @@ import { Video, VideoOff, Mic, MicOff, Monitor, MonitorOff, Users } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import WebinarChat from "./WebinarChat";
 import CommercialBanner from "./CommercialBanner";
+import { useBroadcast } from "./useBroadcast";
 
 interface WebinarHostViewProps {
   webinar: any;
@@ -22,7 +23,12 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const screenRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const broadcastIntervalRef = useRef<number | null>(null);
   const { toast } = useToast();
+
+  // Broadcast video to viewers
+  useBroadcast(webinar.id, videoRef, canvasRef, isStreaming, isVideoEnabled);
 
   const startStream = () => {
     console.log("Démarrage du stream - fonction appelée");
@@ -211,6 +217,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                 className="w-full h-full object-cover"
                 style={{ transform: "scaleX(-1)" }}
               />
+              <canvas ref={canvasRef} className="hidden" />
               
               {!isStreaming && (
                 <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center text-white">
