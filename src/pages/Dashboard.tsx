@@ -7,6 +7,10 @@ import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ProspectGroupsGrid from "@/components/dashboard/ProspectGroupsGrid";
 import ProspectsTable from "@/components/dashboard/ProspectsTable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WorkflowTab from "@/components/dashboard/WorkflowTab";
+import MailTab from "@/components/dashboard/MailTab";
+import BrandingTab from "@/components/dashboard/BrandingTab";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -48,9 +52,28 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="space-y-8">
         <WelcomeBanner />
-        <StatsCards />
-        <ProspectGroupsGrid />
-        <ProspectsTable />
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+            <TabsTrigger value="workflow">Workflow</TabsTrigger>
+            <TabsTrigger value="mail">Mail</TabsTrigger>
+            <TabsTrigger value="branding">Branding</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="space-y-8">
+            <StatsCards />
+            <ProspectGroupsGrid />
+            <ProspectsTable />
+          </TabsContent>
+          <TabsContent value="workflow">
+            <WorkflowTab />
+          </TabsContent>
+          <TabsContent value="mail">
+            <MailTab />
+          </TabsContent>
+          <TabsContent value="branding">
+            <BrandingTab />
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );
