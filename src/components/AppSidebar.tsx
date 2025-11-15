@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -44,12 +45,13 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent>
-        <div className="px-3 py-4">
+        <div className="px-3 py-4 flex items-center justify-between">
           <h2 className={`font-bold transition-all ${open ? "text-lg" : "text-xs"}`}>
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               {open ? "CRM Pro" : "CP"}
             </span>
           </h2>
+          {open && <SidebarTrigger className="-mr-1" />}
         </div>
 
         <SidebarGroup>
@@ -76,6 +78,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-1.5">
+        {!open && <SidebarTrigger className="mb-2 self-center" />}
         <Button
           variant="ghost"
           size="sm"
