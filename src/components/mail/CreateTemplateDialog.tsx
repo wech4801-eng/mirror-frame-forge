@@ -25,7 +25,13 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
   const [activeTab, setActiveTab] = useState<"predefined" | "html" | "visual">("predefined");
   const [loading, setLoading] = useState(false);
   const [selectedPredefined, setSelectedPredefined] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const { toast } = useToast();
+
+  const categories = ["all", ...new Set(predefinedTemplates.map(t => t.category))];
+  const filteredTemplates = categoryFilter === "all" 
+    ? predefinedTemplates 
+    : predefinedTemplates.filter(t => t.category === categoryFilter);
 
   const handlePredefinedSelect = (templateId: string) => {
     const template = predefinedTemplates.find(t => t.id === templateId);
@@ -120,13 +126,28 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
 
             <TabsContent value="predefined" className="space-y-4">
               <div className="space-y-2">
+                <Label>Filtrer par catégorie</Label>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat === "all" ? "Toutes les catégories" : cat} ({cat === "all" ? predefinedTemplates.length : predefinedTemplates.filter(t => t.category === cat).length})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="template-select">Choisir un template prédéfini</Label>
                 <Select value={selectedPredefined} onValueChange={handlePredefinedSelect}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez un template" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[400px]">
-                    {predefinedTemplates.map((template) => (
+                    {filteredTemplates.map((template) => (
                       <SelectItem key={template.id} value={template.id}>
                         <div className="flex flex-col">
                           <span className="font-semibold">{template.name}</span>
