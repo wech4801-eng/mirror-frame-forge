@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ExternalLink, Edit, Trash2, Copy } from "lucide-react";
+import { CalendarBlank, ArrowSquareOut, PencilSimple, Trash, Copy } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 
@@ -111,12 +111,12 @@ const ProspectGroupsGrid = () => {
                   size="icon"
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ArrowSquareOut className="h-4 w-4" />
                 </Button>
               </div>
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                <Calendar className="h-3 w-3" />
+                <CalendarBlank className="h-3 w-3" />
                 <span>MIS À JOUR: {formatDate(group.updated_at)}</span>
               </div>
 
@@ -131,10 +131,10 @@ const ProspectGroupsGrid = () => {
                   <Copy className="h-3.5 w-3.5" />
                 </Button>
                 <Button variant="ghost" size="sm" className="h-9 flex-1">
-                  <Edit className="h-3.5 w-3.5" />
+                  <PencilSimple className="h-3.5 w-3.5" />
                 </Button>
                 <Button variant="ghost" size="sm" className="h-9 flex-1">
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </CardContent>

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Users, Eye, MousePointerClick, Edit, Send, Calendar, Play, Pause } from "lucide-react";
+import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";

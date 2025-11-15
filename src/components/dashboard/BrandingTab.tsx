@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Palette, Plus } from "lucide-react";
+import { Palette, Plus } from "@phosphor-icons/react";
 import { supabase } from "@/integrations/supabase/client";
 import CreateBrandingDialog from "./CreateBrandingDialog";
 import BrandingCard from "./BrandingCard";
@@ -69,8 +69,8 @@ const BrandingTab = () => {
           className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg"
           size="lg"
         >
-          <Plus className="mr-2 h-5 w-5" />
-          Nouveau Branding
+            <Plus className="mr-2 h-5 w-5" />
+            Nouveau Branding
         </Button>
       </div>
 

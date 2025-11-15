@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, Zap, ChevronDown } from "lucide-react";
+import { Bell, Lightning, CaretDown } from "@phosphor-icons/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,7 +72,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
             <div className="flex items-center gap-3">
               <Button variant="outline" size="sm" className="gap-2">
-                <Zap className="h-4 w-4" />
+                <Lightning className="h-4 w-4" />
                 <span className="hidden sm:inline">Upgrade Now</span>
               </Button>
 
@@ -94,7 +94,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       <span className="font-medium">{userName}</span>
                       <span className="text-xs text-muted-foreground">{userEmail}</span>
                     </div>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground hidden md:block" />
+                    <CaretDown className="h-4 w-4 text-muted-foreground hidden md:block" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">

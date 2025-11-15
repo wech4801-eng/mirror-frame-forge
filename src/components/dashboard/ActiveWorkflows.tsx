@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Pause, Play } from "lucide-react";
+import { Lightning, Pause, Play } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -54,7 +54,7 @@ const ActiveWorkflows = () => {
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className={`p-2 rounded-lg ${workflow.is_active ? 'bg-primary/10' : 'bg-muted'}`}>
-                    <Zap className={`h-4 w-4 ${workflow.is_active ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <Lightning className={`h-4 w-4 ${workflow.is_active ? 'text-primary' : 'text-muted-foreground'}`} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{workflow.name}</p>
@@ -75,7 +75,7 @@ const ActiveWorkflows = () => {
           </div>
         ) : (
           <div className="text-center py-8">
-            <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+            <Lightning className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
             <p className="text-sm text-muted-foreground mb-4">Aucun workflow créé</p>
             <Button 
               variant="outline" 

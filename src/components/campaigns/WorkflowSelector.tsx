@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Workflow } from "lucide-react";
+import { FlowArrow } from "@phosphor-icons/react";
 
 interface WorkflowData {
   id: string;

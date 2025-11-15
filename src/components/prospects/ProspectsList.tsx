@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Trash2, Edit, Users } from "lucide-react";
+import { MagnifyingGlass, Trash, PencilSimple, UsersThree } from "@phosphor-icons/react";
 import { useToast } from "@/components/ui/use-toast";
 import EditProspectDialog from "./EditProspectDialog";
 import ManageGroupsDialog from "./ManageGroupsDialog";

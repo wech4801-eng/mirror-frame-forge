@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, X } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 const WelcomeBanner = () => {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload } from "lucide-react";
+import { UploadSimple } from "@phosphor-icons/react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -156,7 +156,7 @@ const EditBrandingDialog = ({ branding, open, onOpenChange, onSuccess }: EditBra
                   onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
                   className="flex-1"
                 />
-                <Upload className="h-4 w-4 text-muted-foreground" />
+                <UploadSimple className="h-4 w-4 text-muted-foreground" />
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useValidation } from "@/hooks/useValidation";
 import { TemplateValidationGuard } from "@/components/validation/TemplateValidationGuard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Sparkles } from "lucide-react";
+import { EnvelopeSimple, Sparkle } from "@phosphor-icons/react";
 import { supabase } from "@/integrations/supabase/client";
 import CreateTemplateDialog from "../mail/CreateTemplateDialog";
 import TemplateCard from "../mail/TemplateCard";
@@ -85,7 +85,7 @@ const MailTab = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+              <EnvelopeSimple className="h-5 w-5" />
               <div>
                 <CardTitle>Templates d'Emails</CardTitle>
                 <CardDescription>
@@ -106,7 +106,7 @@ const MailTab = () => {
             Tous ({templates.length + predefinedTemplates.length})
           </TabsTrigger>
           <TabsTrigger value="predefined">
-            <Sparkles className="h-4 w-4 mr-2" />
+            <Sparkle className="h-4 w-4 mr-2" />
             Prédéfinis ({predefinedTemplates.length})
           </TabsTrigger>
         </TabsList>
@@ -121,7 +121,7 @@ const MailTab = () => {
               {predefinedTemplates.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="h-4 w-4 text-primary" />
+                    <Sparkle className="h-4 w-4 text-primary" />
                     <h3 className="text-sm font-semibold">Templates Prédéfinis</h3>
                     <Badge variant="secondary" className="text-xs">
                       {predefinedTemplates.length}
@@ -153,7 +153,7 @@ const MailTab = () => {
               {templates.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <Mail className="h-4 w-4 text-primary" />
+                    <EnvelopeSimple className="h-4 w-4 text-primary" />
                     <h3 className="text-sm font-semibold">Mes Templates</h3>
                     <Badge variant="secondary" className="text-xs">
                       {templates.length}
