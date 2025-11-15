@@ -59,66 +59,70 @@ const BrandingCard = ({ branding, onEdit, onDelete }: BrandingCardProps) => {
   };
 
   return (
-    <Card className="border-primary/20">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-semibold text-primary">{branding.name}</CardTitle>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={() => onEdit(branding)}>
+    <Card className="border-primary/20 hover:border-primary/40 transition-all">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+        <CardTitle className="text-lg font-semibold text-primary">{branding.name}</CardTitle>
+        <div className="flex gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(branding)}>
             <Edit className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleDelete}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDelete}>
             <Trash2 className="h-4 w-4 text-destructive" />
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {branding.logo_url && (
-            <div className="flex justify-center p-8 bg-muted rounded-lg">
-              <img
-                src={branding.logo_url}
-                alt={`Logo ${branding.name}`}
-                className="h-20 object-contain"
+      <CardContent className="space-y-4">
+        {/* Logo Section - Compact */}
+        {branding.logo_url && (
+          <div className="flex justify-center py-4 bg-muted/50 rounded-lg">
+            <img
+              src={branding.logo_url}
+              alt={`Logo ${branding.name}`}
+              className="h-12 object-contain"
+            />
+          </div>
+        )}
+
+        {/* Couleurs - Circles horizontaux */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Couleurs</p>
+          <div className="flex items-center justify-around py-2">
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-12 h-12 rounded-full border-2 border-border shadow-sm"
+                style={{ backgroundColor: branding.primary_color }}
+                title="Principale"
               />
+              <span className="text-xs text-muted-foreground">Principale</span>
             </div>
-          )}
-
-          <div>
-            <p className="text-sm text-muted-foreground mb-3">Palette de couleurs</p>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <div
-                  className="h-24 rounded-lg border-2 border-border"
-                  style={{ backgroundColor: branding.primary_color }}
-                />
-                <p className="text-sm text-center text-muted-foreground">Principale</p>
-              </div>
-              <div className="space-y-2">
-                <div
-                  className="h-24 rounded-lg border-2 border-border"
-                  style={{ backgroundColor: branding.secondary_color }}
-                />
-                <p className="text-sm text-center text-muted-foreground">Secondaire</p>
-              </div>
-              <div className="space-y-2">
-                <div
-                  className="h-24 rounded-lg border-2 border-border"
-                  style={{ backgroundColor: branding.accent_color }}
-                />
-                <p className="text-sm text-center text-muted-foreground">Accent</p>
-              </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-12 h-12 rounded-full border-2 border-border shadow-sm"
+                style={{ backgroundColor: branding.secondary_color }}
+                title="Secondaire"
+              />
+              <span className="text-xs text-muted-foreground">Secondaire</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className="w-12 h-12 rounded-full border-2 border-border shadow-sm"
+                style={{ backgroundColor: branding.accent_color }}
+                title="Accent"
+              />
+              <span className="text-xs text-muted-foreground">Accent</span>
             </div>
           </div>
+        </div>
 
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Typographie</p>
-            <p
-              className="text-2xl font-semibold"
-              style={{ fontFamily: branding.font_family }}
-            >
-              {branding.font_family}
-            </p>
-          </div>
+        {/* Police - Compact */}
+        <div className="pt-2 border-t border-border/50">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Police</p>
+          <p
+            className="text-base font-semibold"
+            style={{ fontFamily: branding.font_family }}
+          >
+            {branding.font_family}
+          </p>
         </div>
       </CardContent>
     </Card>
