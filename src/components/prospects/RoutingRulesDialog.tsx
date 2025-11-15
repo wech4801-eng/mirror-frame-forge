@@ -376,7 +376,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex items-start gap-3 flex-1">
-                              <GripVertical className="h-5 w-5 text-muted-foreground mt-1 cursor-move" />
+                              <DotsSixVertical className="h-5 w-5 text-muted-foreground mt-1 cursor-move" />
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
                                   <CardTitle className="text-base">{rule.name}</CardTitle>
@@ -418,7 +418,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
                                 size="sm"
                                 onClick={() => handleDeleteRule(rule.id)}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash className="h-4 w-4" />
                               </Button>
                             </div>
                           </div>

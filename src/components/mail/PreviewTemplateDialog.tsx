@@ -70,7 +70,7 @@ const PreviewTemplateDialog = ({ template, open, onOpenChange }: PreviewTemplate
             <DialogTitle>{template.name}</DialogTitle>
             {template.isPredefined && (
               <Badge variant="secondary" className="text-xs">
-                <Sparkles className="h-3 w-3 mr-1" />
+                <Sparkle className="h-3 w-3 mr-1" />
                 Prédéfini
               </Badge>
             )}

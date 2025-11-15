@@ -61,7 +61,7 @@ const TemplateCard = ({ template, onEdit, onDelete, onPreview }: TemplateCardPro
               <CardTitle className="text-lg">{template.name}</CardTitle>
               {template.isPredefined && (
                 <Badge variant="secondary" className="text-xs">
-                  <Sparkles className="h-3 w-3 mr-1" />
+                  <Sparkle className="h-3 w-3 mr-1" />
                   Prédéfini
                 </Badge>
               )}
@@ -80,10 +80,10 @@ const TemplateCard = ({ template, onEdit, onDelete, onPreview }: TemplateCardPro
             {!template.isPredefined && (
               <>
                 <Button variant="ghost" size="icon" onClick={() => onEdit(template)}>
-                  <Edit className="h-4 w-4" />
+                  <PencilSimple className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={handleDelete}>
-                  <Trash2 className="h-4 w-4" />
+                  <Trash className="h-4 w-4" />
                 </Button>
               </>
             )}

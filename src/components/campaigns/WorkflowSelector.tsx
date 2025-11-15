@@ -61,7 +61,7 @@ export const WorkflowSelector = ({ onWorkflowChange, selectedWorkflowId }: Workf
   return (
     <div className="space-y-2">
       <Label htmlFor="workflow" className="flex items-center gap-2">
-        <Workflow className="h-4 w-4" />
+        <FlowArrow className="h-4 w-4" />
         Sélectionner un workflow (optionnel)
       </Label>
       <Select

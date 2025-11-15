@@ -142,7 +142,7 @@ const ProspectsList = () => {
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Rechercher un prospect..."
                 value={search}
@@ -214,7 +214,7 @@ const ProspectsList = () => {
                               setGroupsDialogOpen(true);
                             }}
                           >
-                            <Users className="h-4 w-4" />
+                            <UsersThree className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -225,7 +225,7 @@ const ProspectsList = () => {
                               setEditDialogOpen(true);
                             }}
                           >
-                            <Edit className="h-4 w-4" />
+                            <PencilSimple className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -233,7 +233,7 @@ const ProspectsList = () => {
                             className="h-8 w-8"
                             onClick={() => deleteProspect(prospect.id)}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash className="h-4 w-4" />
                           </Button>
                         </div>
                       </td>

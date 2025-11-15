@@ -190,7 +190,7 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "predefined" | "html" | "visual")}>
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="predefined"><Sparkles className="h-4 w-4 mr-2" />Templates</TabsTrigger>
+              <TabsTrigger value="predefined"><Sparkle className="h-4 w-4 mr-2" />Templates</TabsTrigger>
               <TabsTrigger value="html">HTML</TabsTrigger>
               <TabsTrigger value="visual">Éditeur Visuel</TabsTrigger>
             </TabsList>
@@ -288,7 +288,7 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
                         variant="outline"
                         onClick={handleSendTestEmail}
                       >
-                        <Send className="h-4 w-4 mr-2" />
+                        <PaperPlaneTilt className="h-4 w-4 mr-2" />
                         Envoyer test
                       </Button>
                     </div>

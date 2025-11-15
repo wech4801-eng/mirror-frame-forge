@@ -112,7 +112,7 @@ const TemplateSelector = ({ selectedTemplateId, onSelect }: TemplateSelectorProp
                     <h3 className="font-semibold text-lg">{template.name}</h3>
                     {template.isPredefined && (
                       <Badge variant="secondary" className="text-xs">
-                        <Sparkles className="h-3 w-3 mr-1" />
+                        <Sparkle className="h-3 w-3 mr-1" />
                         Prédéfini
                       </Badge>
                     )}
