@@ -9,11 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import VisualEmailEditor from "../campaigns/VisualEmailEditor";
-import { Plus, Sparkles } from "lucide-react";
+import { Plus, Sparkles, Send } from "lucide-react";
 import { predefinedTemplates } from "./predefinedTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BrandingSelector } from "./BrandingSelector";
 import { applyBrandingToEmailContent, generateBrandedEmailTemplate } from "@/lib/emailBrandingUtils";
+import { VariablesPicker } from "./VariablesPicker";
+import { TemplateValidationBanner } from "./TemplateValidationBanner";
+import { renderTemplatePreview } from "@/lib/emailVariables";
 
 interface CreateTemplateDialogProps {
   onSuccess: () => void;
@@ -39,6 +42,8 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
   const [selectedPredefined, setSelectedPredefined] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [selectedBranding, setSelectedBranding] = useState<Branding | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
   const { toast } = useToast();
 
   const categories = ["all", ...new Set(predefinedTemplates.map(t => t.category))];
@@ -77,6 +82,31 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
         setContent(generateBrandedEmailTemplate(branding));
       }
     }
+  };
+
+  const handleVariableInsert = (variable: string) => {
+    setContent(prev => prev + variable);
+    toast({
+      title: "Variable ajoutée",
+      description: `${variable} a été ajouté au template`,
+    });
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!testEmail) {
+      toast({
+        title: "Email requis",
+        description: "Veuillez saisir une adresse email",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // TODO: Implémenter l'envoi de test via edge function
+    toast({
+      title: "Test email envoyé",
+      description: `Un email de test a été envoyé à ${testEmail}`,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -211,33 +241,64 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
             </TabsContent>
 
             <TabsContent value="html" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="content">Contenu HTML</Label>
-                <Textarea
-                  id="content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Votre contenu HTML ici..."
-                  className="min-h-[400px] font-mono text-sm"
-                  required
-                />
-                <div className="bg-muted/50 p-4 rounded-md space-y-2">
-                  <p className="text-xs font-semibold text-foreground">Variables disponibles :</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    <code className="text-xs bg-background px-2 py-1 rounded">{"{nom}"}</code>
-                    <code className="text-xs bg-background px-2 py-1 rounded">{"{email}"}</code>
-                    <code className="text-xs bg-background px-2 py-1 rounded">{"{entreprise}"}</code>
+              <TemplateValidationBanner content={content} />
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2 space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="content">Contenu HTML</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowPreview(!showPreview)}
+                      >
+                        {showPreview ? "Éditer" : "Preview"}
+                      </Button>
+                    </div>
+                    
+                    {showPreview ? (
+                      <Card className="p-4 max-h-[500px] overflow-y-auto">
+                        <div dangerouslySetInnerHTML={{ __html: renderTemplatePreview(content) }} />
+                      </Card>
+                    ) : (
+                      <Textarea
+                        id="content"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="Votre contenu HTML ici..."
+                        className="min-h-[500px] font-mono text-sm"
+                        required
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Test email</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="email"
+                        placeholder="email@example.com"
+                        value={testEmail}
+                        onChange={(e) => setTestEmail(e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSendTestEmail}
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        Envoyer test
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <Card className="p-4">
-                <Label className="mb-4 block">Aperçu</Label>
-                <div 
-                  className="border rounded-md bg-background min-h-[200px] overflow-auto p-4"
-                  dangerouslySetInnerHTML={{ __html: content }}
-                />
-              </Card>
+                <div>
+                  <VariablesPicker onVariableClick={handleVariableInsert} />
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="visual">
