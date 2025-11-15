@@ -1,7 +1,7 @@
 import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle, Circle } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -48,7 +48,7 @@ export const OnboardingProgress = () => {
             >
               <div className="mt-0.5">
                 {step.completed ? (
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                 ) : (
                   <Circle className="h-5 w-5 text-muted-foreground" />
                 )}

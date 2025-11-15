@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { WorkflowTemplate } from "@/lib/workflowTemplates";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, X, Loader2, Plus, ExternalLink } from "lucide-react";
+import { Check, X, CircleNotch, Plus, ArrowSquareOut } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import {
   Select,
@@ -78,7 +78,7 @@ export function WizardStepPrerequisites({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <CircleNotch className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -164,7 +164,7 @@ export function WizardStepPrerequisites({
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Créer
-                  <ExternalLink className="h-3 w-3 ml-2" />
+                  <ArrowSquareOut className="h-3 w-3 ml-2" />
                 </Button>
               )}
             </CardContent>
@@ -208,7 +208,7 @@ export function WizardStepPrerequisites({
             className="mt-3"
             onClick={checkPrerequisites}
           >
-            <Loader2 className="h-4 w-4 mr-2" />
+            <CircleNotch className="h-4 w-4 mr-2" />
             Rafraîchir
           </Button>
         </div>

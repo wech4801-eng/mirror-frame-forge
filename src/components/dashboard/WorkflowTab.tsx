@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Workflow, Plus, Save, Play, Pause, Trash2 } from 'lucide-react';
+import { FlowArrow as Workflow, Plus, FloppyDisk, Play, Pause, Trash } from "@phosphor-icons/react";
 import { WorkflowCanvas } from '../workflow/WorkflowCanvas';
 import { NodeLibrary } from '../workflow/NodeLibrary';
 import { supabase } from '@/integrations/supabase/client';
@@ -249,7 +249,7 @@ const WorkflowTab = () => {
               {currentWorkflow && (
                 <>
                   <Button variant="outline" onClick={handleSaveWorkflow}>
-                    <Save className="h-4 w-4 mr-2" />
+                    <FloppyDisk className="h-4 w-4 mr-2" />
                     Sauvegarder
                   </Button>
                   <Button
@@ -318,7 +318,7 @@ const WorkflowTab = () => {
                             handleDeleteWorkflow(workflow.id);
                           }}
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <Trash className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
                     </div>

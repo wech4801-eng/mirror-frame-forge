@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { VideoOff, Users } from "lucide-react";
+import { VideoCameraSlash, UsersThree } from "@phosphor-icons/react";
 import WebinarChat from "./WebinarChat";
 import CommercialBanner from "./CommercialBanner";
 import { supabase } from "@/integrations/supabase/client";
@@ -143,7 +143,7 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
 
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
+              <UsersThree className="h-4 w-4" />
               <span>{viewerCount} participants en ligne</span>
             </div>
           </div>
@@ -164,7 +164,7 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
               <p className="text-sm text-muted-foreground">Webinaire en direct</p>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <UsersThree className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-semibold text-foreground">{viewerCount} spectateurs</span>
             </div>
           </Card>
@@ -198,7 +198,7 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center space-y-4">
                   <div className="relative">
-                    <VideoOff className="h-20 w-20 text-white/50 mx-auto" />
+                    <VideoCameraSlash className="h-20 w-20 text-white/50 mx-auto" />
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse" />
                   </div>
                   <div className="space-y-2">

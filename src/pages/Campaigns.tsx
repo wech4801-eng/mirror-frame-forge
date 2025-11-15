@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus } from "@phosphor-icons/react";
 import CampaignsList from "@/components/campaigns/CampaignsList";
 import CreateCampaignDialog from "@/components/campaigns/CreateCampaignDialog";
 import CampaignStatsCards from "@/components/campaigns/CampaignStatsCards";

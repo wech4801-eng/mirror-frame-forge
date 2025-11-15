@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Check, AlertCircle, Loader2, ChevronRight, ChevronLeft } from "lucide-react";
+import { Check, WarningCircle, CircleNotch, CaretRight, CaretLeft } from "@phosphor-icons/react";
 import { WizardStepPrerequisites } from "./wizard/WizardStepPrerequisites";
 import { WizardStepTrigger } from "./wizard/WizardStepTrigger";
 import { WizardStepActions } from "./wizard/WizardStepActions";
@@ -258,7 +258,7 @@ export function WorkflowWizard({ open, onOpenChange, template }: WorkflowWizardP
         {/* Validation Message */}
         {!canGoNext && currentStep < STEPS.length - 1 && (
           <div className="flex items-center gap-2 rounded-lg bg-orange-500/10 p-3 text-sm text-orange-700 dark:text-orange-300">
-            <AlertCircle className="h-4 w-4" />
+            <WarningCircle className="h-4 w-4" />
             <span>Complétez tous les champs requis pour continuer</span>
           </div>
         )}
@@ -270,7 +270,7 @@ export function WorkflowWizard({ open, onOpenChange, template }: WorkflowWizardP
             onClick={handlePrevious}
             disabled={!canGoPrevious || loading}
           >
-            <ChevronLeft className="h-4 w-4 mr-2" />
+            <CaretLeft className="h-4 w-4 mr-2" />
             Précédent
           </Button>
 
@@ -282,13 +282,13 @@ export function WorkflowWizard({ open, onOpenChange, template }: WorkflowWizardP
             {currentStep < STEPS.length - 1 ? (
               <Button onClick={handleNext} disabled={!canGoNext || loading}>
                 Suivant
-                <ChevronRight className="h-4 w-4 ml-2" />
+                <CaretRight className="h-4 w-4 ml-2" />
               </Button>
             ) : (
               <Button onClick={handleComplete} disabled={!canGoNext || loading}>
                 {loading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <CircleNotch className="h-4 w-4 mr-2 animate-spin" />
                     Création...
                   </>
                 ) : (

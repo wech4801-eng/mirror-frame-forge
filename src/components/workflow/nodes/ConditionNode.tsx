@@ -1,7 +1,7 @@
 import { Handle, Position } from 'reactflow';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { GitBranch } from 'lucide-react';
+import { GitBranch } from "@phosphor-icons/react";
 
 export const ConditionNode = ({ data }: any) => {
   return (

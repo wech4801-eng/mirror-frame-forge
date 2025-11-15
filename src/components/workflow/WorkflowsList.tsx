@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, Trash2, Edit } from 'lucide-react';
+import { Play, Pause, Trash, PencilSimple } from "@phosphor-icons/react";
 import { useNavigate } from 'react-router-dom';
 
 interface Workflow {
@@ -54,7 +54,7 @@ export const WorkflowsList = ({ workflows, onToggleActive, onDelete }: Workflows
                     navigate(`/workflow/${workflow.id}`);
                   }}
                 >
-                  <Edit className="h-4 w-4" />
+                  <PencilSimple className="h-4 w-4" />
                 </Button>
                 <Button
                   size="icon"
@@ -64,7 +64,7 @@ export const WorkflowsList = ({ workflows, onToggleActive, onDelete }: Workflows
                     onDelete(workflow.id);
                   }}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
+                  <Trash className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
             </div>

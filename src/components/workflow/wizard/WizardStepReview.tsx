@@ -1,7 +1,7 @@
 import { WorkflowTemplate } from "@/lib/workflowTemplates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, AlertCircle } from "lucide-react";
+import { Check, WarningCircle } from "@phosphor-icons/react";
 
 interface WizardStepReviewProps {
   template: WorkflowTemplate;
@@ -165,7 +165,7 @@ export function WizardStepReview({ template, wizardState }: WizardStepReviewProp
 
       {!allEmailsConfigured && (
         <div className="flex items-center gap-2 rounded-lg bg-orange-500/10 p-3 text-sm text-orange-700 dark:text-orange-300">
-          <AlertCircle className="h-4 w-4" />
+          <WarningCircle className="h-4 w-4" />
           <span>
             Tous les emails ne sont pas encore configurés. Retournez à l'étape "Actions"
             pour terminer la configuration.

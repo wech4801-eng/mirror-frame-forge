@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { Zap, Send, GitBranch, Clock, UserPlus, Mail, MousePointer, CreditCard, Bell, Tag, UserX } from 'lucide-react';
+import { Lightning, PaperPlaneTilt, GitBranch, Clock, UserPlus, EnvelopeSimple, Cursor, CreditCard, Bell, Tag, UserMinus } from "@phosphor-icons/react";
 import { Node } from 'reactflow';
 
 interface NodeLibraryProps {
@@ -21,7 +21,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
     {
       id: 'email_opened',
       label: 'Email ouvert',
-      icon: Mail,
+      icon: EnvelopeSimple,
       description: 'Déclenché quand un prospect ouvre un email',
       type: 'trigger',
       data: { triggerType: 'email_opened' }
@@ -29,7 +29,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
     {
       id: 'link_clicked',
       label: 'Lien cliqué',
-      icon: MousePointer,
+      icon: Cursor,
       description: 'Déclenché quand un lien est cliqué',
       type: 'trigger',
       data: { triggerType: 'link_clicked' }
@@ -48,7 +48,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
     {
       id: 'send_email',
       label: 'Envoyer un email',
-      icon: Send,
+      icon: EnvelopeSimple,
       description: 'Envoie un email à partir d\'un template',
       type: 'action',
       data: { actionType: 'send_email' }
@@ -72,7 +72,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
     {
       id: 'remove_from_group',
       label: 'Retirer du groupe',
-      icon: UserX,
+      icon: UserMinus,
       description: 'Retire le prospect d\'un groupe',
       type: 'action',
       data: { actionType: 'remove_from_group' }
@@ -122,7 +122,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
     <Card className="h-full overflow-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5" />
+          <Lightning className="h-5 w-5" />
           Bibliothèque
         </CardTitle>
       </CardHeader>
@@ -131,7 +131,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
           <AccordionItem value="triggers">
             <AccordionTrigger>
               <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" />
+                <Lightning className="h-4 w-4 text-primary" />
                 Déclencheurs ({triggers.length})
               </div>
             </AccordionTrigger>
@@ -166,7 +166,7 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
           <AccordionItem value="actions">
             <AccordionTrigger>
               <div className="flex items-center gap-2">
-                <Send className="h-4 w-4 text-accent" />
+                <PaperPlaneTilt className="h-4 w-4 text-accent" />
                 Actions ({actions.length})
               </div>
             </AccordionTrigger>

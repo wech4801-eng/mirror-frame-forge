@@ -1,25 +1,25 @@
 import { Card } from "@/components/ui/card";
-import { Users, Mail, Video, BarChart } from "lucide-react";
+import { UsersThree, EnvelopeSimple, VideoCamera, ChartBar } from "@phosphor-icons/react";
 
 const Features = () => {
   const features = [
     {
-      icon: Users,
+      icon: UsersThree,
       title: "Gestion Intelligente des Prospects",
       description: "Organisez, suivez et convertissez vos prospects avec un système de gestion intuitif et des groupes personnalisables"
     },
     {
-      icon: Mail,
+      icon: EnvelopeSimple,
       title: "Campagnes Email Automatisées",
       description: "Créez et planifiez des campagnes email personnalisées avec suivi des ouvertures et des clics en temps réel"
     },
     {
-      icon: Video,
+      icon: VideoCamera,
       title: "Webinaires Intégrés",
       description: "Gérez vos webinaires et capturez automatiquement les participants comme nouveaux prospects qualifiés"
     },
     {
-      icon: BarChart,
+      icon: ChartBar,
       title: "Analytics & Rapports",
       description: "Visualisez vos performances avec des tableaux de bord détaillés et des statistiques en temps réel"
     }

@@ -6,7 +6,7 @@ import ProspectsList from "@/components/prospects/ProspectsList";
 import AddProspectDialog from "@/components/prospects/AddProspectDialog";
 import { RoutingRulesDialog } from "@/components/prospects/RoutingRulesDialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus } from "@phosphor-icons/react";
 import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 

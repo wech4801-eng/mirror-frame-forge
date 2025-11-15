@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Video, Calendar, Users, ExternalLink } from "lucide-react";
+import { Plus, VideoCamera, CalendarBlank, UsersThree, ArrowSquareOut } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -102,7 +102,7 @@ const Webinars = () => {
             <Card key={webinar.id} className="p-6 space-y-4 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="p-3 bg-primary/10 rounded-lg">
-                  <Video className="h-6 w-6 text-primary" />
+                  <VideoCamera className="h-6 w-6 text-primary" />
                 </div>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -124,11 +124,11 @@ const Webinars = () => {
 
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4 mr-2" />
+                  <CalendarBlank className="h-4 w-4 mr-2" />
                   {format(new Date(webinar.scheduled_at), "PPP 'à' HH:mm", { locale: fr })}
                 </div>
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Users className="h-4 w-4 mr-2" />
+                  <UsersThree className="h-4 w-4 mr-2" />
                   {webinar.webinar_invitations?.[0]?.count || 0} invités
                 </div>
               </div>
@@ -140,7 +140,7 @@ const Webinars = () => {
                   className="flex-1"
                   onClick={() => copyLink(webinar.viewer_link)}
                 >
-                  <ExternalLink className="h-4 w-4 mr-2" />
+                  <ArrowSquareOut className="h-4 w-4 mr-2" />
                   Copier le lien
                 </Button>
                 <Button
@@ -157,7 +157,7 @@ const Webinars = () => {
 
         {webinars.length === 0 && (
           <div className="text-center py-12">
-            <Video className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <VideoCamera className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">Aucun webinaire</h3>
             <p className="text-muted-foreground mb-4">
               Créez votre premier webinaire pour commencer à vendre vos formations
