@@ -8,6 +8,8 @@ import { Plus } from "lucide-react";
 import CampaignsList from "@/components/campaigns/CampaignsList";
 import CreateCampaignDialog from "@/components/campaigns/CreateCampaignDialog";
 import CampaignStatsCards from "@/components/campaigns/CampaignStatsCards";
+import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
+import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Campaigns = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -47,30 +49,34 @@ const Campaigns = () => {
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Campagnes Email</h1>
-            <p className="text-muted-foreground mt-2">
-              Créez et gérez vos campagnes d'emailing
-            </p>
+    <OnboardingGuard currentStepId="campaigns">
+      <DashboardLayout>
+        <div className="space-y-8">
+          <OnboardingProgress />
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Campagnes Email</h1>
+              <p className="text-muted-foreground mt-2">
+                Créez et gérez vos campagnes d'emailing
+              </p>
+            </div>
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nouvelle campagne
+            </Button>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouvelle campagne
-          </Button>
+
+          <CampaignStatsCards />
+          <CampaignsList />
+
+          <CreateCampaignDialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          />
         </div>
-
-        <CampaignStatsCards />
-        <CampaignsList />
-
-        <CreateCampaignDialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-        />
-      </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </OnboardingGuard>
   );
 };
 

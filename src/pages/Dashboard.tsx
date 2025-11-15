@@ -7,6 +7,7 @@ import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
 import StatsCards from "@/components/dashboard/StatsCards";
 import ProspectGroupsGrid from "@/components/dashboard/ProspectGroupsGrid";
 import ProspectsTable from "@/components/dashboard/ProspectsTable";
+import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -47,6 +48,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8">
+        <OnboardingProgress />
         <WelcomeBanner />
         <StatsCards />
         <ProspectGroupsGrid />
