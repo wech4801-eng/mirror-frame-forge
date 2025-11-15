@@ -21,6 +21,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
   const [content, setContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"info" | "template" | "editor">("info");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -74,7 +75,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <Tabs defaultValue="info" className="w-full">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "template" | "editor")} className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="info">Informations</TabsTrigger>
               <TabsTrigger value="template">Template</TabsTrigger>
@@ -109,6 +110,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                 onSelectTemplate={(template) => {
                   setSelectedTemplate(template.id);
                   setContent(template.html);
+                  setActiveTab("editor");
                 }}
                 selectedTemplate={selectedTemplate}
               />
