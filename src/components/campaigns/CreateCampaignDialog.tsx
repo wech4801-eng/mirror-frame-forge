@@ -12,6 +12,7 @@ import { BrandingSelector } from "../mail/BrandingSelector";
 import { WorkflowSelector } from "./WorkflowSelector";
 import { PopulationSelector } from "./PopulationSelector";
 import { applyBrandingToEmailContent } from "@/lib/emailBrandingUtils";
+import { CampaignValidationDialog } from "../validation/CampaignValidationDialog";
 
 interface CreateCampaignDialogProps {
   open: boolean;
@@ -46,6 +47,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
   const [populationType, setPopulationType] = useState<'prospects' | 'groups'>('prospects');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "population" | "template">("info");
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -73,9 +75,18 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
     setPopulationType(type);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!name.trim()) {
+      toast({
+        title: "Nom requis",
+        description: "Veuillez donner un nom à votre campagne",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (selectedPopulation.length === 0) {
       toast({
         title: "Population requise",
@@ -85,6 +96,11 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
       return;
     }
 
+    // Ouvrir le dialog de validation
+    setValidationDialogOpen(true);
+  };
+
+  const createCampaign = async () => {
     setLoading(true);
 
     try {
@@ -277,12 +293,25 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>
-            <Button type="submit" disabled={loading || !selectedTemplate || selectedPopulation.length === 0}>
+            <Button
+              type="submit"
+              disabled={!name || loading || (activeTab === "template" && !selectedTemplate && !content)}
+              onClick={handleSubmit}
+            >
               {loading ? "Création..." : "Créer la campagne"}
             </Button>
           </div>
         </form>
       </DialogContent>
+
+      <CampaignValidationDialog
+        open={validationDialogOpen}
+        onOpenChange={setValidationDialogOpen}
+        onConfirm={createCampaign}
+        populationIds={selectedPopulation}
+        templateId={selectedTemplate?.id}
+        workflowId={selectedWorkflow || undefined}
+      />
     </Dialog>
   );
 };

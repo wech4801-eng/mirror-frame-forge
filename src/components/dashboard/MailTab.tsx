@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useValidation } from "@/hooks/useValidation";
+import { TemplateValidationGuard } from "@/components/validation/TemplateValidationGuard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -91,7 +93,9 @@ const MailTab = () => {
                 </CardDescription>
               </div>
             </div>
-            <CreateTemplateDialog onSuccess={fetchTemplates} />
+            <TemplateValidationGuard>
+              <CreateTemplateDialog onSuccess={fetchTemplates} />
+            </TemplateValidationGuard>
           </div>
         </CardHeader>
       </Card>
