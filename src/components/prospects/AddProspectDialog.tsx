@@ -153,7 +153,7 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-popover z-[90] border shadow-lg">
+                <SelectContent className="bg-popover">
                   <SelectItem value="nouveau">Nouveau</SelectItem>
                   <SelectItem value="contacte">Contacté</SelectItem>
                   <SelectItem value="qualifie">Qualifié</SelectItem>

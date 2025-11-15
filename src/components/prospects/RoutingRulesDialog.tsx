@@ -289,7 +289,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
                   <SelectTrigger>
                     <SelectValue placeholder="Tous" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover z-[90] border shadow-lg">
+                  <SelectContent className="bg-popover">
                     <SelectItem value="all">Tous</SelectItem>
                     <SelectItem value="nouveau">Nouveau</SelectItem>
                     <SelectItem value="qualifie">Qualifié</SelectItem>
@@ -314,7 +314,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un groupe" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover z-[90] border shadow-lg">
+                <SelectContent className="bg-popover">
                   {groups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       <div className="flex items-center gap-2">
