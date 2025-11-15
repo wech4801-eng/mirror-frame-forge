@@ -66,8 +66,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
             <div className="flex items-center gap-6">
-              <SidebarTrigger className="-ml-1" />
-              <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">{getPageTitle()}</h1>
             </div>
 
             <div className="flex items-center gap-3">
