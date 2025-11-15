@@ -8,6 +8,8 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Prospects from "./pages/Prospects";
 import Campaigns from "./pages/Campaigns";
+import Webinars from "./pages/Webinars";
+import WebinarRoom from "./pages/WebinarRoom";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,9 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/prospects" element={<Prospects />} />
           <Route path="/campaigns" element={<Campaigns />} />
+          <Route path="/webinars" element={<Webinars />} />
+          <Route path="/webinar/:id/:mode" element={<WebinarRoom />} />
+          <Route path="/webinar/:id" element={<WebinarRoom />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
