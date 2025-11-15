@@ -12,9 +12,21 @@ import VisualEmailEditor from "../campaigns/VisualEmailEditor";
 import { Plus, Sparkles } from "lucide-react";
 import { predefinedTemplates } from "./predefinedTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BrandingSelector } from "./BrandingSelector";
+import { applyBrandingToEmailContent, generateBrandedEmailTemplate } from "@/lib/emailBrandingUtils";
 
 interface CreateTemplateDialogProps {
   onSuccess: () => void;
+}
+
+interface Branding {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  primary_color: string | null;
+  secondary_color: string | null;
+  accent_color: string | null;
+  font_family: string | null;
 }
 
 const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
@@ -26,6 +38,7 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [selectedPredefined, setSelectedPredefined] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [selectedBranding, setSelectedBranding] = useState<Branding | null>(null);
   const { toast } = useToast();
 
   const categories = ["all", ...new Set(predefinedTemplates.map(t => t.category))];
@@ -38,8 +51,31 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
     if (template) {
       setName(template.name);
       setSubject(template.subject);
-      setContent(template.content);
+      const brandedContent = selectedBranding 
+        ? applyBrandingToEmailContent(template.content, selectedBranding)
+        : template.content;
+      setContent(brandedContent);
       setSelectedPredefined(templateId);
+    }
+  };
+
+  const handleBrandingChange = (branding: Branding | null) => {
+    setSelectedBranding(branding);
+    
+    if (branding) {
+      // Si un template est déjà sélectionné, appliquer le branding
+      if (selectedPredefined) {
+        const template = predefinedTemplates.find(t => t.id === selectedPredefined);
+        if (template) {
+          setContent(applyBrandingToEmailContent(template.content, branding));
+        }
+      } else if (content) {
+        // Appliquer le branding au contenu existant
+        setContent(applyBrandingToEmailContent(content, branding));
+      } else {
+        // Générer un nouveau template avec le branding
+        setContent(generateBrandedEmailTemplate(branding));
+      }
     }
   };
 
@@ -116,6 +152,11 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
               required
             />
           </div>
+
+          <BrandingSelector
+            onBrandingChange={handleBrandingChange}
+            selectedBrandingId={selectedBranding?.id}
+          />
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "predefined" | "html" | "visual")}>
             <TabsList className="grid w-full grid-cols-3">

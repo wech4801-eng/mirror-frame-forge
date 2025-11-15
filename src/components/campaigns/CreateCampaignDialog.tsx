@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TemplateSelector from "./TemplateSelector";
+import { BrandingSelector } from "../mail/BrandingSelector";
+import { applyBrandingToEmailContent } from "@/lib/emailBrandingUtils";
 
 interface CreateCampaignDialogProps {
   open: boolean;
@@ -21,11 +23,22 @@ interface EmailTemplate {
   content: string;
 }
 
+interface Branding {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  primary_color: string | null;
+  secondary_color: string | null;
+  accent_color: string | null;
+  font_family: string | null;
+}
+
 const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps) => {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  const [selectedBranding, setSelectedBranding] = useState<Branding | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "template">("info");
   const { toast } = useToast();
@@ -34,7 +47,20 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
   const handleTemplateSelect = (template: EmailTemplate) => {
     setSelectedTemplate(template);
     setSubject(template.subject);
-    setContent(template.content);
+    const brandedContent = selectedBranding 
+      ? applyBrandingToEmailContent(template.content, selectedBranding)
+      : template.content;
+    setContent(brandedContent);
+  };
+
+  const handleBrandingChange = (branding: Branding | null) => {
+    setSelectedBranding(branding);
+    
+    if (branding && content) {
+      setContent(applyBrandingToEmailContent(content, branding));
+    } else if (branding && selectedTemplate) {
+      setContent(applyBrandingToEmailContent(selectedTemplate.content, branding));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,6 +142,12 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                   required
                 />
               </div>
+              
+              <BrandingSelector
+                onBrandingChange={handleBrandingChange}
+                selectedBrandingId={selectedBranding?.id}
+              />
+
               {selectedTemplate && (
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <p className="text-sm font-semibold mb-2">Template sélectionné :</p>
