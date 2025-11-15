@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Mail, Video, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Mail, Video, Palette, Settings, Workflow, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,9 @@ const menuItems = [
   { title: "Prospects", url: "/prospects", icon: Users },
   { title: "Campagnes", url: "/campaigns", icon: Mail },
   { title: "Webinaires", url: "/webinars", icon: Video },
+  { title: "Workflow", url: "/workflow", icon: Workflow },
+  { title: "Mail", url: "/mail", icon: Settings },
+  { title: "Branding", url: "/branding", icon: Palette },
 ];
 
 export function AppSidebar() {
