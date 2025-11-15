@@ -27,6 +27,37 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+// Error boundary to avoid full-screen overlay when dialog content throws
+class DialogErrorBoundary extends React.Component<{ children?: React.ReactNode }> {
+  state = { hasError: false as boolean, error: undefined as unknown };
+  static getDerivedStateFromError(error: unknown) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: unknown, info: unknown) {
+    console.error("Dialog render error:", error, info);
+  }
+  render() {
+    if ((this.state as any).hasError) {
+      return (
+        <div className="text-sm">
+          <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4">
+            <p className="font-medium">Une erreur est survenue dans la fenêtre.</p>
+            <p className="mt-1 text-muted-foreground truncate">
+              {String((this.state as any).error?.message ?? (this.state as any).error ?? "Erreur inconnue")}
+            </p>
+            <div className="mt-3 flex justify-end">
+              <DialogPrimitive.Close className="inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-primary-foreground">
+                Fermer
+              </DialogPrimitive.Close>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children as React.ReactElement;
+  }
+}
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
@@ -41,7 +72,9 @@ const DialogContent = React.forwardRef<
       )}
       {...props}
     >
-      {children}
+      <DialogErrorBoundary>
+        {children}
+      </DialogErrorBoundary>
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
