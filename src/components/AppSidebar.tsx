@@ -19,12 +19,12 @@ import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Prospects", url: "/prospects", icon: Users },
-  { title: "Mail", url: "/mail", icon: Settings },
-  { title: "Workflow", url: "/workflow", icon: Workflow },
-  { title: "Campagnes", url: "/campaigns", icon: Mail },
+  { title: "1. Prospects", url: "/prospects", icon: Users },
+  { title: "2. Branding", url: "/branding", icon: Palette },
+  { title: "3. Templates Mail", url: "/mail", icon: Settings },
+  { title: "4. Workflows", url: "/workflow", icon: Workflow },
+  { title: "5. Campagnes", url: "/campaigns", icon: Mail },
   { title: "Webinaires", url: "/webinars", icon: Video },
-  { title: "Branding", url: "/branding", icon: Palette },
 ];
 
 export function AppSidebar() {
