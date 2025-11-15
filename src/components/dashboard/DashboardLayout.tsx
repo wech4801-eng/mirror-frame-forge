@@ -100,13 +100,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                    Dashboard
+                  <DropdownMenuItem onClick={() => navigate("/settings")}>
+                    Paramètres
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/prospects")}>
-                    Mes Prospects
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     Déconnexion
                   </DropdownMenuItem>
