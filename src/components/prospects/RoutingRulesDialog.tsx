@@ -250,7 +250,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog modal={false} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle>Règles de routage automatique</DialogTitle>
@@ -289,7 +289,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
                   <SelectTrigger>
                     <SelectValue placeholder="Tous" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover">
+                  <SelectContent className="bg-popover z-[90] border shadow-lg">
                     <SelectItem value="all">Tous</SelectItem>
                     <SelectItem value="nouveau">Nouveau</SelectItem>
                     <SelectItem value="qualifie">Qualifié</SelectItem>
@@ -314,7 +314,7 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un groupe" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover">
+                <SelectContent className="bg-popover z-[90] border shadow-lg">
                   {groups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       <div className="flex items-center gap-2">

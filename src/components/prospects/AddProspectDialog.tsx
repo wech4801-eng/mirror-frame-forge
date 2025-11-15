@@ -91,7 +91,7 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog modal={false} open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Ajouter un Prospect</DialogTitle>
@@ -153,7 +153,7 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover z-[90] border shadow-lg">
                   <SelectItem value="nouveau">Nouveau</SelectItem>
                   <SelectItem value="contacte">Contacté</SelectItem>
                   <SelectItem value="qualifie">Qualifié</SelectItem>
