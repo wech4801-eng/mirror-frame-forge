@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Eye } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Edit, Trash2, Eye, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
@@ -13,6 +14,8 @@ interface EmailTemplate {
   content: string;
   created_at: string;
   updated_at: string;
+  category?: string;
+  isPredefined?: boolean;
 }
 
 interface TemplateCardProps {
@@ -54,19 +57,36 @@ const TemplateCard = ({ template, onEdit, onDelete, onPreview }: TemplateCardPro
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg">{template.name}</CardTitle>
+            <div className="flex items-center gap-2 mb-1">
+              <CardTitle className="text-lg">{template.name}</CardTitle>
+              {template.isPredefined && (
+                <Badge variant="secondary" className="text-xs">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Prédéfini
+                </Badge>
+              )}
+              {template.category && (
+                <Badge variant="outline" className="text-xs">
+                  {template.category}
+                </Badge>
+              )}
+            </div>
             <CardDescription className="mt-1">{template.subject}</CardDescription>
           </div>
           <div className="flex gap-1">
             <Button variant="ghost" size="icon" onClick={() => onPreview(template)}>
               <Eye className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => onEdit(template)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {!template.isPredefined && (
+              <>
+                <Button variant="ghost" size="icon" onClick={() => onEdit(template)}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleDelete}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -76,9 +96,11 @@ const TemplateCard = ({ template, onEdit, onDelete, onPreview }: TemplateCardPro
             className="border rounded-md bg-muted/50 p-4 max-h-40 overflow-hidden"
             dangerouslySetInnerHTML={{ __html: template.content }}
           />
-          <p className="text-xs text-muted-foreground">
-            Modifié {formatDistanceToNow(new Date(template.updated_at), { addSuffix: true, locale: fr })}
-          </p>
+          {!template.isPredefined && (
+            <p className="text-xs text-muted-foreground">
+              Modifié {formatDistanceToNow(new Date(template.updated_at), { addSuffix: true, locale: fr })}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>
