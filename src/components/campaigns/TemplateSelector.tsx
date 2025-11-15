@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Eye } from "lucide-react";
+import { Check, Eye, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { predefinedTemplates } from "../mail/predefinedTemplates";
+import { Badge } from "@/components/ui/badge";
 
 interface EmailTemplate {
   id: string;
   name: string;
   subject: string;
   content: string;
+  category?: string;
+  isPredefined?: boolean;
 }
 
 interface TemplateSelectorProps {
@@ -33,7 +37,19 @@ const TemplateSelector = ({ selectedTemplateId, onSelect }: TemplateSelectorProp
           .order('updated_at', { ascending: false });
 
         if (error) throw error;
-        setTemplates(data || []);
+        
+        // Combiner templates prédéfinis et templates utilisateur
+        const predefined = predefinedTemplates.map(t => ({
+          id: t.id,
+          name: t.name,
+          subject: t.subject,
+          content: t.content,
+          category: t.category,
+          isPredefined: true
+        }));
+        
+        const allTemplates = [...predefined, ...(data || [])];
+        setTemplates(allTemplates);
       } catch (error) {
         console.error('Error fetching templates:', error);
       } finally {
@@ -92,7 +108,15 @@ const TemplateSelector = ({ selectedTemplateId, onSelect }: TemplateSelectorProp
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{template.name}</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-lg">{template.name}</h3>
+                    {template.isPredefined && (
+                      <Badge variant="secondary" className="text-xs">
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        Prédéfini
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">{template.subject}</p>
                 </div>
                 <div className="flex gap-2">
