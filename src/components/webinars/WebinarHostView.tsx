@@ -38,29 +38,51 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const toggleVideo = async () => {
     try {
       if (isVideoOn) {
+        console.log("Arrêt de la vidéo");
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
-          streamRef.current = null;
+          streamRef.current.getVideoTracks().forEach((track) => {
+            track.stop();
+            streamRef.current?.removeTrack(track);
+          });
         }
         if (videoRef.current) {
           videoRef.current.srcObject = null;
         }
         setIsVideoOn(false);
       } else {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: isAudioOn,
-        });
-        streamRef.current = stream;
+        console.log("Démarrage de la vidéo");
+        const constraints = {
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: "user"
+          },
+          audio: false
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        console.log("Stream vidéo obtenu:", stream.getVideoTracks());
+        
+        if (!streamRef.current) {
+          streamRef.current = stream;
+        } else {
+          stream.getVideoTracks().forEach((track) => {
+            streamRef.current?.addTrack(track);
+          });
+        }
+        
         if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+          videoRef.current.srcObject = streamRef.current;
+          await videoRef.current.play();
+          console.log("Vidéo en lecture");
         }
         setIsVideoOn(true);
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erreur caméra:", error);
       toast({
         title: "Erreur",
-        description: "Impossible d'accéder à la caméra",
+        description: `Impossible d'accéder à la caméra: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -69,34 +91,45 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const toggleAudio = async () => {
     try {
       if (isAudioOn) {
+        console.log("Arrêt du micro");
         if (streamRef.current) {
-          streamRef.current.getAudioTracks().forEach((track) => track.stop());
+          streamRef.current.getAudioTracks().forEach((track) => {
+            track.stop();
+            streamRef.current?.removeTrack(track);
+          });
         }
         setIsAudioOn(false);
       } else {
+        console.log("Démarrage du micro");
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+        console.log("Stream audio obtenu:", audioStream.getAudioTracks());
+        
         if (!streamRef.current) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: isVideoOn,
-            audio: true,
-          });
-          streamRef.current = stream;
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+          streamRef.current = audioStream;
+          if (videoRef.current && isVideoOn) {
+            videoRef.current.srcObject = streamRef.current;
           }
         } else {
-          const audioTrack = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-          audioTrack.getAudioTracks().forEach((track) => {
+          audioStream.getAudioTracks().forEach((track) => {
             streamRef.current?.addTrack(track);
           });
+          if (videoRef.current) {
+            videoRef.current.srcObject = streamRef.current;
+          }
         }
         setIsAudioOn(true);
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erreur micro:", error);
       toast({
         title: "Erreur",
-        description: "Impossible d'accéder au microphone",
+        description: `Impossible d'accéder au microphone: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -105,6 +138,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const toggleScreenShare = async () => {
     try {
       if (isScreenSharing) {
+        console.log("Arrêt du partage d'écran");
         if (screenStreamRef.current) {
           screenStreamRef.current.getTracks().forEach((track) => track.stop());
           screenStreamRef.current = null;
@@ -114,17 +148,24 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
         }
         setIsScreenSharing(false);
       } else {
+        console.log("Démarrage du partage d'écran");
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
+          audio: false
         });
+        console.log("Stream écran obtenu:", screenStream.getVideoTracks());
+        
         screenStreamRef.current = screenStream;
         if (screenRef.current) {
           screenRef.current.srcObject = screenStream;
+          await screenRef.current.play();
+          console.log("Partage d'écran en lecture");
         }
         setIsScreenSharing(true);
 
         // Stop screen sharing when user stops it from browser
         screenStream.getVideoTracks()[0].onended = () => {
+          console.log("Partage d'écran arrêté par l'utilisateur");
           setIsScreenSharing(false);
           screenStreamRef.current = null;
           if (screenRef.current) {
@@ -132,10 +173,11 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
           }
         };
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erreur partage d'écran:", error);
       toast({
         title: "Erreur",
-        description: "Impossible de partager l'écran",
+        description: `Impossible de partager l'écran: ${error.message}`,
         variant: "destructive",
       });
     }
@@ -190,11 +232,27 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  muted
-                  className="w-full h-full object-cover transform -scale-x-100"
+                  muted={!isAudioOn}
+                  className="w-full h-full object-cover"
+                  style={{ transform: "scaleX(-1)" }}
                 />
-                <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse">
+                <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-full animate-pulse flex items-center gap-2">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                   EN DIRECT
+                </div>
+                <div className="absolute bottom-4 right-4 flex gap-2">
+                  {isVideoOn && (
+                    <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
+                      <Video className="h-3 w-3" />
+                      Caméra
+                    </div>
+                  )}
+                  {isAudioOn && (
+                    <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
+                      <Mic className="h-3 w-3" />
+                      Micro
+                    </div>
+                  )}
                 </div>
               </Card>
             )}
