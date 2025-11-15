@@ -177,22 +177,23 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[1000px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Nouvelle campagne email</DialogTitle>
           <DialogDescription>
-            Créez une campagne en utilisant vos templates
+            Suivez les 3 étapes pour créer votre campagne complète
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "population" | "template")} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "info" | "population" | "template")} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
               <TabsTrigger value="info">1. Informations</TabsTrigger>
               <TabsTrigger value="population">2. Population</TabsTrigger>
               <TabsTrigger value="template">3. Contenu</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="info" className="space-y-4 py-4">
+            <div className="flex-1 overflow-y-auto">
+              <TabsContent value="info" className="space-y-4 py-4 mt-0">
               <div className="space-y-2">
                 <Label htmlFor="name">Nom de la campagne</Label>
                 <Input
@@ -217,48 +218,62 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                   <li>Activez la campagne pour démarrer l'envoi</li>
                 </ol>
               </div>
-            </TabsContent>
-            
-            <TabsContent value="population" className="space-y-4 py-4">
-              <PopulationSelector 
-                onSelectionChange={handlePopulationChange}
-                selectedIds={selectedPopulation}
-                selectionType={populationType}
-              />
-            </TabsContent>
-
-            <TabsContent value="template" className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Objet de l'email</Label>
-                <Input
-                  id="subject"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Ex: Découvrez nos nouvelles fonctionnalités"
-                  required
-                />
-              </div>
+              </TabsContent>
               
-              <BrandingSelector
-                onBrandingChange={handleBrandingChange}
-                selectedBrandingId={selectedBranding?.id}
-              />
+              <TabsContent value="population" className="space-y-4 py-4 mt-0">
+                <PopulationSelector 
+                  onSelectionChange={handlePopulationChange}
+                  selectedIds={selectedPopulation}
+                  selectionType={populationType}
+                />
+              </TabsContent>
 
-              <TemplateSelector
-                selectedTemplateId={selectedTemplate?.id || null}
-                onSelect={handleTemplateSelect}
-              />
-
-              {selectedTemplate && (
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <p className="text-sm font-semibold mb-2">Template sélectionné :</p>
-                  <p className="text-sm text-muted-foreground">{selectedTemplate.name}</p>
+              <TabsContent value="template" className="space-y-6 py-4 mt-0">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Paramètres de l'email</h3>
+                  <div className="space-y-4 bg-muted/30 p-4 rounded-lg">
+                    <div className="space-y-2">
+                      <Label htmlFor="subject">Objet de l'email</Label>
+                      <Input
+                        id="subject"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        placeholder="Ex: Découvrez nos nouvelles fonctionnalités"
+                        required
+                      />
+                    </div>
+                    
+                    <BrandingSelector
+                      onBrandingChange={handleBrandingChange}
+                      selectedBrandingId={selectedBranding?.id}
+                    />
+                  </div>
                 </div>
-              )}
-            </TabsContent>
+
+                <div className="pt-2">
+                  <h3 className="text-sm font-medium mb-3">Choisir votre template</h3>
+                  <TemplateSelector
+                    selectedTemplateId={selectedTemplate?.id || null}
+                    onSelect={handleTemplateSelect}
+                  />
+                </div>
+
+                {selectedTemplate && (
+                  <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      <p className="text-sm font-semibold">Template sélectionné</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground ml-4">{selectedTemplate.name}</p>
+                  </div>
+                )}
+              </div>
+              </TabsContent>
+            </div>
           </Tabs>
 
-          <div className="flex items-center justify-between mt-6 pt-4 border-t">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t flex-shrink-0">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuler
             </Button>

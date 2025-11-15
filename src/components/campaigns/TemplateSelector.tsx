@@ -71,7 +71,14 @@ const TemplateSelector = ({ selectedTemplateId, onSelect }: TemplateSelectorProp
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-3 mb-4">
+        <h3 className="text-sm font-semibold">Templates disponibles ({templates.length})</h3>
+        <p className="text-xs text-muted-foreground">
+          Sélectionnez un template pour votre campagne. Le branding sera appliqué automatiquement.
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2">
         {templates.map((template) => (
           <Card
             key={template.id}
