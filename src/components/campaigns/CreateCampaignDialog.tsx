@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EmailTemplateSelector from "./EmailTemplateSelector";
-import EmailEditor from "./EmailEditor";
+import VisualEmailEditor from "./VisualEmailEditor";
 
 interface CreateCampaignDialogProps {
   open: boolean;
@@ -123,7 +123,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
 
             <TabsContent value="editor" className="py-4">
               {content ? (
-                <EmailEditor 
+                <VisualEmailEditor 
                   content={content}
                   onChange={setContent}
                 />
