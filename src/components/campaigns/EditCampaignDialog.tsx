@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { BrandingSelector } from "../mail/BrandingSelector";
+import { applyBrandingToEmailContent } from "@/lib/emailBrandingUtils";
 
 interface EditCampaignDialogProps {
   campaign: any;
@@ -14,10 +16,21 @@ interface EditCampaignDialogProps {
   onSuccess: () => void;
 }
 
+interface Branding {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  primary_color: string | null;
+  secondary_color: string | null;
+  accent_color: string | null;
+  font_family: string | null;
+}
+
 const EditCampaignDialog = ({ campaign, open, onOpenChange, onSuccess }: EditCampaignDialogProps) => {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
+  const [selectedBranding, setSelectedBranding] = useState<Branding | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -28,6 +41,14 @@ const EditCampaignDialog = ({ campaign, open, onOpenChange, onSuccess }: EditCam
       setContent(campaign.content);
     }
   }, [campaign]);
+
+  const handleBrandingChange = (branding: Branding | null) => {
+    setSelectedBranding(branding);
+    
+    if (branding && content) {
+      setContent(applyBrandingToEmailContent(content, branding));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +112,12 @@ const EditCampaignDialog = ({ campaign, open, onOpenChange, onSuccess }: EditCam
                 required
               />
             </div>
+            
+            <BrandingSelector
+              onBrandingChange={handleBrandingChange}
+              selectedBrandingId={selectedBranding?.id}
+            />
+
             <div className="space-y-2">
               <Label htmlFor="edit-content">Contenu de l'email</Label>
               <Textarea
