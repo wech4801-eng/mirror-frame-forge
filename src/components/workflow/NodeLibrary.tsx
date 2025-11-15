@@ -114,6 +114,10 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
     event.dataTransfer.effectAllowed = 'move';
   };
 
+  const handleAddNode = (nodeConfig: any) => {
+    onAddNode(nodeConfig);
+  };
+
   return (
     <Card className="h-full overflow-auto">
       <CardHeader>
@@ -139,8 +143,9 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
                     <div
                       key={trigger.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, { ...trigger, position: { x: 0, y: 0 } })}
-                      className="cursor-move"
+                      onDragStart={(e) => handleDragStart(e, trigger)}
+                      onClick={() => handleAddNode(trigger)}
+                      className="cursor-pointer"
                     >
                       <Card className="p-3 hover:bg-accent/50 transition-colors border-2 border-primary/20">
                         <div className="flex items-start gap-2">
@@ -173,8 +178,9 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
                     <div
                       key={action.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, { ...action, position: { x: 0, y: 0 } })}
-                      className="cursor-move"
+                      onDragStart={(e) => handleDragStart(e, action)}
+                      onClick={() => handleAddNode(action)}
+                      className="cursor-pointer"
                     >
                       <Card className="p-3 hover:bg-accent/50 transition-colors border-2 border-accent/20">
                         <div className="flex items-start gap-2">
@@ -207,8 +213,9 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
                     <div
                       key={condition.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, { ...condition, position: { x: 0, y: 0 } })}
-                      className="cursor-move"
+                      onDragStart={(e) => handleDragStart(e, condition)}
+                      onClick={() => handleAddNode(condition)}
+                      className="cursor-pointer"
                     >
                       <Card className="p-3 hover:bg-accent/50 transition-colors border-2 border-secondary/20">
                         <div className="flex items-start gap-2">
@@ -241,8 +248,9 @@ export const NodeLibrary = ({ onAddNode }: NodeLibraryProps) => {
                     <div
                       key={delay.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, { ...delay, position: { x: 0, y: 0 } })}
-                      className="cursor-move"
+                      onDragStart={(e) => handleDragStart(e, delay)}
+                      onClick={() => handleAddNode(delay)}
+                      className="cursor-pointer"
                     >
                       <Card className="p-3 hover:bg-accent/50 transition-colors border-2 border-muted/20">
                         <div className="flex items-start gap-2">

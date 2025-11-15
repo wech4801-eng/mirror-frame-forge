@@ -118,18 +118,20 @@ const WorkflowEditor = () => {
       const newNode: Node = {
         id: `node-${nodeCounter}`,
         type: nodeConfig.type,
-        position: { x: 250, y: nodes.length * 150 + 50 },
+        position: { x: 250, y: nodes.length * 100 + 50 },
         data: {
-          label: nodeConfig.data?.label || nodeConfig.label || 'Nouveau bloc',
-          description: nodeConfig.description || '',
+          label: nodeConfig.label,
+          description: nodeConfig.description,
+          icon: nodeConfig.icon,
           ...nodeConfig.data,
         },
       };
 
-      setNodes((nds) => [...nds, newNode]);
+      const updatedNodes = [...nodes, newNode];
+      setNodes(updatedNodes);
       setNodeCounter((c) => c + 1);
     },
-    [nodeCounter, nodes.length]
+    [nodeCounter, nodes]
   );
 
   const onDrop = useCallback(
