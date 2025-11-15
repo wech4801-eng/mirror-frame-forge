@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
-import StatsCards from "@/components/dashboard/StatsCards";
-import ProspectGroupsGrid from "@/components/dashboard/ProspectGroupsGrid";
-import ProspectsTable from "@/components/dashboard/ProspectsTable";
+import WorkflowTab from "@/components/dashboard/WorkflowTab";
 
-const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
+const Workflow = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -19,7 +14,6 @@ const Dashboard = () => {
         navigate("/auth");
         return;
       }
-      setUser(session.user);
       setLoading(false);
     });
 
@@ -28,9 +22,7 @@ const Dashboard = () => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         navigate("/auth");
-        return;
       }
-      setUser(session.user);
     });
 
     return () => subscription.unsubscribe();
@@ -46,14 +38,9 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <WelcomeBanner />
-        <StatsCards />
-        <ProspectGroupsGrid />
-        <ProspectsTable />
-      </div>
+      <WorkflowTab />
     </DashboardLayout>
   );
 };
 
-export default Dashboard;
+export default Workflow;

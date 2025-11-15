@@ -48,6 +48,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     if (path === "/prospects") return "Prospects";
     if (path === "/campaigns") return "Campagnes";
     if (path === "/webinars") return "Webinaires";
+    if (path === "/workflow") return "Workflow";
+    if (path === "/mail") return "Mail";
+    if (path === "/branding") return "Branding";
     return "Dashboard";
   };
 
