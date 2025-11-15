@@ -17,6 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
+import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Workflow = () => {
   const [loading, setLoading] = useState(true);
@@ -161,41 +163,44 @@ const Workflow = () => {
   }
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6 p-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <WorkflowIcon className="h-5 w-5" />
-                <div>
-                  <CardTitle>Workflows</CardTitle>
-                  <CardDescription>
-                    Gérez vos automatisations de campagnes
-                  </CardDescription>
-                </div>
-              </div>
-              <Button onClick={() => setCreateDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nouveau Workflow
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {workflows.length > 0 ? (
-          <WorkflowsList
-            workflows={workflows}
-            onToggleActive={handleToggleActive}
-            onDelete={handleDeleteWorkflow}
-          />
-        ) : (
+    <OnboardingGuard currentStepId="workflows">
+      <DashboardLayout>
+        <div className="space-y-6 p-6">
+          <OnboardingProgress />
+          
           <Card>
-            <CardContent className="py-20 text-center text-muted-foreground">
-              <WorkflowIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg mb-2">Aucun workflow créé</p>
-              <p className="text-sm mb-4">
-                Créez votre premier workflow pour commencer les automatisations
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <WorkflowIcon className="h-5 w-5" />
+                  <div>
+                    <CardTitle>Workflows</CardTitle>
+                    <CardDescription>
+                      Gérez vos automatisations de campagnes
+                    </CardDescription>
+                  </div>
+                </div>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouveau Workflow
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
+
+          {workflows.length > 0 ? (
+            <WorkflowsList
+              workflows={workflows}
+              onToggleActive={handleToggleActive}
+              onDelete={handleDeleteWorkflow}
+            />
+          ) : (
+            <Card>
+              <CardContent className="py-20 text-center text-muted-foreground">
+                <WorkflowIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg mb-2">Aucun workflow créé</p>
+                <p className="text-sm mb-4">
+                  Créez votre premier workflow pour commencer les automatisations
               </p>
               <Button onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -245,6 +250,7 @@ const Workflow = () => {
         </Dialog>
       </div>
     </DashboardLayout>
+  </OnboardingGuard>
   );
 };
 
