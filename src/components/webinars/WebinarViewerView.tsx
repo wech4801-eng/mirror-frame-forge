@@ -19,6 +19,9 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
   const [viewerCount] = useState(12);
   const [currentFrame, setCurrentFrame] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioQueueRef = useRef<string[]>([]);
+  const isPlayingAudioRef = useRef(false);
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +30,44 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
     }
   };
 
-  // Subscribe to video broadcast from host
+  // Function to play audio chunks
+  const playAudioChunk = async (base64Audio: string) => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContext();
+    }
+
+    try {
+      // Decode base64 to array buffer
+      const response = await fetch(base64Audio);
+      const arrayBuffer = await response.arrayBuffer();
+      
+      // Decode audio data
+      const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+      
+      // Create audio source
+      const source = audioContextRef.current.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContextRef.current.destination);
+      source.start(0);
+      
+      source.onended = () => {
+        isPlayingAudioRef.current = false;
+        // Play next chunk if available
+        if (audioQueueRef.current.length > 0) {
+          const nextChunk = audioQueueRef.current.shift();
+          if (nextChunk) {
+            isPlayingAudioRef.current = true;
+            playAudioChunk(nextChunk);
+          }
+        }
+      };
+    } catch (error) {
+      console.error("Error playing audio:", error);
+      isPlayingAudioRef.current = false;
+    }
+  };
+
+  // Subscribe to video and audio broadcast from host
   useEffect(() => {
     if (!hasJoined) return;
 
@@ -36,8 +76,18 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
 
     channel
       .on("broadcast", { event: "video-frame" }, (payload) => {
-        console.log("Viewer: Received frame");
         setCurrentFrame(payload.payload.frame);
+      })
+      .on("broadcast", { event: "audio-chunk" }, (payload) => {
+        const audioData = payload.payload.audio;
+        
+        if (!isPlayingAudioRef.current) {
+          isPlayingAudioRef.current = true;
+          playAudioChunk(audioData);
+        } else {
+          // Queue audio chunk if already playing
+          audioQueueRef.current.push(audioData);
+        }
       })
       .subscribe((status) => {
         console.log("Viewer: Subscription status:", status);
@@ -45,6 +95,12 @@ const WebinarViewerView = ({ webinar }: WebinarViewerViewProps) => {
 
     return () => {
       console.log("Viewer: Unsubscribing");
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+      audioQueueRef.current = [];
+      isPlayingAudioRef.current = false;
       supabase.removeChannel(channel);
     };
   }, [hasJoined, webinar.id]);

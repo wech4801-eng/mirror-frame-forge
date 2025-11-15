@@ -27,8 +27,16 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
   const broadcastIntervalRef = useRef<number | null>(null);
   const { toast } = useToast();
 
-  // Broadcast video to viewers
-  useBroadcast(webinar.id, videoRef, canvasRef, isStreaming, isVideoEnabled);
+  // Broadcast video and audio to viewers
+  useBroadcast(
+    webinar.id,
+    videoRef,
+    canvasRef,
+    streamRef,
+    isStreaming,
+    isVideoEnabled,
+    isAudioEnabled
+  );
 
   const startStream = () => {
     console.log("Démarrage du stream - fonction appelée");
