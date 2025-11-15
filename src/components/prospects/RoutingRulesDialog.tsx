@@ -82,8 +82,14 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
           .order("name"),
       ]);
 
-      if (rulesData.error) throw rulesData.error;
-      if (groupsData.error) throw groupsData.error;
+      if (rulesData.error) {
+        console.error("Erreur chargement règles:", rulesData.error);
+        throw rulesData.error;
+      }
+      if (groupsData.error) {
+        console.error("Erreur chargement groupes:", groupsData.error);
+        throw groupsData.error;
+      }
 
       // Enrichir les règles avec les infos des groupes
       const enrichedRules = rulesData.data?.map(rule => ({
@@ -93,10 +99,14 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
 
       setRules(enrichedRules);
       setGroups(groupsData.data || []);
+      
+      console.log("Règles chargées:", enrichedRules.length);
+      console.log("Groupes disponibles:", groupsData.data?.length || 0);
     } catch (error: any) {
+      console.error("Erreur fetchData:", error);
       toast({
-        title: "Erreur",
-        description: error.message,
+        title: "Erreur de chargement",
+        description: error.message || "Impossible de charger les données",
         variant: "destructive",
       });
     } finally {
@@ -127,42 +137,71 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
   };
 
   const handleSaveRule = async () => {
+    if (!formName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le nom de la règle est requis",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formTargetGroup) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez sélectionner un groupe cible",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
       const ruleData = {
         user_id: user.id,
-        name: formName,
-        source_condition: formSourceCondition || null,
+        name: formName.trim(),
+        source_condition: formSourceCondition.trim() || null,
         status_condition: formStatusCondition || null,
-        company_condition: formCompanyCondition || null,
-        target_group_id: formTargetGroup || null,
+        company_condition: formCompanyCondition.trim() || null,
+        target_group_id: formTargetGroup,
         is_active: formIsActive,
         priority: editingRule?.priority ?? rules.length,
       };
+
+      console.log("Sauvegarde règle:", ruleData);
 
       if (editingRule) {
         const { error } = await supabase
           .from("routing_rules")
           .update(ruleData)
           .eq("id", editingRule.id);
-        if (error) throw error;
-        toast({ title: "Règle mise à jour" });
+        
+        if (error) {
+          console.error("Erreur update:", error);
+          throw error;
+        }
+        toast({ title: "Règle mise à jour avec succès" });
       } else {
         const { error } = await supabase
           .from("routing_rules")
           .insert(ruleData);
-        if (error) throw error;
-        toast({ title: "Règle créée" });
+        
+        if (error) {
+          console.error("Erreur insert:", error);
+          throw error;
+        }
+        toast({ title: "Règle créée avec succès" });
       }
 
       setShowForm(false);
       fetchData();
     } catch (error: any) {
+      console.error("Erreur handleSaveRule:", error);
       toast({
-        title: "Erreur",
-        description: error.message,
+        title: "Erreur de sauvegarde",
+        description: error.message || "Impossible de sauvegarder la règle",
         variant: "destructive",
       });
     }
@@ -307,80 +346,96 @@ export const RoutingRulesDialog = ({ open, onOpenChange }: RoutingRulesDialogPro
           </div>
         ) : (
           <>
-            <div className="space-y-4">
-              {rules.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    <p>Aucune règle de routage configurée</p>
-                    <p className="text-sm mt-2">
-                      Créez votre première règle pour automatiser l'assignation des prospects
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                rules.map((rule) => (
-                  <Card key={rule.id} className={!rule.is_active ? "opacity-60" : ""}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3 flex-1">
-                          <GripVertical className="h-5 w-5 text-muted-foreground mt-1 cursor-move" />
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <CardTitle className="text-base">{rule.name}</CardTitle>
-                              {!rule.is_active && <Badge variant="secondary">Inactive</Badge>}
-                            </div>
-                            <CardDescription className="mt-2 space-y-1">
-                              {rule.source_condition && (
-                                <div className="text-sm">Source: {rule.source_condition}</div>
-                              )}
-                              {rule.status_condition && (
-                                <div className="text-sm">Statut: {rule.status_condition}</div>
-                              )}
-                              {rule.company_condition && (
-                                <div className="text-sm">Entreprise contient: {rule.company_condition}</div>
-                              )}
-                              <div className="flex items-center gap-2 mt-2">
-                                <ArrowRight className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium">
-                                  Groupe: {rule.target_group?.name || "N/A"}
-                                </span>
+            {groups.length === 0 ? (
+              <Card className="border-orange/50 bg-orange/5">
+                <CardContent className="py-8 text-center">
+                  <p className="text-lg font-medium mb-2">Aucun groupe disponible</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Vous devez d'abord créer des groupes de prospects avant de pouvoir configurer des règles de routage.
+                  </p>
+                  <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    Fermer et créer des groupes
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {rules.length === 0 ? (
+                    <Card>
+                      <CardContent className="py-8 text-center text-muted-foreground">
+                        <p>Aucune règle de routage configurée</p>
+                        <p className="text-sm mt-2">
+                          Créez votre première règle pour automatiser l'assignation des prospects
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    rules.map((rule) => (
+                      <Card key={rule.id} className={!rule.is_active ? "opacity-60" : ""}>
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                              <GripVertical className="h-5 w-5 text-muted-foreground mt-1 cursor-move" />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <CardTitle className="text-base">{rule.name}</CardTitle>
+                                  {!rule.is_active && <Badge variant="secondary">Inactive</Badge>}
+                                </div>
+                                <CardDescription className="mt-2 space-y-1">
+                                  {rule.source_condition && (
+                                    <div className="text-sm">Source: {rule.source_condition}</div>
+                                  )}
+                                  {rule.status_condition && (
+                                    <div className="text-sm">Statut: {rule.status_condition}</div>
+                                  )}
+                                  {rule.company_condition && (
+                                    <div className="text-sm">Entreprise contient: {rule.company_condition}</div>
+                                  )}
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <ArrowRight className="h-4 w-4 text-primary" />
+                                    <span className="text-sm font-medium">
+                                      Groupe: {rule.target_group?.name || "N/A"}
+                                    </span>
+                                  </div>
+                                </CardDescription>
                               </div>
-                            </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={rule.is_active}
+                                onCheckedChange={() => handleToggleActive(rule)}
+                              />
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditRule(rule)}
+                              >
+                                Modifier
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteRule(rule.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={rule.is_active}
-                            onCheckedChange={() => handleToggleActive(rule)}
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditRule(rule)}
-                          >
-                            Modifier
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteRule(rule.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ))
-              )}
-            </div>
+                        </CardHeader>
+                      </Card>
+                    ))
+                  )}
+                </div>
 
-            <DialogFooter>
-              <Button onClick={handleCreateRule}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nouvelle règle
-              </Button>
-            </DialogFooter>
+                <DialogFooter>
+                  <Button onClick={handleCreateRule}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nouvelle règle
+                  </Button>
+                </DialogFooter>
+              </>
+            )}
           </>
         )}
       </DialogContent>
