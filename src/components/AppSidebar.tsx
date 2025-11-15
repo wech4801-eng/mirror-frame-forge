@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Mail, Video, Palette, Settings, Workflow, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Mail, Video, Palette, Settings, Workflow, LogOut, User } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +25,10 @@ const menuItems = [
   { title: "4. Workflows", url: "/workflow", icon: Workflow },
   { title: "5. Campagnes", url: "/campaigns", icon: Mail },
   { title: "Webinaires", url: "/webinars", icon: Video },
+];
+
+const settingsItems = [
+  { title: "Paramètres", url: "/settings", icon: User },
 ];
 
 export function AppSidebar() {
@@ -59,6 +63,31 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      end
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors text-sm"
+                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                    >
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {open && <span className="text-sm">{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={open ? "px-3 text-[10px] text-muted-foreground uppercase tracking-wide" : "sr-only"}>
+            Compte
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild>
                     <NavLink
