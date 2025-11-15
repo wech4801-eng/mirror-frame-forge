@@ -269,6 +269,148 @@ export type Database = {
           },
         ]
       }
+      webinar_invitations: {
+        Row: {
+          created_at: string | null
+          id: string
+          joined_at: string | null
+          opened_at: string | null
+          prospect_id: string
+          status: string | null
+          webinar_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          joined_at?: string | null
+          opened_at?: string | null
+          prospect_id: string
+          status?: string | null
+          webinar_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          joined_at?: string | null
+          opened_at?: string | null
+          prospect_id?: string
+          status?: string | null
+          webinar_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webinar_invitations_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webinar_invitations_webinar_id_fkey"
+            columns: ["webinar_id"]
+            isOneToOne: false
+            referencedRelation: "webinars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webinar_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_host: boolean | null
+          message: string
+          sender_email: string
+          sender_name: string
+          webinar_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_host?: boolean | null
+          message: string
+          sender_email: string
+          sender_name: string
+          webinar_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_host?: boolean | null
+          message?: string
+          sender_email?: string
+          sender_name?: string
+          webinar_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webinar_messages_webinar_id_fkey"
+            columns: ["webinar_id"]
+            isOneToOne: false
+            referencedRelation: "webinars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webinars: {
+        Row: {
+          commercial_cta_link: string | null
+          commercial_cta_text: string | null
+          commercial_description: string | null
+          commercial_title: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number
+          id: string
+          scheduled_at: string
+          status: string
+          title: string
+          updated_at: string | null
+          user_id: string
+          viewer_link: string
+        }
+        Insert: {
+          commercial_cta_link?: string | null
+          commercial_cta_text?: string | null
+          commercial_description?: string | null
+          commercial_title?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          scheduled_at: string
+          status?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+          viewer_link?: string
+        }
+        Update: {
+          commercial_cta_link?: string | null
+          commercial_cta_text?: string | null
+          commercial_description?: string | null
+          commercial_title?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          scheduled_at?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          viewer_link?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webinars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
