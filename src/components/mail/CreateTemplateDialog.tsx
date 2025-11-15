@@ -9,7 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import VisualEmailEditor from "../campaigns/VisualEmailEditor";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
+import { predefinedTemplates } from "./predefinedTemplates";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CreateTemplateDialogProps {
   onSuccess: () => void;
@@ -20,9 +22,20 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
   const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
-  const [activeTab, setActiveTab] = useState<"html" | "visual">("html");
+  const [activeTab, setActiveTab] = useState<"predefined" | "html" | "visual">("predefined");
   const [loading, setLoading] = useState(false);
+  const [selectedPredefined, setSelectedPredefined] = useState<string>("");
   const { toast } = useToast();
+
+  const handlePredefinedSelect = (templateId: string) => {
+    const template = predefinedTemplates.find(t => t.id === templateId);
+    if (template) {
+      setName(template.name);
+      setSubject(template.subject);
+      setContent(template.content);
+      setSelectedPredefined(templateId);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,11 +111,42 @@ const CreateTemplateDialog = ({ onSuccess }: CreateTemplateDialogProps) => {
             />
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "html" | "visual")}>
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "predefined" | "html" | "visual")}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="predefined"><Sparkles className="h-4 w-4 mr-2" />Templates</TabsTrigger>
               <TabsTrigger value="html">HTML</TabsTrigger>
               <TabsTrigger value="visual">Éditeur Visuel</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="predefined" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="template-select">Choisir un template prédéfini</Label>
+                <Select value={selectedPredefined} onValueChange={handlePredefinedSelect}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un template" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[400px]">
+                    {predefinedTemplates.map((template) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        <div className="flex flex-col">
+                          <span className="font-semibold">{template.name}</span>
+                          <span className="text-xs text-muted-foreground">{template.category}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {selectedPredefined && (
+                <Card className="p-4">
+                  <Label className="mb-4 block">Aperçu du template</Label>
+                  <div 
+                    className="border rounded-md bg-background min-h-[300px] overflow-auto p-4"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                  />
+                </Card>
+              )}
+            </TabsContent>
 
             <TabsContent value="html" className="space-y-4">
               <div className="space-y-2">
