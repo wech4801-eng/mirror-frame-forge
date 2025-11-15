@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Palette } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Palette, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import CreateBrandingDialog from "./CreateBrandingDialog";
 import BrandingCard from "./BrandingCard";
@@ -21,6 +21,7 @@ const BrandingTab = () => {
   const [loading, setLoading] = useState(true);
   const [editingBranding, setEditingBranding] = useState<Branding | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const fetchBrandings = async () => {
     setLoading(true);
@@ -49,34 +50,51 @@ const BrandingTab = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Palette className="h-5 w-5" />
-              <div>
-                <CardTitle>Branding</CardTitle>
-                <CardDescription>
-                  Gérez les identités visuelles de vos entreprises
-                </CardDescription>
-              </div>
-            </div>
-            <CreateBrandingDialog onSuccess={fetchBrandings} />
+    <div className="space-y-8">
+      {/* Modern Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm">
+            <Palette className="h-6 w-6 text-primary" />
           </div>
-        </CardHeader>
-      </Card>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Branding</h1>
+            <p className="text-muted-foreground">
+              Gérez les identités visuelles de vos entreprises
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={() => setCreateDialogOpen(true)}
+          className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg"
+          size="lg"
+        >
+          <Plus className="mr-2 h-5 w-5" />
+          Nouveau Branding
+        </Button>
+      </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="flex items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       ) : brandings.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
-            Aucun branding créé. Créez votre premier branding pour commencer.
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-16 px-4 border-2 border-dashed border-border rounded-2xl bg-muted/30">
+          <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-4">
+            <Palette className="h-12 w-12 text-primary" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Aucun branding créé</h3>
+          <p className="text-muted-foreground text-center mb-6 max-w-md">
+            Créez votre premier branding pour définir l'identité visuelle de votre entreprise
+          </p>
+          <Button
+            onClick={() => setCreateDialogOpen(true)}
+            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Créer mon premier branding
+          </Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {brandings.map((branding) => (
@@ -89,6 +107,12 @@ const BrandingTab = () => {
           ))}
         </div>
       )}
+
+      <CreateBrandingDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={fetchBrandings}
+      />
 
       <EditBrandingDialog
         branding={editingBranding}
