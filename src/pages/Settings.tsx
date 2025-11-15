@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, User as UserIcon, Building2, Mail } from "lucide-react";
+import { CircleNotch, User as UserIcon, Buildings, EnvelopeSimple } from "@phosphor-icons/react";
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -94,7 +94,7 @@ const Settings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <CircleNotch className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -120,7 +120,7 @@ const Settings = () => {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
+                <EnvelopeSimple className="h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -151,7 +151,7 @@ const Settings = () => {
             <div className="space-y-2">
               <Label htmlFor="companyName">Nom de l'entreprise</Label>
               <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <Buildings className="h-4 w-4 text-muted-foreground" />
                 <Input
                   id="companyName"
                   type="text"
@@ -169,7 +169,7 @@ const Settings = () => {
             >
               {saving ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
                   Enregistrement...
                 </>
               ) : (

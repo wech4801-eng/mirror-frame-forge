@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Video, VideoOff, Mic, MicOff, Monitor, MonitorOff, Users } from "lucide-react";
+import { VideoCamera, VideoCameraSlash, Microphone, MicrophoneSlash, Monitor, Desktop, UsersThree } from "@phosphor-icons/react";
 import { useToast } from "@/hooks/use-toast";
 import WebinarChat from "./WebinarChat";
 import CommercialBanner from "./CommercialBanner";
@@ -185,7 +185,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
               <p className="text-sm text-muted-foreground">Vue hôte</p>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <UsersThree className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-semibold text-foreground">{viewerCount} spectateurs</span>
             </div>
           </Card>
@@ -229,14 +229,14 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
               
               {!isStreaming && (
                 <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center text-white">
-                  <VideoOff className="h-24 w-24 mb-4 opacity-50" />
+                  <VideoCameraSlash className="h-24 w-24 mb-4 opacity-50" />
                   <p className="opacity-50">Cliquez sur Démarrer pour commencer</p>
                 </div>
               )}
               
               {isStreaming && !isVideoEnabled && (
                 <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                  <VideoOff className="h-24 w-24 text-white opacity-50" />
+                  <VideoCameraSlash className="h-24 w-24 text-white opacity-50" />
                 </div>
               )}
               
@@ -249,13 +249,13 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                   <div className="absolute bottom-4 right-4 flex gap-2">
                     {isVideoEnabled && (
                       <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
-                        <Video className="h-3 w-3" />
+                        <VideoCamera className="h-3 w-3" />
                         Caméra
                       </div>
                     )}
                     {isAudioEnabled && (
                       <div className="px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
-                        <Mic className="h-3 w-3" />
+                        <Microphone className="h-3 w-3" />
                         Micro
                       </div>
                     )}
@@ -274,7 +274,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                   size="lg"
                   className="bg-green-600 hover:bg-green-700"
                 >
-                  <Video className="h-5 w-5 mr-2" />
+                  <VideoCamera className="h-5 w-5 mr-2" />
                   Démarrer
                 </Button>
               ) : (
@@ -285,7 +285,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                     onClick={toggleVideo}
                     className="w-16 h-16"
                   >
-                    {isVideoEnabled ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
+                    {isVideoEnabled ? <VideoCamera className="h-6 w-6" /> : <VideoCameraSlash className="h-6 w-6" />}
                   </Button>
                   <Button
                     variant={isAudioEnabled ? "default" : "outline"}
@@ -293,7 +293,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                     onClick={toggleAudio}
                     className="w-16 h-16"
                   >
-                    {isAudioEnabled ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+                    {isAudioEnabled ? <Microphone className="h-6 w-6" /> : <MicrophoneSlash className="h-6 w-6" />}
                   </Button>
                   <Button
                     variant={isScreenSharing ? "default" : "outline"}
@@ -301,7 +301,7 @@ const WebinarHostView = ({ webinar, userName, userEmail }: WebinarHostViewProps)
                     onClick={toggleScreenShare}
                     className="w-16 h-16"
                   >
-                    {isScreenSharing ? <Monitor className="h-6 w-6" /> : <MonitorOff className="h-6 w-6" />}
+                    {isScreenSharing ? <Monitor className="h-6 w-6" /> : <Desktop className="h-6 w-6" />}
                   </Button>
                   <Button
                     variant="destructive"

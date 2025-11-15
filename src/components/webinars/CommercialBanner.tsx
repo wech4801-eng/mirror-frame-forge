@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkle } from "@phosphor-icons/react";
 
 interface CommercialBannerProps {
   title?: string;
@@ -16,7 +16,7 @@ const CommercialBanner = ({ title, description, ctaText, ctaLink }: CommercialBa
     <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 border-0">
       <div className="flex items-start gap-4">
         <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-          <Sparkles className="h-6 w-6" />
+          <Sparkle className="h-6 w-6" />
         </div>
         <div className="flex-1 space-y-3">
           {title && <h3 className="text-xl font-bold">{title}</h3>}

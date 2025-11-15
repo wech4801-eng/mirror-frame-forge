@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, AlertTriangle, Info } from "lucide-react";
+import { WarningCircle, Warning, Info } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +30,7 @@ export const ValidationAlert = ({
     }
   };
 
-  const Icon = type === "error" ? AlertCircle : type === "warning" ? AlertTriangle : Info;
+  const Icon = type === "error" ? WarningCircle : type === "warning" ? Warning : Info;
   const variant = type === "error" ? "destructive" : type === "warning" ? "default" : "default";
 
   return (

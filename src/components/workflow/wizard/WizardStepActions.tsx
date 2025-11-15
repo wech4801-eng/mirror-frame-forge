@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Mail, Clock, Plus, ExternalLink } from "lucide-react";
+import { EnvelopeSimple, Clock, Plus, ArrowSquareOut } from "@phosphor-icons/react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface WizardStepActionsProps {
@@ -58,7 +58,7 @@ export function WizardStepActions({
   const getActionIcon = (type: string) => {
     switch (type) {
       case "send_email":
-        return <Mail className="h-4 w-4" />;
+        return <EnvelopeSimple className="h-4 w-4" />;
       case "wait":
         return <Clock className="h-4 w-4" />;
       default:
@@ -145,7 +145,7 @@ export function WizardStepActions({
                 <AccordionItem key={actualIndex} value={`action-${actualIndex}`}>
                   <AccordionTrigger className="hover:no-underline">
                     <div className="flex items-center gap-3">
-                      <Mail className="h-4 w-4" />
+                      <EnvelopeSimple className="h-4 w-4" />
                       <span className="text-sm">
                         Email {actionIndex + 1}: {action.params.template_key}
                       </span>
@@ -220,7 +220,7 @@ export function WizardStepActions({
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un template
-                          <ExternalLink className="h-3 w-3 ml-2" />
+                          <ArrowSquareOut className="h-3 w-3 ml-2" />
                         </Button>
                       </div>
                     )}

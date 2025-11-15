@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Save, Play, Pause, ArrowLeft } from "lucide-react";
+import { FloppyDisk, Play, Pause, ArrowLeft } from "@phosphor-icons/react";
 import { WorkflowCanvas } from "@/components/workflow/WorkflowCanvas";
 import { NodeLibrary } from "@/components/workflow/NodeLibrary";
 import { useToast } from "@/hooks/use-toast";
@@ -185,7 +185,7 @@ const WorkflowEditor = () => {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleSaveWorkflow}>
-              <Save className="h-4 w-4 mr-2" />
+              <FloppyDisk className="h-4 w-4 mr-2" />
               Sauvegarder
             </Button>
             {workflow && (

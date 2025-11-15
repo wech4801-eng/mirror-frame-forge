@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useValidation, ValidationResult } from "@/hooks/useValidation";
-import { AlertCircle, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { WarningCircle, Warning, CheckCircle } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CampaignValidationDialogProps {
@@ -78,7 +78,7 @@ export const CampaignValidationDialog = ({
               {/* Résumé */}
               <div className="rounded-lg border p-4 space-y-2">
                 <h4 className="font-semibold flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                   Résumé
                 </h4>
                 <ul className="text-sm space-y-1 text-muted-foreground ml-7">
@@ -91,7 +91,7 @@ export const CampaignValidationDialog = ({
               {/* Erreurs */}
               {validation.errors.length > 0 && (
                 <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
+                  <WarningCircle className="h-4 w-4" />
                   <AlertDescription>
                     <div className="font-semibold mb-2">Erreurs bloquantes</div>
                     <ul className="list-disc list-inside space-y-1">
@@ -106,7 +106,7 @@ export const CampaignValidationDialog = ({
               {/* Avertissements */}
               {validation.warnings.length > 0 && (
                 <Alert>
-                  <AlertTriangle className="h-4 w-4" />
+                  <Warning className="h-4 w-4" />
                   <AlertDescription>
                     <div className="font-semibold mb-2">Avertissements</div>
                     <ul className="list-disc list-inside space-y-1">
@@ -121,7 +121,7 @@ export const CampaignValidationDialog = ({
               {/* Succès */}
               {validation.isValid && validation.warnings.length === 0 && (
                 <Alert className="border-primary/20 bg-primary/5">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                   <AlertDescription>
                     Tout est prêt ! Vous pouvez lancer votre campagne.
                   </AlertDescription>

@@ -1,17 +1,17 @@
 import { Handle, Position } from 'reactflow';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Zap, UserPlus, Mail, MousePointer, CreditCard } from 'lucide-react';
+import { Lightning, UserPlus, EnvelopeSimple, Cursor, CreditCard } from "@phosphor-icons/react";
 
 const triggerIcons = {
   'new_prospect': UserPlus,
-  'email_opened': Mail,
-  'link_clicked': MousePointer,
+  'email_opened': EnvelopeSimple,
+  'link_clicked': Cursor,
   'no_payment': CreditCard,
 };
 
 export const TriggerNode = ({ data }: any) => {
-  const Icon = triggerIcons[data.triggerType as keyof typeof triggerIcons] || Zap;
+  const Icon = triggerIcons[data.triggerType as keyof typeof triggerIcons] || Lightning;
 
   return (
     <div>
@@ -23,7 +23,7 @@ export const TriggerNode = ({ data }: any) => {
           </div>
           <div className="flex-1">
             <Badge variant="secondary" className="mb-1">
-              <Zap className="w-3 h-3 mr-1" />
+              <Lightning className="w-3 h-3 mr-1" />
               Déclencheur
             </Badge>
             <h4 className="font-bold text-sm">{data.label}</h4>

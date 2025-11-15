@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { List } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 const Navigation = () => {
@@ -37,7 +37,7 @@ const Navigation = () => {
               Essai gratuit
             </Button>
             <Button variant="ghost" size="icon" className="lg:hidden">
-              <Menu className="h-5 w-5" />
+              <List className="h-5 w-5" />
             </Button>
           </div>
         </div>

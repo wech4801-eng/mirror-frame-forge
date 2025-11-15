@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Workflow as WorkflowIcon, Plus, Library } from "lucide-react";
+import { FlowArrow as WorkflowIcon, Plus, Books } from "@phosphor-icons/react";
 import { WorkflowsList } from "@/components/workflow/WorkflowsList";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -182,7 +182,7 @@ const Workflow = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => navigate('/workflow/library')}>
-                    <Library className="h-4 w-4 mr-2" />
+                    <Books className="h-4 w-4 mr-2" />
                     Bibliothèque
                   </Button>
                   <Button onClick={() => setCreateDialogOpen(true)}>
@@ -210,7 +210,7 @@ const Workflow = () => {
                 </p>
                 <div className="flex gap-2 justify-center">
                   <Button variant="outline" onClick={() => navigate('/workflow/library')}>
-                    <Library className="h-4 w-4 mr-2" />
+                    <Books className="h-4 w-4 mr-2" />
                     Bibliothèque de workflows
                   </Button>
                   <Button onClick={() => setCreateDialogOpen(true)}>

@@ -1,17 +1,17 @@
 import { Handle, Position } from 'reactflow';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Send, Bell, Tag, UserX } from 'lucide-react';
+import { PaperPlaneTilt, Bell, Tag, UserMinus } from "@phosphor-icons/react";
 
 const actionIcons = {
-  'send_email': Send,
+  'send_email': PaperPlaneTilt,
   'send_notification': Bell,
   'add_tag': Tag,
-  'remove_from_group': UserX,
+  'remove_from_group': UserMinus,
 };
 
 export const ActionNode = ({ data }: any) => {
-  const Icon = actionIcons[data.actionType as keyof typeof actionIcons] || Send;
+  const Icon = actionIcons[data.actionType as keyof typeof actionIcons] || PaperPlaneTilt;
 
   return (
     <div>

@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Zap } from "lucide-react";
+import { Lightning } from "@phosphor-icons/react";
 
 interface WizardStepTriggerProps {
   template: WorkflowTemplate;
@@ -163,7 +163,7 @@ export function WizardStepTrigger({
         <Card className="bg-blue-500/5 border-blue-500/20">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-blue-600" />
+              <Lightning className="h-4 w-4 text-blue-600" />
               <span className="font-medium text-sm">Déclenchement automatique</span>
             </div>
             <p className="text-xs text-muted-foreground">
