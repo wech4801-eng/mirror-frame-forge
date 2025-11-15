@@ -14,6 +14,7 @@ import Branding from "./pages/Branding";
 import Mail from "./pages/Mail";
 import Workflow from "./pages/Workflow";
 import WorkflowEditor from "./pages/WorkflowEditor";
+import WorkflowLibrary from "./pages/WorkflowLibrary";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/branding" element={<Branding />} />
           <Route path="/mail" element={<Mail />} />
           <Route path="/workflow" element={<Workflow />} />
+          <Route path="/workflow/library" element={<WorkflowLibrary />} />
           <Route path="/workflow/:id" element={<WorkflowEditor />} />
           <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

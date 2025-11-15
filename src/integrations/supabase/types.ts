@@ -582,6 +582,54 @@ export type Database = {
           },
         ]
       }
+      workflow_templates: {
+        Row: {
+          actions_config: Json
+          category: string
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          safeguards: Json | null
+          trigger_config: Json
+          updated_at: string
+          usage_count: number | null
+          variables: Json | null
+        }
+        Insert: {
+          actions_config: Json
+          category: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          safeguards?: Json | null
+          trigger_config: Json
+          updated_at?: string
+          usage_count?: number | null
+          variables?: Json | null
+        }
+        Update: {
+          actions_config?: Json
+          category?: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          safeguards?: Json | null
+          trigger_config?: Json
+          updated_at?: string
+          usage_count?: number | null
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       workflows: {
         Row: {
           created_at: string

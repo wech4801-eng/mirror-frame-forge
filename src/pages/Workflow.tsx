@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Workflow as WorkflowIcon, Plus } from "lucide-react";
+import { Workflow as WorkflowIcon, Plus, Library } from "lucide-react";
 import { WorkflowsList } from "@/components/workflow/WorkflowsList";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -180,10 +180,16 @@ const Workflow = () => {
                     </CardDescription>
                   </div>
                 </div>
-                <Button onClick={() => setCreateDialogOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nouveau Workflow
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => navigate('/workflow/library')}>
+                    <Library className="h-4 w-4 mr-2" />
+                    Bibliothèque
+                  </Button>
+                  <Button onClick={() => setCreateDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nouveau Workflow
+                  </Button>
+                </div>
               </div>
             </CardHeader>
           </Card>
@@ -200,14 +206,20 @@ const Workflow = () => {
                 <WorkflowIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p className="text-lg mb-2">Aucun workflow créé</p>
                 <p className="text-sm mb-4">
-                  Créez votre premier workflow pour commencer les automatisations
-              </p>
-              <Button onClick={() => setCreateDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Créer un workflow
-              </Button>
-            </CardContent>
-          </Card>
+                  Créez votre premier workflow ou explorez notre bibliothèque de 20 workflows prêts à l'emploi
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <Button variant="outline" onClick={() => navigate('/workflow/library')}>
+                    <Library className="h-4 w-4 mr-2" />
+                    Bibliothèque de workflows
+                  </Button>
+                  <Button onClick={() => setCreateDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Créer un workflow
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
         )}
 
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
