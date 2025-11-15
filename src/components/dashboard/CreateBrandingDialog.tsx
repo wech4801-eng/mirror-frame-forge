@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface CreateBrandingDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onSuccess: () => void;
 }
 
@@ -24,8 +26,10 @@ const FONT_OPTIONS = [
   "Merriweather",
 ];
 
-const CreateBrandingDialog = ({ onSuccess }: CreateBrandingDialogProps) => {
-  const [open, setOpen] = useState(false);
+const CreateBrandingDialog = ({ open: controlledOpen, onOpenChange, onSuccess }: CreateBrandingDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [name, setName] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#6366f1");
   const [secondaryColor, setSecondaryColor] = useState("#8b5cf6");
@@ -102,12 +106,14 @@ const CreateBrandingDialog = ({ onSuccess }: CreateBrandingDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nouveau Branding
-        </Button>
-      </DialogTrigger>
+      {onOpenChange === undefined && (
+        <DialogTrigger asChild>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Nouveau Branding
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Créer un nouveau branding</DialogTitle>
