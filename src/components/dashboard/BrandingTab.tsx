@@ -51,26 +51,25 @@ const BrandingTab = () => {
 
   return (
     <div className="space-y-8">
-      {/* Modern Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 bg-card rounded-lg border">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-lg bg-primary/10">
             <Palette className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Branding</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-bold">Branding</h1>
+            <p className="text-sm text-muted-foreground">
               Gérez les identités visuelles de vos entreprises
             </p>
           </div>
         </div>
         <Button
           onClick={() => setCreateDialogOpen(true)}
-          className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg"
-          size="lg"
+          className="gap-2"
         >
-            <Plus className="mr-2 h-5 w-5" />
-            Nouveau Branding
+          <Plus className="h-4 w-4" />
+          Nouveau Branding
         </Button>
       </div>
 
