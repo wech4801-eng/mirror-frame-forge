@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
+import { NotificationsDropdown } from "@/components/notifications/NotificationsDropdown";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -77,10 +78,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <span className="hidden sm:inline">Upgrade Now</span>
               </Button>
 
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-primary rounded-full" />
-              </Button>
+              <NotificationsDropdown />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
