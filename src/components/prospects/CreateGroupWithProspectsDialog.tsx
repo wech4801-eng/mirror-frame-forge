@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { notificationHelpers } from "@/lib/notificationsUtils";
 
 interface Prospect {
   id: string;
@@ -121,6 +122,9 @@ const CreateGroupWithProspectsDialog = ({
 
         if (prospectGroupsError) throw prospectGroupsError;
       }
+      
+      // Créer une notification
+      await notificationHelpers.groupCreated(newGroup.name, selectedProspects.size);
 
       toast({
         title: "Succès",

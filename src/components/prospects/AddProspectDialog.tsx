@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { notificationHelpers } from "@/lib/notificationsUtils";
 
 interface AddProspectDialogProps {
   open: boolean;
@@ -61,6 +62,9 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
         await supabase.rpc("apply_routing_rules", {
           prospect_id_param: newProspect.id
         });
+        
+        // Créer une notification
+        await notificationHelpers.newProspect(newProspect.full_name);
       }
 
       toast({
