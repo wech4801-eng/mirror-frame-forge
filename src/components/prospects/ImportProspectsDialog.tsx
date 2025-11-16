@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Upload, CircleNotch, FileArrowDown } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { notificationHelpers } from "@/lib/notificationsUtils";
 
 interface ImportProspectsDialogProps {
   open: boolean;
@@ -114,6 +115,9 @@ const ImportProspectsDialog = ({
       const { error } = await supabase.from("prospects").insert(prospects);
 
       if (error) throw error;
+      
+      // Créer une notification
+      await notificationHelpers.csvImported(prospects.length);
 
       toast({
         title: "Import réussi",
