@@ -5,16 +5,21 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ProspectsList from "@/components/prospects/ProspectsList";
 import AddProspectDialog from "@/components/prospects/AddProspectDialog";
 import CreateGroupWithProspectsDialog from "@/components/prospects/CreateGroupWithProspectsDialog";
+import ExportProspectsDialog from "@/components/prospects/ExportProspectsDialog";
+import ImportProspectsDialog from "@/components/prospects/ImportProspectsDialog";
 import { RoutingRulesDialog } from "@/components/prospects/RoutingRulesDialog";
 import { Button } from "@/components/ui/button";
-import { Plus, UsersThree } from "@phosphor-icons/react";
+import { Plus, UsersThree, Download, Upload } from "@phosphor-icons/react";
 import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Prospects = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [groupDialogOpen, setGroupDialogOpen] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [routingDialogOpen, setRoutingDialogOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +46,20 @@ const Prospects = () => {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={() => setImportDialogOpen(true)}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Importer CSV
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setExportDialogOpen(true)}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Exporter CSV
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => setRoutingDialogOpen(true)}
               >
                 Règles de routage
@@ -62,7 +81,7 @@ const Prospects = () => {
             </div>
           </div>
 
-          <ProspectsList />
+          <ProspectsList key={refreshKey} />
           
           <AddProspectDialog 
             open={dialogOpen} 
@@ -72,6 +91,17 @@ const Prospects = () => {
           <CreateGroupWithProspectsDialog
             open={groupDialogOpen}
             onOpenChange={setGroupDialogOpen}
+          />
+          
+          <ExportProspectsDialog
+            open={exportDialogOpen}
+            onOpenChange={setExportDialogOpen}
+          />
+          
+          <ImportProspectsDialog
+            open={importDialogOpen}
+            onOpenChange={setImportDialogOpen}
+            onImportComplete={() => setRefreshKey((prev) => prev + 1)}
           />
           
           <RoutingRulesDialog
