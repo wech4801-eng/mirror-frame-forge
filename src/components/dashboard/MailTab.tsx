@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useValidation } from "@/hooks/useValidation";
 import { TemplateValidationGuard } from "@/components/validation/TemplateValidationGuard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { EnvelopeSimple, Sparkle } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import { EnvelopeSimple, Sparkle, Plus } from "@phosphor-icons/react";
 import { supabase } from "@/integrations/supabase/client";
-import CreateTemplateDialog from "../mail/CreateTemplateDialog";
 import TemplateCard from "../mail/TemplateCard";
-import EditTemplateDialog from "../mail/EditTemplateDialog";
 import PreviewTemplateDialog from "../mail/PreviewTemplateDialog";
 import { predefinedTemplates } from "../mail/predefinedTemplates";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,11 +24,10 @@ interface EmailTemplate {
 }
 
 const MailTab = () => {
+  const navigate = useNavigate();
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null);
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
 
   const fetchTemplates = async () => {
@@ -51,11 +50,6 @@ const MailTab = () => {
   useEffect(() => {
     fetchTemplates();
   }, []);
-
-  const handleEdit = (template: EmailTemplate) => {
-    setEditingTemplate(template);
-    setEditDialogOpen(true);
-  };
 
   const handlePreview = (template: EmailTemplate) => {
     setPreviewTemplate(template);
@@ -94,7 +88,10 @@ const MailTab = () => {
               </div>
             </div>
             <TemplateValidationGuard>
-              <CreateTemplateDialog onSuccess={fetchTemplates} />
+              <Button onClick={() => navigate("/mail/create")} size="lg">
+                <Plus className="h-5 w-5 mr-2" />
+                Créer un template
+              </Button>
             </TemplateValidationGuard>
           </div>
         </CardHeader>
@@ -141,7 +138,6 @@ const MailTab = () => {
                           category: template.category,
                           isPredefined: true
                         }}
-                        onEdit={() => {}}
                         onDelete={() => Promise.resolve()}
                         onPreview={() => handleUsePredefined(template.id)}
                       />
@@ -164,7 +160,6 @@ const MailTab = () => {
                       <TemplateCard
                         key={template.id}
                         template={template}
-                        onEdit={handleEdit}
                         onDelete={fetchTemplates}
                         onPreview={handlePreview}
                       />
@@ -199,7 +194,6 @@ const MailTab = () => {
                   category: template.category,
                   isPredefined: true
                 }}
-                onEdit={() => {}}
                 onDelete={() => Promise.resolve()}
                 onPreview={() => handleUsePredefined(template.id)}
               />
@@ -207,13 +201,6 @@ const MailTab = () => {
           </div>
         </TabsContent>
       </Tabs>
-
-      <EditTemplateDialog
-        template={editingTemplate}
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
-        onSuccess={fetchTemplates}
-      />
 
       <PreviewTemplateDialog
         template={previewTemplate}
