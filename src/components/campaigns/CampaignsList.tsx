@@ -3,17 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause } from "@phosphor-icons/react";
+import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause, ChartBar } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
 import EditCampaignDialog from "./EditCampaignDialog";
 import SelectProspectsDialog from "./SelectProspectsDialog";
+import CampaignDetailsDialog from "./CampaignDetailsDialog";
 import { useToast } from "@/components/ui/use-toast";
 
 const CampaignsList = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
   const [selectingProspects, setSelectingProspects] = useState<any>(null);
+  const [detailsCampaignId, setDetailsCampaignId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const { data: campaigns, refetch } = useQuery({
@@ -141,6 +143,14 @@ const CampaignsList = () => {
                   </div>
                   <div className="flex gap-2">
                     <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDetailsCampaignId(campaign.id)}
+                    >
+                      <ChartBar className="h-4 w-4 mr-2" />
+                      Détails
+                    </Button>
+                    <Button
                       variant={campaign.is_active ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleToggleCampaign(campaign)}
@@ -247,6 +257,12 @@ const CampaignsList = () => {
           }}
         />
       )}
+
+      <CampaignDetailsDialog
+        campaignId={detailsCampaignId}
+        open={!!detailsCampaignId}
+        onOpenChange={(open) => !open && setDetailsCampaignId(null)}
+      />
     </>
   );
 };
