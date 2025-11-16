@@ -29,16 +29,16 @@ export const VariablesPicker = ({ onVariableClick }: VariablesPickerProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="prospect" className="w-full">
+        <Tabs defaultValue="opportunities" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="prospect" className="text-xs">Prospect</TabsTrigger>
-            <TabsTrigger value="campaign" className="text-xs">Campagne</TabsTrigger>
-            <TabsTrigger value="system" className="text-xs">Système</TabsTrigger>
+            <TabsTrigger value="opportunities" className="text-xs">Opportunités</TabsTrigger>
+            <TabsTrigger value="default_fields" className="text-xs">Champs</TabsTrigger>
+            <TabsTrigger value="user_variables" className="text-xs">Utilisateur</TabsTrigger>
           </TabsList>
 
           <ScrollArea className="h-[300px] mt-4">
-            <TabsContent value="prospect" className="space-y-2 mt-0">
-              {EMAIL_VARIABLES.prospect.map((variable) => (
+            <TabsContent value="opportunities" className="space-y-2 mt-0">
+              {EMAIL_VARIABLES.opportunities.map((variable) => (
                 <div
                   key={variable.key}
                   className="flex items-center justify-between p-2 rounded-md hover:bg-accent/50 cursor-pointer transition-colors"
@@ -70,8 +70,8 @@ export const VariablesPicker = ({ onVariableClick }: VariablesPickerProps) => {
               ))}
             </TabsContent>
 
-            <TabsContent value="campaign" className="space-y-2 mt-0">
-              {EMAIL_VARIABLES.campaign.map((variable) => (
+            <TabsContent value="default_fields" className="space-y-2 mt-0">
+              {EMAIL_VARIABLES.default_fields.map((variable) => (
                 <div
                   key={variable.key}
                   className="flex items-center justify-between p-2 rounded-md hover:bg-accent/50 cursor-pointer transition-colors"
@@ -103,8 +103,8 @@ export const VariablesPicker = ({ onVariableClick }: VariablesPickerProps) => {
               ))}
             </TabsContent>
 
-            <TabsContent value="system" className="space-y-2 mt-0">
-              {EMAIL_VARIABLES.system.map((variable) => (
+            <TabsContent value="user_variables" className="space-y-2 mt-0">
+              {EMAIL_VARIABLES.user_variables.map((variable) => (
                 <div
                   key={variable.key}
                   className="flex items-center justify-between p-2 rounded-md hover:bg-accent/50 cursor-pointer transition-colors"
