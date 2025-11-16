@@ -22,6 +22,7 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,11 +33,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         setUserEmail(user.email || "");
         const { data: profile } = await supabase
           .from("profiles")
-          .select("full_name")
+          .select("full_name, avatar_url")
           .eq("id", user.id)
           .single();
         
         setUserName(profile?.full_name || user.email?.split("@")[0] || "Utilisateur");
+        setAvatarUrl(profile?.avatar_url || null);
       }
     };
     fetchUser();
@@ -84,7 +86,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2 pl-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="" />
+                      <AvatarImage src={avatarUrl || undefined} />
                       <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                         {userName.slice(0, 2).toUpperCase()}
                       </AvatarFallback>

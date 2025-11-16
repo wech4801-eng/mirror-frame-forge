@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { CircleNotch, User as UserIcon, Buildings, EnvelopeSimple } from "@phosphor-icons/react";
+import { AvatarUpload } from "@/components/settings/AvatarUpload";
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -17,6 +18,7 @@ const Settings = () => {
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -42,6 +44,7 @@ const Settings = () => {
       if (profile) {
         setFullName(profile.full_name || "");
         setCompanyName(profile.company_name || "");
+        setAvatarUrl(profile.avatar_url || null);
       }
 
       setLoading(false);
@@ -116,26 +119,45 @@ const Settings = () => {
               Mettez à jour vos informations personnelles
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="flex items-center gap-2">
-                <EnvelopeSimple className="h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  disabled
-                  className="bg-muted"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                L'email ne peut pas être modifié
-              </p>
-            </div>
+          <CardContent className="space-y-6">
+            {user && (
+              <AvatarUpload
+                userId={user.id}
+                currentAvatarUrl={avatarUrl}
+                userInitials={
+                  fullName
+                    ? fullName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
+                    : email.slice(0, 2).toUpperCase()
+                }
+                onAvatarUpdate={setAvatarUrl}
+              />
+            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nom complet</Label>
+            <div className="space-y-4 pt-4 border-t">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="flex items-center gap-2">
+                  <EnvelopeSimple className="h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    disabled
+                    className="bg-muted"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  L'email ne peut pas être modifié
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Nom complet</Label>
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
                 <Input
@@ -160,22 +182,23 @@ const Settings = () => {
                   placeholder="Nom de votre entreprise"
                 />
               </div>
-            </div>
+              </div>
 
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="w-full sm:w-auto"
-            >
-              {saving ? (
-                <>
-                  <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
-                  Enregistrement...
-                </>
-              ) : (
-                "Enregistrer les modifications"
-              )}
-            </Button>
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full sm:w-auto"
+              >
+                {saving ? (
+                  <>
+                    <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
+                    Enregistrement...
+                  </>
+                ) : (
+                  "Enregistrer les modifications"
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
