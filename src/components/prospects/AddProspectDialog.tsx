@@ -91,7 +91,7 @@ const AddProspectDialog = ({ open, onOpenChange }: AddProspectDialogProps) => {
   };
 
   return (
-    <Dialog modal={false} open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Ajouter un Prospect</DialogTitle>
