@@ -4,14 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ProspectsList from "@/components/prospects/ProspectsList";
 import AddProspectDialog from "@/components/prospects/AddProspectDialog";
+import CreateGroupWithProspectsDialog from "@/components/prospects/CreateGroupWithProspectsDialog";
 import { RoutingRulesDialog } from "@/components/prospects/RoutingRulesDialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, UsersThree } from "@phosphor-icons/react";
 import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Prospects = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [groupDialogOpen, setGroupDialogOpen] = useState(false);
   const [routingDialogOpen, setRoutingDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -43,6 +45,13 @@ const Prospects = () => {
               >
                 Règles de routage
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => setGroupDialogOpen(true)}
+              >
+                <UsersThree className="mr-2 h-4 w-4" />
+                Créer un Groupe
+              </Button>
               <Button 
                 onClick={() => setDialogOpen(true)} 
                 className="bg-primary hover:bg-primary/90"
@@ -58,6 +67,11 @@ const Prospects = () => {
           <AddProspectDialog 
             open={dialogOpen} 
             onOpenChange={setDialogOpen}
+          />
+          
+          <CreateGroupWithProspectsDialog
+            open={groupDialogOpen}
+            onOpenChange={setGroupDialogOpen}
           />
           
           <RoutingRulesDialog
