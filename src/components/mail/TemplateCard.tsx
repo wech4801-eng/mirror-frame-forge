@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { PencilSimple, Trash, Eye, Sparkle } from "@phosphor-icons/react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -20,13 +21,13 @@ interface EmailTemplate {
 
 interface TemplateCardProps {
   template: EmailTemplate;
-  onEdit: (template: EmailTemplate) => void;
   onDelete: () => void;
   onPreview: (template: EmailTemplate) => void;
 }
 
-const TemplateCard = ({ template, onEdit, onDelete, onPreview }: TemplateCardProps) => {
+const TemplateCard = ({ template, onDelete, onPreview }: TemplateCardProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleDelete = async () => {
     try {
@@ -79,7 +80,7 @@ const TemplateCard = ({ template, onEdit, onDelete, onPreview }: TemplateCardPro
             </Button>
             {!template.isPredefined && (
               <>
-                <Button variant="ghost" size="icon" onClick={() => onEdit(template)}>
+                <Button variant="ghost" size="icon" onClick={() => navigate(`/mail/edit/${template.id}`)}>
                   <PencilSimple className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={handleDelete}>

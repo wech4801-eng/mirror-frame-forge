@@ -12,6 +12,8 @@ import Webinars from "./pages/Webinars";
 import WebinarRoom from "./pages/WebinarRoom";
 import Branding from "./pages/Branding";
 import Mail from "./pages/Mail";
+import CreateEmailTemplate from "./pages/CreateEmailTemplate";
+import EditEmailTemplate from "./pages/EditEmailTemplate";
 import Workflow from "./pages/Workflow";
 import WorkflowEditor from "./pages/WorkflowEditor";
 import WorkflowLibrary from "./pages/WorkflowLibrary";
@@ -37,6 +39,8 @@ const App = () => (
           <Route path="/webinar/:id" element={<WebinarRoom />} />
           <Route path="/branding" element={<Branding />} />
           <Route path="/mail" element={<Mail />} />
+          <Route path="/mail/create" element={<CreateEmailTemplate />} />
+          <Route path="/mail/edit/:id" element={<EditEmailTemplate />} />
           <Route path="/workflow" element={<Workflow />} />
           <Route path="/workflow/library" element={<WorkflowLibrary />} />
           <Route path="/workflow/:id" element={<WorkflowEditor />} />
