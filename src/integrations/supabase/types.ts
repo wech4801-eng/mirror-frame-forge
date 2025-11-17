@@ -301,46 +301,58 @@ export type Database = {
       }
       landing_pages: {
         Row: {
+          background_color: string | null
           client_name: string
           created_at: string
           cta_text: string | null
+          custom_fields: Json | null
           description: string | null
           form_fields: Json | null
           id: string
           is_active: boolean | null
           logo_url: string | null
           primary_color: string | null
+          secondary_color: string | null
           subdomain: string
+          subtitle: string | null
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          background_color?: string | null
           client_name: string
           created_at?: string
           cta_text?: string | null
+          custom_fields?: Json | null
           description?: string | null
           form_fields?: Json | null
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           primary_color?: string | null
+          secondary_color?: string | null
           subdomain: string
+          subtitle?: string | null
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          background_color?: string | null
           client_name?: string
           created_at?: string
           cta_text?: string | null
+          custom_fields?: Json | null
           description?: string | null
           form_fields?: Json | null
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           primary_color?: string | null
+          secondary_color?: string | null
           subdomain?: string
+          subtitle?: string | null
           title?: string
           updated_at?: string
           user_id?: string
