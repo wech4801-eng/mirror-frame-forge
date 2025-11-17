@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Upload, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LandingPage {
@@ -51,6 +51,8 @@ interface CustomField {
 const EditLandingPageDialog = ({ open, onOpenChange, landingPage, onSuccess }: EditLandingPageDialogProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
@@ -143,6 +145,74 @@ const EditLandingPageDialog = ({ open, onOpenChange, landingPage, onSuccess }: E
     setCustomFields(updated);
   };
 
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description: "Please upload an image file",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB",
+      });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('branding-logos')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('branding-logos')
+        .getPublicUrl(filePath);
+
+      setFormData({ ...formData, logo_url: publicUrl });
+      
+      toast({
+        title: "Logo uploaded",
+        description: "Your logo has been uploaded successfully",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: error.message,
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setFormData({ ...formData, logo_url: "" });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -217,14 +287,55 @@ const EditLandingPageDialog = ({ open, onOpenChange, landingPage, onSuccess }: E
 
             <TabsContent value="design" className="space-y-4 mt-4">
               <div>
-                <Label htmlFor="logo_url">Logo URL</Label>
-                <Input
-                  id="logo_url"
-                  type="url"
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                  placeholder="https://example.com/logo.png"
-                />
+                <Label>Logo</Label>
+                <div className="space-y-3 mt-2">
+                  {formData.logo_url ? (
+                    <div className="relative inline-block">
+                      <img 
+                        src={formData.logo_url} 
+                        alt="Logo preview" 
+                        className="h-24 object-contain border rounded-md p-2 bg-muted"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                        onClick={removeLogo}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        id="logo-upload"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                        className="flex-1"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploading ? "Uploading..." : "Upload Logo"}
+                      </Button>
+                    </div>
+                  )}
+                  <Input
+                    type="url"
+                    value={formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    placeholder="Or paste logo URL"
+                    className="text-sm"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
