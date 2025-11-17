@@ -261,6 +261,100 @@ export type Database = {
           },
         ]
       }
+      landing_page_submissions: {
+        Row: {
+          additional_data: Json | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          landing_page_id: string
+          phone: string | null
+        }
+        Insert: {
+          additional_data?: Json | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          landing_page_id: string
+          phone?: string | null
+        }
+        Update: {
+          additional_data?: Json | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          landing_page_id?: string
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landing_page_submissions_landing_page_id_fkey"
+            columns: ["landing_page_id"]
+            isOneToOne: false
+            referencedRelation: "landing_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landing_pages: {
+        Row: {
+          client_name: string
+          created_at: string
+          cta_text: string | null
+          description: string | null
+          form_fields: Json | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          primary_color: string | null
+          subdomain: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          cta_text?: string | null
+          description?: string | null
+          form_fields?: Json | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          primary_color?: string | null
+          subdomain: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          cta_text?: string | null
+          description?: string | null
+          form_fields?: Json | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          primary_color?: string | null
+          subdomain?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landing_pages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string

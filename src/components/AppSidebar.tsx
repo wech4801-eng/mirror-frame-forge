@@ -1,4 +1,4 @@
-import { Layout, UsersThree, EnvelopeSimple, VideoCamera, Palette, Gear, FlowArrow, SignOut, User } from "@phosphor-icons/react";
+import { Layout, UsersThree, EnvelopeSimple, VideoCamera, Palette, Gear, FlowArrow, SignOut, User, Globe } from "@phosphor-icons/react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Layout },
+  { title: "Landing Pages", url: "/landing-pages", icon: Globe },
   { title: "Prospects", url: "/prospects", icon: UsersThree },
   { title: "Branding", url: "/branding", icon: Palette },
   { title: "Templates Mail", url: "/mail", icon: Gear },

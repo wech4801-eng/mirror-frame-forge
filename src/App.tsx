@@ -19,6 +19,8 @@ import WorkflowEditor from "./pages/WorkflowEditor";
 import WorkflowLibrary from "./pages/WorkflowLibrary";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import LandingPages from "./pages/LandingPages";
+import LandingPagePublic from "./pages/LandingPagePublic";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/landing-pages" element={<LandingPages />} />
+          <Route path="/lp/:subdomain" element={<LandingPagePublic />} />
           <Route path="/prospects" element={<Prospects />} />
           <Route path="/campaigns" element={<Campaigns />} />
           <Route path="/webinars" element={<Webinars />} />
