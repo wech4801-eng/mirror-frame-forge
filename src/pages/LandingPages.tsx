@@ -15,12 +15,16 @@ interface LandingPage {
   client_name: string;
   subdomain: string;
   title: string;
+  subtitle: string | null;
   description: string | null;
   primary_color: string;
+  secondary_color: string;
+  background_color: string;
   logo_url: string | null;
   cta_text: string;
   is_active: boolean;
   created_at: string;
+  custom_fields: any;
 }
 
 const LandingPages = () => {
