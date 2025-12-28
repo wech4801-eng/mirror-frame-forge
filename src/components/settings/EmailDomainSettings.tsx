@@ -16,7 +16,10 @@ import {
   ArrowClockwise,
   EnvelopeSimple,
   Shield,
-  Info
+  Info,
+  MagnifyingGlass,
+  Lightbulb,
+  Warning
 } from "@phosphor-icons/react";
 import {
   Accordion,
@@ -62,6 +65,8 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
   const [replyTo, setReplyTo] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [testingDns, setTestingDns] = useState(false);
+  const [dnsTestResults, setDnsTestResults] = useState<{type: string; status: 'success' | 'error' | 'pending'; message: string}[]>([]);
   const [existingDomain, setExistingDomain] = useState<EmailDomain | null>(null);
   const [dnsRecords, setDnsRecords] = useState<DnsRecord[]>([]);
   const { toast } = useToast();
@@ -240,6 +245,97 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
     }
   };
 
+  const handleTestDns = async () => {
+    if (!existingDomain) return;
+    
+    setTestingDns(true);
+    setDnsTestResults([]);
+    
+    try {
+      // Test DNS records using public DNS lookup APIs
+      const domain = existingDomain.domain;
+      const results: {type: string; status: 'success' | 'error' | 'pending'; message: string}[] = [];
+      
+      // Test using Google DNS API
+      const dnsTypes = ['TXT', 'MX'];
+      
+      for (const type of dnsTypes) {
+        try {
+          const response = await fetch(`https://dns.google/resolve?name=${domain}&type=${type}`);
+          const data = await response.json();
+          
+          if (data.Answer && data.Answer.length > 0) {
+            const records = data.Answer.map((a: { data: string }) => a.data).join(', ');
+            results.push({
+              type,
+              status: 'success',
+              message: `Enregistrement ${type} trouvé: ${records.substring(0, 100)}${records.length > 100 ? '...' : ''}`
+            });
+          } else {
+            results.push({
+              type,
+              status: 'error',
+              message: `Aucun enregistrement ${type} trouvé pour ${domain}`
+            });
+          }
+        } catch {
+          results.push({
+            type,
+            status: 'pending',
+            message: `Impossible de vérifier l'enregistrement ${type}`
+          });
+        }
+      }
+      
+      // Also check for DKIM subdomain
+      try {
+        const dkimDomain = `resend._domainkey.${domain}`;
+        const response = await fetch(`https://dns.google/resolve?name=${dkimDomain}&type=TXT`);
+        const data = await response.json();
+        
+        if (data.Answer && data.Answer.length > 0) {
+          results.push({
+            type: 'DKIM',
+            status: 'success',
+            message: 'Enregistrement DKIM trouvé et configuré correctement'
+          });
+        } else {
+          results.push({
+            type: 'DKIM',
+            status: 'error',
+            message: `Enregistrement DKIM non trouvé sur resend._domainkey.${domain}`
+          });
+        }
+      } catch {
+        results.push({
+          type: 'DKIM',
+          status: 'pending',
+          message: 'Impossible de vérifier l\'enregistrement DKIM'
+        });
+      }
+      
+      setDnsTestResults(results);
+      
+      const allSuccess = results.every(r => r.status === 'success');
+      toast({
+        title: allSuccess ? "DNS configuré correctement !" : "Vérification terminée",
+        description: allSuccess 
+          ? "Tous vos enregistrements DNS sont en place. Cliquez sur 'Vérifier le statut' pour valider auprès de Resend."
+          : "Certains enregistrements DNS sont manquants. Consultez les résultats ci-dessous.",
+        variant: allSuccess ? "default" : "destructive",
+      });
+    } catch (error) {
+      console.error("DNS test error:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de tester la configuration DNS",
+        variant: "destructive",
+      });
+    } finally {
+      setTestingDns(false);
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
@@ -357,9 +453,65 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
                 )}
                 Vérifier le statut
               </Button>
+              <Button variant="secondary" onClick={handleTestDns} disabled={testingDns}>
+                {testingDns ? (
+                  <CircleNotch className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <MagnifyingGlass className="h-4 w-4 mr-2" />
+                )}
+                Tester DNS
+              </Button>
             </>
           )}
         </div>
+
+        {/* Explication du processus pour domaine existant */}
+        {existingDomain && !existingDomain.is_verified && (
+          <Alert className="border-amber-500/50 bg-amber-500/10">
+            <Lightbulb className="h-4 w-4 text-amber-500" />
+            <AlertTitle className="text-amber-600">Comment ça fonctionne ?</AlertTitle>
+            <AlertDescription className="space-y-2 text-sm">
+              <p><strong>1. Ajoutez les enregistrements DNS</strong> : Copiez les enregistrements ci-dessous et ajoutez-les dans la zone DNS de votre domaine (chez OVH, Gandi, Cloudflare, etc.)</p>
+              <p><strong>2. Attendez la propagation</strong> : Les modifications DNS peuvent prendre de 5 minutes à 48 heures pour se propager.</p>
+              <p><strong>3. Testez votre configuration</strong> : Utilisez le bouton "Tester DNS" pour vérifier en temps réel si vos enregistrements sont visibles.</p>
+              <p><strong>4. Validez</strong> : Une fois le test DNS réussi, cliquez sur "Vérifier le statut" pour finaliser la vérification avec Resend.</p>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Résultats du test DNS */}
+        {dnsTestResults.length > 0 && (
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <MagnifyingGlass className="h-4 w-4" />
+              Résultats du test DNS
+            </h4>
+            {dnsTestResults.map((result, index) => (
+              <div 
+                key={index} 
+                className={`p-3 rounded-lg border flex items-start gap-3 ${
+                  result.status === 'success' 
+                    ? 'border-green-500/50 bg-green-500/10' 
+                    : result.status === 'error'
+                    ? 'border-red-500/50 bg-red-500/10'
+                    : 'border-amber-500/50 bg-amber-500/10'
+                }`}
+              >
+                {result.status === 'success' ? (
+                  <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                ) : result.status === 'error' ? (
+                  <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                ) : (
+                  <Warning className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <p className="font-medium">{result.type}</p>
+                  <p className="text-sm text-muted-foreground">{result.message}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Statut du domaine */}
         {existingDomain && (
