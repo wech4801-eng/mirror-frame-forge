@@ -176,14 +176,26 @@ const CampaignsList = () => {
                       <PencilSimple className="h-4 w-4" />
                     </Button>
                     {campaign.status === "brouillon" && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectingProspects(campaign)}
-                      >
-                        <UsersThree className="h-4 w-4 mr-2" />
-                        Destinataires ({totalRecipients})
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectingProspects(campaign)}
+                        >
+                          <UsersThree className="h-4 w-4 mr-2" />
+                          Destinataires ({totalRecipients})
+                        </Button>
+                        {totalRecipients > 0 && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleSendCampaign(campaign)}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <PaperPlaneTilt className="h-4 w-4 mr-2" />
+                            Envoyer
+                          </Button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
