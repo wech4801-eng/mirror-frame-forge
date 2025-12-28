@@ -246,116 +246,37 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
   };
 
   const handleTestDns = async () => {
-    if (!existingDomain) return;
+    if (!existingDomain?.resend_domain_id) return;
 
     setTestingDns(true);
     setDnsTestResults([]);
 
-    const normalize = (v: string) => v.replace(/"/g, "").replace(/\s+/g, "").toLowerCase();
-    const toFqdn = (name: string, base: string) => {
-      const n = (name || "").trim().replace(/\.$/, "");
-      const b = base.trim().replace(/\.$/, "");
-      if (!n || n === "@") return b;
-      if (n === b || n.endsWith(`.${b}`)) return n;
-      return `${n}.${b}`;
-    };
-
-    const dohLookupGoogle = async (name: string, type: "TXT" | "MX") => {
-      const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`);
-      const json = await res.json();
-      const answers: string[] = Array.isArray(json?.Answer)
-        ? json.Answer.map((a: { data?: string }) => a?.data).filter(Boolean)
-        : [];
-      return answers;
-    };
-
-    const matchesExpected = (answers: string[], expected: string) => {
-      if (!expected) return false;
-      const exp = normalize(expected);
-      return answers.some((a) => normalize(a).includes(exp));
-    };
-
     try {
-      const domainName = existingDomain.domain;
+      const { data, error } = await supabase.functions.invoke("test-domain-dns", {
+        body: { domainId: existingDomain.resend_domain_id },
+      });
 
-      // On récupère les enregistrements attendus (si on ne les a pas déjà)
-      let expected: any[] = dnsRecords as any[];
-      if ((!expected || expected.length === 0) && existingDomain.resend_domain_id) {
-        const { data, error } = await supabase.functions.invoke("check-domain-status", {
-          body: { domainId: existingDomain.resend_domain_id },
-        });
-        if (!error && data?.records) {
-          expected = data.records;
-          setDnsRecords(data.records);
-        }
-      }
+      if (error) throw error;
 
-      const dkimExpected = expected?.find((r) => r?.type === "TXT" && String(r?.name || "").includes("_domainkey"));
-      const spfExpected = expected?.find((r) => r?.type === "TXT" && String(r?.value || "").toLowerCase().includes("v=spf1"));
-      const mxExpected = expected?.find((r) => r?.type === "MX");
+      const checks = Array.isArray(data?.checks) ? data.checks : [];
+      const results = checks.map((c: any) => {
+        const status = (c?.status as "success" | "error" | "pending") || "pending";
+        const googleOk = c?.resolvers?.google === "success";
+        const cloudflareOk = c?.resolvers?.cloudflare === "success";
+        const okCount = [googleOk, cloudflareOk].filter(Boolean).length;
+        const suffix = status === "success" ? ` (confirmé par ${okCount}/2)` : "";
 
-      const results: { type: string; status: "success" | "error" | "pending"; message: string }[] = [];
-
-      // SPF (TXT)
-      if (spfExpected?.name && spfExpected?.value) {
-        const fqdn = toFqdn(spfExpected.name, domainName);
-        try {
-          const answers = await dohLookupGoogle(fqdn, "TXT");
-          if (answers.length === 0) {
-            results.push({ type: "SPF", status: "error", message: `Aucun SPF détecté sur ${fqdn}` });
-          } else if (matchesExpected(answers, spfExpected.value)) {
-            results.push({ type: "SPF", status: "success", message: `SPF correctement configuré sur ${fqdn}` });
-          } else {
-            results.push({ type: "SPF", status: "error", message: `Un enregistrement TXT existe sur ${fqdn}, mais ce n'est pas le SPF attendu` });
-          }
-        } catch {
-          results.push({ type: "SPF", status: "pending", message: `Impossible de vérifier le SPF sur ${fqdn}` });
-        }
-      } else {
-        results.push({ type: "SPF", status: "pending", message: "Impossible d'identifier le SPF attendu pour ce domaine" });
-      }
-
-      // MX
-      if (mxExpected?.name && mxExpected?.value) {
-        const fqdn = toFqdn(mxExpected.name, domainName);
-        try {
-          const answers = await dohLookupGoogle(fqdn, "MX");
-          if (answers.length === 0) {
-            results.push({ type: "MX", status: "error", message: `Aucun MX détecté sur ${fqdn}` });
-          } else if (matchesExpected(answers, mxExpected.value)) {
-            results.push({ type: "MX", status: "success", message: `MX correctement configuré sur ${fqdn}` });
-          } else {
-            results.push({ type: "MX", status: "error", message: `Un enregistrement MX existe sur ${fqdn}, mais ce n'est pas le MX attendu` });
-          }
-        } catch {
-          results.push({ type: "MX", status: "pending", message: `Impossible de vérifier le MX sur ${fqdn}` });
-        }
-      } else {
-        results.push({ type: "MX", status: "pending", message: "Impossible d'identifier le MX attendu pour ce domaine" });
-      }
-
-      // DKIM (TXT)
-      if (dkimExpected?.name && dkimExpected?.value) {
-        const fqdn = toFqdn(dkimExpected.name, domainName);
-        try {
-          const answers = await dohLookupGoogle(fqdn, "TXT");
-          if (answers.length === 0) {
-            results.push({ type: "DKIM", status: "error", message: `Aucun DKIM détecté sur ${fqdn}` });
-          } else if (matchesExpected(answers, dkimExpected.value)) {
-            results.push({ type: "DKIM", status: "success", message: `DKIM correctement configuré sur ${fqdn}` });
-          } else {
-            results.push({ type: "DKIM", status: "error", message: `Un enregistrement TXT existe sur ${fqdn}, mais ce n'est pas le DKIM attendu` });
-          }
-        } catch {
-          results.push({ type: "DKIM", status: "pending", message: `Impossible de vérifier le DKIM sur ${fqdn}` });
-        }
-      } else {
-        results.push({ type: "DKIM", status: "pending", message: "Impossible d'identifier le DKIM attendu pour ce domaine" });
-      }
+        return {
+          type: String(c?.type || "DNS"),
+          status,
+          // Ne pas afficher les valeurs DNS publiques : seulement l'état.
+          message: String(c?.message || "Vérification terminée") + suffix,
+        };
+      });
 
       setDnsTestResults(results);
 
-      const allSuccess = results.every((r) => r.status === "success");
+      const allSuccess = results.length > 0 && results.every((r) => r.status === "success");
       const successCount = results.filter((r) => r.status === "success").length;
 
       toast({
