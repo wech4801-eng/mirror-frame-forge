@@ -182,6 +182,62 @@ export type Database = {
           },
         ]
       }
+      email_domains: {
+        Row: {
+          created_at: string
+          dkim_status: string | null
+          dmarc_status: string | null
+          domain: string
+          from_email: string
+          from_name: string
+          id: string
+          is_verified: boolean | null
+          reply_to: string | null
+          resend_domain_id: string | null
+          spf_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dkim_status?: string | null
+          dmarc_status?: string | null
+          domain: string
+          from_email: string
+          from_name?: string
+          id?: string
+          is_verified?: boolean | null
+          reply_to?: string | null
+          resend_domain_id?: string | null
+          spf_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dkim_status?: string | null
+          dmarc_status?: string | null
+          domain?: string
+          from_email?: string
+          from_name?: string
+          id?: string
+          is_verified?: boolean | null
+          reply_to?: string | null
+          resend_domain_id?: string | null
+          spf_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_domains_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_templates: {
         Row: {
           content: string
