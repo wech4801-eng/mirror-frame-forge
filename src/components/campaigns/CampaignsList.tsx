@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause, ChartBar } from "@phosphor-icons/react";
+import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause, ChartBar, CircleNotch } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
@@ -16,6 +16,7 @@ const CampaignsList = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
   const [selectingProspects, setSelectingProspects] = useState<any>(null);
   const [detailsCampaignId, setDetailsCampaignId] = useState<string | null>(null);
+  const [sendingCampaignId, setSendingCampaignId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const { data: campaigns, refetch } = useQuery({
@@ -80,8 +81,9 @@ const CampaignsList = () => {
   };
 
   const handleSendCampaign = async (campaign: any) => {
+    setSendingCampaignId(campaign.id);
     try {
-      const { error } = await supabase.functions.invoke("send-campaign", {
+      const { data, error } = await supabase.functions.invoke("send-campaign", {
         body: { campaignId: campaign.id },
       });
 
@@ -89,15 +91,18 @@ const CampaignsList = () => {
 
       toast({
         title: "Campagne envoyée",
-        description: "La campagne a été envoyée avec succès",
+        description: `${data?.sent || 0} email(s) envoyé(s) avec succès`,
       });
       refetch();
     } catch (error: any) {
+      console.error("Error sending campaign:", error);
       toast({
         title: "Erreur",
-        description: error.message,
+        description: error.message || "Erreur lors de l'envoi de la campagne",
         variant: "destructive",
       });
+    } finally {
+      setSendingCampaignId(null);
     }
   };
 
@@ -189,10 +194,15 @@ const CampaignsList = () => {
                           <Button
                             size="sm"
                             onClick={() => handleSendCampaign(campaign)}
+                            disabled={sendingCampaignId === campaign.id}
                             className="bg-green-600 hover:bg-green-700"
                           >
-                            <PaperPlaneTilt className="h-4 w-4 mr-2" />
-                            Envoyer
+                            {sendingCampaignId === campaign.id ? (
+                              <CircleNotch className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                              <PaperPlaneTilt className="h-4 w-4 mr-2" />
+                            )}
+                            {sendingCampaignId === campaign.id ? "Envoi..." : "Envoyer"}
                           </Button>
                         )}
                       </>
