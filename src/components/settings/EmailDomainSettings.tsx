@@ -265,17 +265,20 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
           const data = await response.json();
           
           if (data.Answer && data.Answer.length > 0) {
-            const records = data.Answer.map((a: { data: string }) => a.data).join(', ');
             results.push({
               type,
               status: 'success',
-              message: `Enregistrement ${type} trouvé: ${records.substring(0, 100)}${records.length > 100 ? '...' : ''}`
+              message: type === 'TXT' 
+                ? 'Enregistrement TXT détecté et configuré' 
+                : 'Enregistrement MX détecté et configuré'
             });
           } else {
             results.push({
               type,
               status: 'error',
-              message: `Aucun enregistrement ${type} trouvé pour ${domain}`
+              message: type === 'TXT'
+                ? 'Aucun enregistrement TXT trouvé. Ajoutez-le dans votre zone DNS.'
+                : 'Aucun enregistrement MX trouvé. Ajoutez-le dans votre zone DNS.'
             });
           }
         } catch {
@@ -297,13 +300,13 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
           results.push({
             type: 'DKIM',
             status: 'success',
-            message: 'Enregistrement DKIM trouvé et configuré correctement'
+            message: 'Enregistrement DKIM détecté et configuré correctement'
           });
         } else {
           results.push({
             type: 'DKIM',
             status: 'error',
-            message: `Enregistrement DKIM non trouvé sur resend._domainkey.${domain}`
+            message: 'Enregistrement DKIM non trouvé. Ajoutez-le dans votre zone DNS.'
           });
         }
       } catch {
