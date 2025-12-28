@@ -252,61 +252,113 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
     setDnsTestResults([]);
     
     try {
-      // Test DNS records using public DNS lookup APIs
-      const domain = existingDomain.domain;
+      const domainName = existingDomain.domain;
       const results: {type: string; status: 'success' | 'error' | 'pending'; message: string}[] = [];
       
-      // Test using Google DNS API
-      const dnsTypes = ['TXT', 'MX'];
-      
-      for (const type of dnsTypes) {
-        try {
-          const response = await fetch(`https://dns.google/resolve?name=${domain}&type=${type}`);
-          const data = await response.json();
-          
-          if (data.Answer && data.Answer.length > 0) {
+      // Vérifier l'enregistrement SPF (TXT sur send.domain)
+      try {
+        const spfSubdomain = `send.${domainName}`;
+        const response = await fetch(`https://dns.google/resolve?name=${spfSubdomain}&type=TXT`);
+        const data = await response.json();
+        
+        if (data.Answer && data.Answer.length > 0) {
+          const hasSpf = data.Answer.some((a: { data: string }) => 
+            a.data.includes('v=spf1') && a.data.includes('amazonses.com')
+          );
+          if (hasSpf) {
             results.push({
-              type,
+              type: 'SPF',
               status: 'success',
-              message: type === 'TXT' 
-                ? 'Enregistrement TXT détecté et configuré' 
-                : 'Enregistrement MX détecté et configuré'
+              message: `Enregistrement SPF correctement configuré sur send.${domainName}`
             });
           } else {
             results.push({
-              type,
+              type: 'SPF',
               status: 'error',
-              message: type === 'TXT'
-                ? 'Aucun enregistrement TXT trouvé. Ajoutez-le dans votre zone DNS.'
-                : 'Aucun enregistrement MX trouvé. Ajoutez-le dans votre zone DNS.'
+              message: `Enregistrement TXT trouvé sur send.${domainName} mais la valeur SPF est incorrecte`
             });
           }
-        } catch {
+        } else {
           results.push({
-            type,
-            status: 'pending',
-            message: `Impossible de vérifier l'enregistrement ${type}`
+            type: 'SPF',
+            status: 'error',
+            message: `Aucun enregistrement SPF trouvé sur send.${domainName}`
           });
         }
+      } catch {
+        results.push({
+          type: 'SPF',
+          status: 'pending',
+          message: 'Impossible de vérifier l\'enregistrement SPF'
+        });
       }
       
-      // Also check for DKIM subdomain
+      // Vérifier l'enregistrement MX (sur send.domain)
       try {
-        const dkimDomain = `resend._domainkey.${domain}`;
+        const mxSubdomain = `send.${domainName}`;
+        const response = await fetch(`https://dns.google/resolve?name=${mxSubdomain}&type=MX`);
+        const data = await response.json();
+        
+        if (data.Answer && data.Answer.length > 0) {
+          const hasMx = data.Answer.some((a: { data: string }) => 
+            a.data.includes('amazonses.com')
+          );
+          if (hasMx) {
+            results.push({
+              type: 'MX',
+              status: 'success',
+              message: `Enregistrement MX correctement configuré sur send.${domainName}`
+            });
+          } else {
+            results.push({
+              type: 'MX',
+              status: 'error',
+              message: `Enregistrement MX trouvé sur send.${domainName} mais la valeur est incorrecte`
+            });
+          }
+        } else {
+          results.push({
+            type: 'MX',
+            status: 'error',
+            message: `Aucun enregistrement MX trouvé sur send.${domainName}`
+          });
+        }
+      } catch {
+        results.push({
+          type: 'MX',
+          status: 'pending',
+          message: 'Impossible de vérifier l\'enregistrement MX'
+        });
+      }
+      
+      // Vérifier l'enregistrement DKIM (TXT sur resend._domainkey.domain)
+      try {
+        const dkimDomain = `resend._domainkey.${domainName}`;
         const response = await fetch(`https://dns.google/resolve?name=${dkimDomain}&type=TXT`);
         const data = await response.json();
         
         if (data.Answer && data.Answer.length > 0) {
-          results.push({
-            type: 'DKIM',
-            status: 'success',
-            message: 'Enregistrement DKIM détecté et configuré correctement'
-          });
+          const hasDkim = data.Answer.some((a: { data: string }) => 
+            a.data.includes('p=') && a.data.includes('DQEBAQUAA')
+          );
+          if (hasDkim) {
+            results.push({
+              type: 'DKIM',
+              status: 'success',
+              message: `Enregistrement DKIM correctement configuré sur resend._domainkey.${domainName}`
+            });
+          } else {
+            results.push({
+              type: 'DKIM',
+              status: 'error',
+              message: `Enregistrement TXT trouvé sur resend._domainkey.${domainName} mais la clé DKIM est incorrecte`
+            });
+          }
         } else {
           results.push({
             type: 'DKIM',
             status: 'error',
-            message: 'Enregistrement DKIM non trouvé. Ajoutez-le dans votre zone DNS.'
+            message: `Aucun enregistrement DKIM trouvé sur resend._domainkey.${domainName}`
           });
         }
       } catch {
@@ -320,11 +372,13 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
       setDnsTestResults(results);
       
       const allSuccess = results.every(r => r.status === 'success');
+      const successCount = results.filter(r => r.status === 'success').length;
+      
       toast({
-        title: allSuccess ? "DNS configuré correctement !" : "Vérification terminée",
+        title: allSuccess ? "Configuration DNS complète !" : `${successCount}/${results.length} enregistrements validés`,
         description: allSuccess 
-          ? "Tous vos enregistrements DNS sont en place. Cliquez sur 'Vérifier le statut' pour valider auprès de Resend."
-          : "Certains enregistrements DNS sont manquants. Consultez les résultats ci-dessous.",
+          ? "Tous vos enregistrements DNS sont correctement configurés. Cliquez sur 'Vérifier le statut' pour finaliser."
+          : "Certains enregistrements DNS sont manquants ou incorrects. Consultez les détails ci-dessous.",
         variant: allSuccess ? "default" : "destructive",
       });
     } catch (error) {
