@@ -87,7 +87,12 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
   };
 
   const handleAddDomain = async () => {
-    if (!domain || !fromName || !fromEmail) {
+    const normalizedDomain = domain.trim().toLowerCase();
+    const normalizedFromName = fromName.trim();
+    const normalizedFromEmail = fromEmail.trim();
+    const normalizedReplyTo = replyTo.trim();
+
+    if (!normalizedDomain || !normalizedFromName || !normalizedFromEmail) {
       toast({
         title: "Erreur",
         description: "Veuillez remplir tous les champs obligatoires",
@@ -96,12 +101,22 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
       return;
     }
 
+    // Validation simple côté UI pour éviter les erreurs classiques
+    if (normalizedDomain.includes(" ") || !normalizedDomain.includes(".")) {
+      toast({
+        title: "Domaine invalide",
+        description: "Veuillez saisir un domaine complet (ex: exemple.com).",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      // Call edge function to add domain to Resend
+      // Call backend function to add domain to Resend
       const { data: resendData, error: resendError } = await supabase.functions.invoke(
         "verify-domain",
-        { body: { domain } }
+        { body: { domain: normalizedDomain } }
       );
 
       if (resendError) throw resendError;
@@ -109,10 +124,10 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
       // Save domain configuration
       const { error: dbError } = await supabase.from("email_domains").upsert({
         user_id: userId,
-        domain,
-        from_name: fromName,
-        from_email: fromEmail,
-        reply_to: replyTo || null,
+        domain: normalizedDomain,
+        from_name: normalizedFromName,
+        from_email: normalizedFromEmail,
+        reply_to: normalizedReplyTo || null,
         resend_domain_id: resendData.domain_id,
         is_verified: false,
         dkim_status: "pending",
@@ -127,10 +142,24 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
 
       toast({
         title: "Domaine ajouté",
-        description: "Configurez les enregistrements DNS ci-dessous pour vérifier votre domaine",
+        description:
+          "Configurez les enregistrements DNS ci-dessous pour vérifier votre domaine",
       });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
+      let errorMessage =
+        error instanceof Error ? error.message : "Erreur inconnue";
+
+      // Supabase Functions errors often include a Response in `context`
+      const maybeContext = (error as any)?.context;
+      if (maybeContext && typeof maybeContext.json === "function") {
+        try {
+          const body = await maybeContext.json();
+          if (body?.error) errorMessage = body.error;
+        } catch {
+          // ignore
+        }
+      }
+
       console.error("Error adding domain:", error);
       toast({
         title: "Erreur",
