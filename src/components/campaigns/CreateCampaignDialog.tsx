@@ -23,7 +23,7 @@ interface EmailTemplate {
   id: string;
   name: string;
   subject: string;
-  content: string;
+  content: string; isPredefined?: boolean;
 }
 
 interface Branding {
@@ -115,7 +115,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
           name,
           subject,
           content,
-          template_id: selectedTemplate?.id || null,
+          template_id: selectedTemplate?.isPredefined ? null : (selectedTemplate?.id || null),
           workflow_id: selectedWorkflow || null,
           status: "brouillon",
           is_active: false,
