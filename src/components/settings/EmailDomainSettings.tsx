@@ -324,12 +324,38 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "verified":
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" /> Vérifié</Badge>;
+      case "success":
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle className="h-3 w-3 mr-1" /> Vérifié
+          </Badge>
+        );
       case "failed":
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" /> Échec</Badge>;
+      case "error":
+        return (
+          <Badge variant="destructive">
+            <XCircle className="h-3 w-3 mr-1" /> Échec
+          </Badge>
+        );
+      case "not_started":
+      case "pending":
       default:
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> En attente</Badge>;
+        return (
+          <Badge variant="secondary">
+            <Clock className="h-3 w-3 mr-1" /> En attente
+          </Badge>
+        );
     }
+  };
+
+  /** Returns badge for each DNS record using public DNS test result if available, falling back to Resend status */
+  const getDnsRecordBadge = (index: number, resendStatus: string) => {
+    const testResult = dnsTestByIndex.get(index);
+    if (testResult) {
+      return getStatusBadge(testResult.status);
+    }
+    // Fall back to Resend status
+    return getStatusBadge(resendStatus);
   };
 
   return (
@@ -482,7 +508,7 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
                   <Warning className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 )}
                 <div>
-                  <p className="font-medium">{result.type}</p>
+                  <p className="font-medium">{result.record}</p>
                   <p className="text-sm text-muted-foreground">{result.message}</p>
                 </div>
               </div>
@@ -555,7 +581,7 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
                     <div key={index} className="p-4 rounded-lg border space-y-2">
                       <div className="flex items-center justify-between">
                         <Badge variant="outline">{record.type}</Badge>
-                        {getStatusBadge(record.status)}
+                        {getDnsRecordBadge(index, record.status)}
                       </div>
                       <div className="grid gap-2 text-sm">
                         <div className="flex items-center justify-between">
