@@ -1,11 +1,28 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { predefinedTemplates } from "@/components/mail/predefinedTemplates";
 
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
   warnings: string[];
 }
+
+/** Check if a template ID exists (DB or predefined) */
+const templateExists = async (templateId: string): Promise<boolean> => {
+  // Check predefined templates first
+  const isPredefined = predefinedTemplates.some((t) => t.id === templateId);
+  if (isPredefined) return true;
+
+  // Check DB templates
+  const { data } = await supabase
+    .from("email_templates")
+    .select("id")
+    .eq("id", templateId)
+    .maybeSingle();
+
+  return !!data;
+};
 
 export const useValidation = () => {
   const [hasBranding, setHasBranding] = useState(false);
@@ -32,7 +49,8 @@ export const useValidation = () => {
       ]);
 
       setHasBranding((brandingData.data?.length ?? 0) > 0);
-      setHasTemplates((templatesData.data?.length ?? 0) > 0);
+      // User has templates if they have DB templates OR predefined templates exist
+      setHasTemplates((templatesData.data?.length ?? 0) > 0 || predefinedTemplates.length > 0);
       setHasWorkflows((workflowsData.data?.length ?? 0) > 0);
     } catch (error) {
       console.error("Error checking resources:", error);
@@ -74,13 +92,8 @@ export const useValidation = () => {
         for (const node of emailNodes) {
           const templateId = node.data?.templateId;
           if (templateId) {
-            const { data: template } = await supabase
-              .from("email_templates")
-              .select("id")
-              .eq("id", templateId)
-              .single();
-
-            if (!template) {
+            const exists = await templateExists(templateId);
+            if (!exists) {
               errors.push(`Le template ${templateId} n'existe plus`);
             }
           }
@@ -115,13 +128,8 @@ export const useValidation = () => {
     }
 
     if (templateId) {
-      const { data: template } = await supabase
-        .from("email_templates")
-        .select("id")
-        .eq("id", templateId)
-        .maybeSingle();
-
-      if (!template) {
+      const exists = await templateExists(templateId);
+      if (!exists) {
         errors.push("Le template sélectionné n'existe plus");
       }
     }
