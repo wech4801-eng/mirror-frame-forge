@@ -67,12 +67,24 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Get user's email domain configuration
-    const { data: emailDomain } = await supabase
+    const { data: emailDomain, error: domainError } = await supabase
       .from("email_domains")
       .select("*")
       .eq("user_id", campaign.user_id)
       .eq("is_verified", true)
       .single();
+
+    if (domainError || !emailDomain) {
+      console.error("No verified email domain found for user:", campaign.user_id);
+      return new Response(
+        JSON.stringify({ 
+          error: "Aucun domaine d'envoi vérifié trouvé. Veuillez configurer et vérifier un domaine dans les paramètres." 
+        }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log(`Using verified domain: ${emailDomain.domain}, from: ${emailDomain.from_email}`);
 
     // Get pending recipients
     const { data: recipients, error: recipientsError } = await supabase
@@ -96,12 +108,10 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`Sending to ${recipients.length} recipients`);
+    console.log(`Sending to ${recipients.length} recipients via ${emailDomain.from_email}`);
 
-    // Determine from address
-    const fromAddress = emailDomain 
-      ? `${emailDomain.from_name} <${emailDomain.from_email}>`
-      : "Mon Entreprise <onboarding@resend.dev>";
+    // Build from address using verified domain
+    const fromAddress = `${emailDomain.from_name} <${emailDomain.from_email}>`;
 
     let successCount = 0;
     let errorCount = 0;
