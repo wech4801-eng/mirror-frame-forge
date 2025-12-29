@@ -123,15 +123,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     // 2) Vérifier publiquement (Google + Cloudflare) que les valeurs correspondent EXACTEMENT
     const checks = await Promise.all(
-      records.map(async (r) => {
+      records.map(async (r, index) => {
         const recordLabel = String(r?.record || r?.type || "DNS");
         const type = String(r?.type || "").toUpperCase();
-        const fqdn = toFqdn(String(r?.name || ""), domainName);
+        const name = String(r?.name || "");
+        const fqdn = toFqdn(name, domainName);
         const expectedValue = String(r?.value || "");
 
         if (!fqdn || !type || !expectedValue) {
           return {
-            type: recordLabel,
+            index,
+            record: recordLabel,
+            dns_type: type,
+            name,
+            fqdn,
             status: "pending" as CheckStatus,
             message: "Vérification indisponible pour cet enregistrement",
             resolvers: { google: "pending", cloudflare: "pending" },
@@ -140,9 +145,13 @@ const handler = async (req: Request): Promise<Response> => {
 
         const checkOne = async (resolver: "google" | "cloudflare") => {
           const answers = resolver === "google" ? await dohGoogle(fqdn, type) : await dohCloudflare(fqdn, type);
-          if (!answers.length) return "error" as CheckStatus;
+
+          // S'il n'y a pas encore de réponse publique, c'est souvent de la propagation.
+          if (!answers.length) return "pending" as CheckStatus;
+
           if (type === "TXT") return (checkTxtExact(answers, expectedValue) ? "success" : "error") as CheckStatus;
           if (type === "MX") return (checkMxExact(answers, expectedValue) ? "success" : "error") as CheckStatus;
+
           // Types non gérés ici
           return "pending" as CheckStatus;
         };
@@ -166,13 +175,17 @@ const handler = async (req: Request): Promise<Response> => {
 
         const message =
           finalStatus === "success"
-            ? `Enregistrement ${recordLabel} détecté et conforme`
+            ? `Enregistrement ${recordLabel} détecté et conforme` 
             : finalStatus === "error"
-              ? `Enregistrement ${recordLabel} manquant ou différent (DNS publics)`
-              : `Enregistrement ${recordLabel} en attente de propagation`;
+              ? `Enregistrement ${recordLabel} détecté mais différent (DNS publics)`
+              : `Enregistrement ${recordLabel} non détecté ou en propagation (DNS publics)`;
 
         return {
-          type: recordLabel,
+          index,
+          record: recordLabel,
+          dns_type: type,
+          name,
+          fqdn,
           status: finalStatus,
           message,
           resolvers: { google: googleStatus, cloudflare: cloudflareStatus },
