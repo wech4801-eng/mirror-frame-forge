@@ -46,7 +46,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
 
-    const result = await response.json();
+    let result = await response.json();
 
     if (!response.ok) {
       console.error("Error checking domain:", result);
@@ -54,6 +54,39 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ error: result.message || "Failed to check domain" }),
         { status: response.status, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // If Resend hasn't started verification yet, trigger it (idempotent) then refetch.
+    if (result?.status !== "verified") {
+      try {
+        const verifyResponse = await fetch(`https://api.resend.com/domains/${domainId}/verify`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const verifyJson = await verifyResponse.json().catch(() => ({}));
+
+        if (!verifyResponse.ok) {
+          console.warn("Resend verify-domain call failed:", verifyJson);
+        } else {
+          console.log("Resend verify-domain triggered:", verifyJson);
+        }
+
+        const response2 = await fetch(`https://api.resend.com/domains/${domainId}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+          },
+        });
+
+        const result2 = await response2.json().catch(() => null);
+        if (response2.ok && result2) result = result2;
+      } catch (e) {
+        console.warn("Resend verify-domain attempt error:", e);
+      }
     }
 
     console.log("Domain status:", result);

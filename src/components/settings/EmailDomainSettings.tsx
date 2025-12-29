@@ -297,10 +297,15 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
       toast({
         title: allSuccess ? "Configuration DNS complète !" : `${successCount}/${results.length} enregistrements validés`,
         description: allSuccess
-          ? "Les DNS publics voient bien les enregistrements attendus. Vous pouvez finaliser la vérification."
+          ? "Les DNS publics voient bien les enregistrements attendus. Lancement de la vérification automatique…"
           : "Les DNS publics ne voient pas encore tous les enregistrements attendus (ou ils sont différents).",
         variant: allSuccess ? "default" : "destructive",
       });
+
+      // Si tout est vert côté DNS publics, on déclenche la vérification côté Resend
+      if (allSuccess) {
+        await handleCheckStatus();
+      }
     } catch (error) {
       console.error("DNS test error:", error);
       toast({
@@ -549,7 +554,7 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
               </div>
               <div className="p-3 rounded-lg border text-center">
                 <Shield className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground">DMARC</p>
+                <p className="text-xs text-muted-foreground">MX</p>
                 {getStatusBadge(existingDomain.dmarc_status)}
               </div>
             </div>

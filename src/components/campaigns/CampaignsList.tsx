@@ -47,22 +47,25 @@ const CampaignsList = () => {
     },
   });
 
-  // Fetch user's verified email domain
+  // Fetch user's email domain configuration (verified or not)
   const { data: emailDomain } = useQuery({
-    queryKey: ["email-domain-verified"],
+    queryKey: ["email-domain"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("email_domains")
         .select("*")
         .eq("user_id", user.id)
-        .eq("is_verified", true)
-        .single();
+        .maybeSingle();
 
+      if (error) return null;
       return data;
     },
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchInterval: (query) => (query.state.data?.is_verified ? false : 15000),
   });
 
   const getStatusBadge = (status: string) => {
@@ -106,7 +109,17 @@ const CampaignsList = () => {
     if (!emailDomain) {
       toast({
         title: "Domaine non configuré",
-        description: "Vous devez configurer et vérifier un domaine d'envoi dans les paramètres avant d'envoyer une campagne.",
+        description: "Vous devez configurer un domaine d'envoi dans les paramètres avant d'envoyer une campagne.",
+        variant: "destructive",
+      });
+      navigate("/settings");
+      return;
+    }
+
+    if (!emailDomain.is_verified) {
+      toast({
+        title: "Domaine en cours de vérification",
+        description: `Votre domaine ${emailDomain.domain} n'est pas encore vérifié. Rendez-vous dans les paramètres pour lancer/actualiser la vérification.`,
         variant: "destructive",
       });
       navigate("/settings");
@@ -166,7 +179,7 @@ const CampaignsList = () => {
           <Warning className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <span>
-              Aucun domaine d'envoi vérifié. Configurez un domaine dans les paramètres pour envoyer des campagnes.
+              Aucun domaine d'envoi configuré. Configurez un domaine dans les paramètres pour envoyer des campagnes.
             </span>
             <Button variant="outline" size="sm" onClick={() => navigate("/settings")}>
               Configurer
@@ -175,7 +188,22 @@ const CampaignsList = () => {
         </Alert>
       )}
 
-      {emailDomain && (
+      {emailDomain && !emailDomain.is_verified && (
+        <Alert className="mb-4 border-amber-500/50 bg-amber-500/10">
+          <Warning className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              Domaine détecté : <strong>{emailDomain.domain}</strong> — en attente de vérification. Après que les DNS soient OK,
+              cliquez sur <strong>“Vérifier le statut”</strong> dans les paramètres.
+            </span>
+            <Button variant="outline" size="sm" onClick={() => navigate("/settings")}>
+              Ouvrir les paramètres
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {emailDomain?.is_verified && (
         <Alert className="mb-4 border-green-500/50 bg-green-500/10">
           <At className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-700">
