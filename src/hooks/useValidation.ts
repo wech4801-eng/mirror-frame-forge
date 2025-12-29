@@ -8,11 +8,22 @@ export interface ValidationResult {
   warnings: string[];
 }
 
+/** Check if a string looks like a valid UUID */
+const isValidUUID = (str: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+};
+
 /** Check if a template ID exists (DB or predefined) */
 const templateExists = async (templateId: string): Promise<boolean> => {
   // Check predefined templates first
   const isPredefined = predefinedTemplates.some((t) => t.id === templateId);
   if (isPredefined) return true;
+
+  // Only query DB if it looks like a valid UUID (DB template IDs are UUIDs)
+  if (!isValidUUID(templateId)) {
+    return false;
+  }
 
   // Check DB templates
   const { data } = await supabase
