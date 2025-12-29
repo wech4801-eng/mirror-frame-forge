@@ -125,16 +125,31 @@ const handler = async (req: Request): Promise<Response> => {
         continue;
       }
 
-      // Replace variables in content
+      // Replace variables in content (support both {var} and {{var}} syntax)
       let emailContent = campaign.content;
-      emailContent = emailContent.replace(/{{prenom}}/g, prospect.full_name?.split(" ")[0] || "");
-      emailContent = emailContent.replace(/{{nom}}/g, prospect.full_name || "");
-      emailContent = emailContent.replace(/{{email}}/g, prospect.email);
-      emailContent = emailContent.replace(/{{entreprise}}/g, prospect.company || "");
+      const firstName = prospect.full_name?.split(" ")[0] || "";
+      const fullName = prospect.full_name || "";
+      const email = prospect.email || "";
+      const company = prospect.company || "";
+
+      // Double braces
+      emailContent = emailContent.replace(/\{\{prenom\}\}/gi, firstName);
+      emailContent = emailContent.replace(/\{\{nom\}\}/gi, fullName);
+      emailContent = emailContent.replace(/\{\{email\}\}/gi, email);
+      emailContent = emailContent.replace(/\{\{entreprise\}\}/gi, company);
+      // Single braces
+      emailContent = emailContent.replace(/\{prenom\}/gi, firstName);
+      emailContent = emailContent.replace(/\{nom\}/gi, fullName);
+      emailContent = emailContent.replace(/\{email\}/gi, email);
+      emailContent = emailContent.replace(/\{entreprise\}/gi, company);
 
       let emailSubject = campaign.subject;
-      emailSubject = emailSubject.replace(/{{prenom}}/g, prospect.full_name?.split(" ")[0] || "");
-      emailSubject = emailSubject.replace(/{{nom}}/g, prospect.full_name || "");
+      // Double braces
+      emailSubject = emailSubject.replace(/\{\{prenom\}\}/gi, firstName);
+      emailSubject = emailSubject.replace(/\{\{nom\}\}/gi, fullName);
+      // Single braces
+      emailSubject = emailSubject.replace(/\{prenom\}/gi, firstName);
+      emailSubject = emailSubject.replace(/\{nom\}/gi, fullName);
 
       try {
         const emailPayload: Record<string, unknown> = {
