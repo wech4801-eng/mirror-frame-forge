@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,20 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  CircleNotch, 
-  Globe, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Copy, 
+import {
+  CircleNotch,
+  Globe,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Copy,
   ArrowClockwise,
   EnvelopeSimple,
   Shield,
   Info,
   MagnifyingGlass,
   Lightbulb,
-  Warning
+  Warning,
 } from "@phosphor-icons/react";
 import {
   Accordion,
@@ -27,11 +27,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface EmailDomain {
   id: string;
@@ -54,6 +50,19 @@ interface DnsRecord {
   ttl?: string;
 }
 
+type PublicDnsCheckStatus = "success" | "error" | "pending";
+
+interface DnsTestResult {
+  index: number;
+  record: string;
+  status: PublicDnsCheckStatus;
+  message: string;
+  resolvers?: {
+    google?: PublicDnsCheckStatus;
+    cloudflare?: PublicDnsCheckStatus;
+  };
+}
+
 interface EmailDomainSettingsProps {
   userId: string;
 }
@@ -66,10 +75,16 @@ export const EmailDomainSettings = ({ userId }: EmailDomainSettingsProps) => {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
   const [testingDns, setTestingDns] = useState(false);
-  const [dnsTestResults, setDnsTestResults] = useState<{type: string; status: 'success' | 'error' | 'pending'; message: string}[]>([]);
+  const [dnsTestResults, setDnsTestResults] = useState<DnsTestResult[]>([]);
   const [existingDomain, setExistingDomain] = useState<EmailDomain | null>(null);
   const [dnsRecords, setDnsRecords] = useState<DnsRecord[]>([]);
   const { toast } = useToast();
+
+  const dnsTestByIndex = useMemo(() => {
+    const map = new Map<number, DnsTestResult>();
+    dnsTestResults.forEach((r) => map.set(r.index, r));
+    return map;
+  }, [dnsTestResults]);
 
   useEffect(() => {
     loadExistingDomain();
