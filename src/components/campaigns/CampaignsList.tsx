@@ -109,6 +109,7 @@ const CampaignsList = () => {
         description: "Vous devez configurer et vérifier un domaine d'envoi dans les paramètres avant d'envoyer une campagne.",
         variant: "destructive",
       });
+      navigate("/settings");
       return;
     }
 
@@ -118,7 +119,27 @@ const CampaignsList = () => {
         body: { campaignId: campaign.id },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Try to parse error message from response
+        let errorMessage = error.message || "Erreur lors de l'envoi de la campagne";
+        
+        // Check if it's a FunctionsHttpError with context
+        if (error.context?.body) {
+          try {
+            const body = JSON.parse(error.context.body);
+            errorMessage = body.error || errorMessage;
+          } catch {
+            // Keep original error message
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      // Check if data contains an error (edge function returned 400)
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       toast({
         title: "Campagne envoyée",
