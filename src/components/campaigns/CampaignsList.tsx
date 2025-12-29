@@ -3,14 +3,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause, ChartBar, CircleNotch } from "@phosphor-icons/react";
+import { EnvelopeSimple, UsersThree, Eye, CursorClick, PencilSimple, PaperPlaneTilt, CalendarBlank, Play, Pause, ChartBar, CircleNotch, Warning, At } from "@phosphor-icons/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EditCampaignDialog from "./EditCampaignDialog";
 import SelectProspectsDialog from "./SelectProspectsDialog";
 import CampaignDetailsDialog from "./CampaignDetailsDialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CampaignsList = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
@@ -18,6 +20,7 @@ const CampaignsList = () => {
   const [detailsCampaignId, setDetailsCampaignId] = useState<string | null>(null);
   const [sendingCampaignId, setSendingCampaignId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: campaigns, refetch } = useQuery({
     queryKey: ["campaigns"],
@@ -40,6 +43,24 @@ const CampaignsList = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch user's verified email domain
+  const { data: emailDomain } = useQuery({
+    queryKey: ["email-domain-verified"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from("email_domains")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("is_verified", true)
+        .single();
+
       return data;
     },
   });
@@ -81,6 +102,16 @@ const CampaignsList = () => {
   };
 
   const handleSendCampaign = async (campaign: any) => {
+    // Check if user has a verified domain
+    if (!emailDomain) {
+      toast({
+        title: "Domaine non configuré",
+        description: "Vous devez configurer et vérifier un domaine d'envoi dans les paramètres avant d'envoyer une campagne.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSendingCampaignId(campaign.id);
     try {
       const { data, error } = await supabase.functions.invoke("send-campaign", {
@@ -91,7 +122,7 @@ const CampaignsList = () => {
 
       toast({
         title: "Campagne envoyée",
-        description: `${data?.sent || 0} email(s) envoyé(s) avec succès`,
+        description: `${data?.sent || 0} email(s) envoyé(s) via ${emailDomain.from_email}`,
       });
       refetch();
     } catch (error: any) {
@@ -108,6 +139,30 @@ const CampaignsList = () => {
 
   return (
     <>
+      {/* Domain status alert */}
+      {!emailDomain && (
+        <Alert variant="destructive" className="mb-4">
+          <Warning className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              Aucun domaine d'envoi vérifié. Configurez un domaine dans les paramètres pour envoyer des campagnes.
+            </span>
+            <Button variant="outline" size="sm" onClick={() => navigate("/settings")}>
+              Configurer
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {emailDomain && (
+        <Alert className="mb-4 border-green-500/50 bg-green-500/10">
+          <At className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-700">
+            Les emails seront envoyés depuis : <strong>{emailDomain.from_name} &lt;{emailDomain.from_email}&gt;</strong>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-4">
         {campaigns?.length === 0 && (
           <Card>
