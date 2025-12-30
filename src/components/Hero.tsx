@@ -34,7 +34,7 @@ const Hero = () => {
             <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
               clients fidèles
             </span>{" "}
-            avec CRM Pro
+            avec ScendTrail
           </h1>
           
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto px-4">

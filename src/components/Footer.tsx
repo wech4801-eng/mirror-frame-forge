@@ -40,14 +40,17 @@ const Footer = () => {
 
         <div className="pt-6 md:pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-xl md:text-2xl font-bold tracking-tight">DARKTRACE</div>
+            <div className="flex items-center gap-2">
+              <img src="/scendtrail-logo.png" alt="ScendTrail" className="h-8 w-auto" />
+              <span className="text-xl md:text-2xl font-bold tracking-tight bg-gradient-primary bg-clip-text text-transparent">ScendTrail</span>
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-xs md:text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">Mentions légales</a>
               <a href="#" className="hover:text-primary transition-colors">Politique de confidentialité</a>
               <a href="#" className="hover:text-primary transition-colors">Cookies</a>
             </div>
             <div className="text-xs md:text-sm text-muted-foreground">
-              © 2025 Darktrace. Tous droits réservés.
+              © 2025 ScendTrail. Tous droits réservés.
             </div>
           </div>
         </div>

@@ -47,11 +47,14 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarContent>
         <div className="px-3 py-4 flex items-center justify-between">
-          <h2 className={`font-bold transition-all ${open ? "text-lg" : "text-xs"}`}>
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
-              {open ? "CRM Pro" : "CP"}
-            </span>
-          </h2>
+          <div className="flex items-center gap-2">
+            <img src="/scendtrail-logo.png" alt="ScendTrail" className={`${open ? "h-8" : "h-6"} w-auto transition-all`} />
+            {open && (
+              <span className="font-bold text-lg bg-gradient-primary bg-clip-text text-transparent">
+                ScendTrail
+              </span>
+            )}
+          </div>
           {open && <SidebarTrigger className="-mr-1" />}
         </div>
 

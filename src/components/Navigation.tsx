@@ -10,8 +10,9 @@ const Navigation = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex items-center gap-8 md:gap-12">
-            <div className="text-lg md:text-2xl font-bold tracking-tight">
-              <span className="bg-gradient-primary bg-clip-text text-transparent">CRM Pro</span>
+            <div className="flex items-center gap-2">
+              <img src="/scendtrail-logo.png" alt="ScendTrail" className="h-8 md:h-10 w-auto" />
+              <span className="text-lg md:text-2xl font-bold tracking-tight bg-gradient-primary bg-clip-text text-transparent">ScendTrail</span>
             </div>
             
             <div className="hidden lg:flex items-center gap-8">
