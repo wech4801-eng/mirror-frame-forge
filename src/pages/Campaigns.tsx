@@ -8,8 +8,6 @@ import { Plus } from "@phosphor-icons/react";
 import CampaignsList from "@/components/campaigns/CampaignsList";
 import CreateCampaignDialog from "@/components/campaigns/CreateCampaignDialog";
 import CampaignStatsCards from "@/components/campaigns/CampaignStatsCards";
-import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
-import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Campaigns = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -49,10 +47,8 @@ const Campaigns = () => {
   }
 
   return (
-    <OnboardingGuard currentStepId="campaigns">
-      <DashboardLayout>
-        <div className="space-y-8">
-          <OnboardingProgress />
+    <DashboardLayout>
+      <div className="space-y-8">
           
           <div className="flex items-center justify-between">
             <div>
@@ -75,8 +71,7 @@ const Campaigns = () => {
             onOpenChange={setIsCreateDialogOpen}
           />
         </div>
-      </DashboardLayout>
-    </OnboardingGuard>
+    </DashboardLayout>
   );
 };
 

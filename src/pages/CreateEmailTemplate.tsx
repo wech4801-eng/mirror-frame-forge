@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, FloppyDisk } from "@phosphor-icons/react";
 import SimpleEmailEditor from "@/components/campaigns/SimpleEmailEditor";
-import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
 
 const CreateEmailTemplate = () => {
   const [name, setName] = useState("");
@@ -72,54 +71,52 @@ const CreateEmailTemplate = () => {
   };
 
   return (
-    <OnboardingGuard currentStepId="templates">
-      <DashboardLayout>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/mail")}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold">Nouveau modèle d'e-mail</h1>
-                <p className="text-muted-foreground">
-                  Créez un template personnalisé pour vos campagnes
-                </p>
-              </div>
-            </div>
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <Button
-              onClick={handleSubmit}
-              disabled={loading || !name.trim() || !subject.trim() || !content.trim()}
-              size="lg"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/mail")}
             >
-              <FloppyDisk className="h-5 w-5 mr-2" />
-              {loading ? "Enregistrement..." : "Enregistrer le modèle"}
+              <ArrowLeft className="h-5 w-5" />
             </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Nouveau modèle d'e-mail</h1>
+              <p className="text-muted-foreground">
+                Créez un template personnalisé pour vos campagnes
+              </p>
+            </div>
           </div>
-
-          {/* Editor */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <SimpleEmailEditor
-              name={name}
-              subject={subject}
-              cc={cc}
-              bcc={bcc}
-              content={content}
-              onNameChange={setName}
-              onSubjectChange={setSubject}
-              onCcChange={setCc}
-              onBccChange={setBcc}
-              onContentChange={setContent}
-            />
-          </form>
+          <Button
+            onClick={handleSubmit}
+            disabled={loading || !name.trim() || !subject.trim() || !content.trim()}
+            size="lg"
+          >
+            <FloppyDisk className="h-5 w-5 mr-2" />
+            {loading ? "Enregistrement..." : "Enregistrer le modèle"}
+          </Button>
         </div>
-      </DashboardLayout>
-    </OnboardingGuard>
+
+        {/* Editor */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <SimpleEmailEditor
+            name={name}
+            subject={subject}
+            cc={cc}
+            bcc={bcc}
+            content={content}
+            onNameChange={setName}
+            onSubjectChange={setSubject}
+            onCcChange={setCc}
+            onBccChange={setBcc}
+            onContentChange={setContent}
+          />
+        </form>
+      </div>
+    </DashboardLayout>
   );
 };
 
