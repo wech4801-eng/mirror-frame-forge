@@ -35,7 +35,7 @@ const Features = () => {
             Tout ce dont vous avez besoin pour réussir
           </h2>
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground">
-            CRM Pro vous offre tous les outils nécessaires pour gérer efficacement vos prospects 
+            ScendTrail vous offre tous les outils nécessaires pour gérer efficacement vos prospects 
             et maximiser vos conversions
           </p>
         </div>

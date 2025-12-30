@@ -23,7 +23,7 @@ const CTASection = () => {
             Prêt à transformer votre gestion de prospects ?
           </h2>
           <p className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 text-white/90">
-            Rejoignez des milliers d&apos;entreprises qui font confiance à CRM Pro
+            Rejoignez des milliers d&apos;entreprises qui font confiance à ScendTrail
           </p>
           <Button 
             size="lg" 
