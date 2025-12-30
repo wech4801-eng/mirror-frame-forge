@@ -17,8 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
-import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Workflow = () => {
   const [loading, setLoading] = useState(true);
@@ -163,63 +161,60 @@ const Workflow = () => {
   }
 
   return (
-    <OnboardingGuard currentStepId="workflows">
-      <DashboardLayout>
-        <div className="space-y-6 p-6">
-          <OnboardingProgress />
-          
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <WorkflowIcon className="h-5 w-5" />
-                  <div>
-                    <CardTitle>Workflows</CardTitle>
-                    <CardDescription>
-                      Gérez vos automatisations de campagnes
-                    </CardDescription>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => navigate('/workflow/library')}>
-                    <Books className="h-4 w-4 mr-2" />
-                    Bibliothèque
-                  </Button>
-                  <Button onClick={() => setCreateDialogOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nouveau Workflow
-                  </Button>
+    <DashboardLayout>
+      <div className="space-y-6 p-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <WorkflowIcon className="h-5 w-5" />
+                <div>
+                  <CardTitle>Workflows</CardTitle>
+                  <CardDescription>
+                    Gérez vos automatisations de campagnes
+                  </CardDescription>
                 </div>
               </div>
-            </CardHeader>
-          </Card>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => navigate('/workflow/library')}>
+                  <Books className="h-4 w-4 mr-2" />
+                  Bibliothèque
+                </Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouveau Workflow
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
 
-          {workflows.length > 0 ? (
-            <WorkflowsList
-              workflows={workflows}
-              onToggleActive={handleToggleActive}
-              onDelete={handleDeleteWorkflow}
-            />
-          ) : (
-            <Card>
-              <CardContent className="py-20 text-center text-muted-foreground">
-                <WorkflowIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg mb-2">Aucun workflow créé</p>
-                <p className="text-sm mb-4">
-                  Créez votre premier workflow ou explorez notre bibliothèque de 20 workflows prêts à l'emploi
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <Button variant="outline" onClick={() => navigate('/workflow/library')}>
-                    <Books className="h-4 w-4 mr-2" />
-                    Bibliothèque de workflows
-                  </Button>
-                  <Button onClick={() => setCreateDialogOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Créer un workflow
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+        {workflows.length > 0 ? (
+          <WorkflowsList
+            workflows={workflows}
+            onToggleActive={handleToggleActive}
+            onDelete={handleDeleteWorkflow}
+          />
+        ) : (
+          <Card>
+            <CardContent className="py-20 text-center text-muted-foreground">
+              <WorkflowIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg mb-2">Aucun workflow créé</p>
+              <p className="text-sm mb-4">
+                Créez votre premier workflow ou explorez notre bibliothèque de 20 workflows prêts à l'emploi
+              </p>
+              <div className="flex gap-2 justify-center">
+                <Button variant="outline" onClick={() => navigate('/workflow/library')}>
+                  <Books className="h-4 w-4 mr-2" />
+                  Bibliothèque de workflows
+                </Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Créer un workflow
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
@@ -262,7 +257,6 @@ const Workflow = () => {
         </Dialog>
       </div>
     </DashboardLayout>
-  </OnboardingGuard>
   );
 };
 

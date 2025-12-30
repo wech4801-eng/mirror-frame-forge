@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import BrandingTab from "@/components/dashboard/BrandingTab";
-import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
-import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Branding = () => {
   const [loading, setLoading] = useState(true);
@@ -39,14 +37,11 @@ const Branding = () => {
   }
 
   return (
-    <OnboardingGuard currentStepId="branding">
-      <DashboardLayout>
-        <div className="space-y-8">
-          <OnboardingProgress />
-          <BrandingTab />
-        </div>
-      </DashboardLayout>
-    </OnboardingGuard>
+    <DashboardLayout>
+      <div className="space-y-8">
+        <BrandingTab />
+      </div>
+    </DashboardLayout>
   );
 };
 

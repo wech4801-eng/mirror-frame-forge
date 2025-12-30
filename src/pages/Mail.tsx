@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import MailTab from "@/components/dashboard/MailTab";
-import { OnboardingGuard } from "@/components/onboarding/OnboardingGuard";
-import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 
 const Mail = () => {
   const [loading, setLoading] = useState(true);
@@ -39,14 +37,11 @@ const Mail = () => {
   }
 
   return (
-    <OnboardingGuard currentStepId="templates">
-      <DashboardLayout>
-        <div className="space-y-8">
-          <OnboardingProgress />
-          <MailTab />
-        </div>
-      </DashboardLayout>
-    </OnboardingGuard>
+    <DashboardLayout>
+      <div className="space-y-8">
+        <MailTab />
+      </div>
+    </DashboardLayout>
   );
 };
 
