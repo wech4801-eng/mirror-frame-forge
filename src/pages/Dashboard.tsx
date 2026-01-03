@@ -53,8 +53,6 @@ const Dashboard = () => {
         <WelcomeBanner />
         <StatsCards />
         
-        <ActiveCampaignsMetrics />
-        
         <div className="grid gap-6 lg:grid-cols-2">
           <ProspectsChart />
           <CampaignsPerformance />
@@ -67,6 +65,8 @@ const Dashboard = () => {
           <ActiveWorkflows />
         </div>
 
+        <ActiveCampaignsMetrics />
+        
         <ProspectsTable />
       </div>
     </DashboardLayout>
