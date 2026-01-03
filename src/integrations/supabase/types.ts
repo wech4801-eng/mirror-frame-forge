@@ -114,6 +114,7 @@ export type Database = {
       }
       email_campaigns: {
         Row: {
+          auto_enroll_new_prospects: boolean | null
           content: string
           created_at: string
           id: string
@@ -123,12 +124,14 @@ export type Database = {
           sent_at: string | null
           status: string | null
           subject: string
+          target_groups: string[] | null
           template_id: string | null
           updated_at: string
           user_id: string
           workflow_id: string | null
         }
         Insert: {
+          auto_enroll_new_prospects?: boolean | null
           content: string
           created_at?: string
           id?: string
@@ -138,12 +141,14 @@ export type Database = {
           sent_at?: string | null
           status?: string | null
           subject: string
+          target_groups?: string[] | null
           template_id?: string | null
           updated_at?: string
           user_id: string
           workflow_id?: string | null
         }
         Update: {
+          auto_enroll_new_prospects?: boolean | null
           content?: string
           created_at?: string
           id?: string
@@ -153,6 +158,7 @@ export type Database = {
           sent_at?: string | null
           status?: string | null
           subject?: string
+          target_groups?: string[] | null
           template_id?: string | null
           updated_at?: string
           user_id?: string
