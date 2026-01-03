@@ -1,1 +1,22 @@
 project_id = "bhchcptwfqxgpbnlgkzu"
+
+[functions.send-email]
+verify_jwt = false
+
+[functions.send-campaign]
+verify_jwt = false
+
+[functions.verify-domain]
+verify_jwt = false
+
+[functions.check-domain-status]
+verify_jwt = false
+
+[functions.test-domain-dns]
+verify_jwt = false
+
+[functions.process-workflows]
+verify_jwt = false
+
+[functions.enroll-new-prospects]
+verify_jwt = false
