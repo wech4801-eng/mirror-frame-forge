@@ -166,31 +166,10 @@ const SimpleEmailEditor = ({
       <Card className="p-4 h-fit sticky top-4">
         <ScrollArea className="h-[600px] pr-4">
           <div className="space-y-6">
-            {/* Variables pour les opportunités */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-sm">Variables pour les opportunités</h3>
+              <h3 className="font-semibold text-sm">Champs du prospect</h3>
               <div className="flex flex-wrap gap-2">
-                {EMAIL_VARIABLES.opportunities.map((v) => (
-                  <VariableButton key={v.key} variable={v.key} label={v.label} />
-                ))}
-              </div>
-            </div>
-
-            {/* Champs par défaut disponibles */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-sm">Champs par défaut disponibles</h3>
-              <div className="flex flex-wrap gap-2">
-                {EMAIL_VARIABLES.default_fields.map((v) => (
-                  <VariableButton key={v.key} variable={v.key} label={v.label} />
-                ))}
-              </div>
-            </div>
-
-            {/* Variables de l'utilisateur */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-sm">Variables de l'utilisateur</h3>
-              <div className="flex flex-wrap gap-2">
-                {EMAIL_VARIABLES.user_variables.map((v) => (
+                {EMAIL_VARIABLES.prospect_fields.map((v) => (
                   <VariableButton key={v.key} variable={v.key} label={v.label} />
                 ))}
               </div>

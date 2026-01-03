@@ -156,27 +156,23 @@ const handler = async (req: Request): Promise<Response> => {
             }
           }
 
-          // Replace variables in content
-          const firstName = prospect.full_name?.split(" ")[0] || "";
+          // Replace variables in content - using exact prospect field names
           const fullName = prospect.full_name || "";
           const email = prospect.email || "";
+          const phone = prospect.phone || "";
           const company = prospect.company || "";
 
           emailContent = emailContent
-            .replace(/\{\{prenom\}\}/gi, firstName)
-            .replace(/\{\{nom\}\}/gi, fullName)
+            .replace(/\{\{full_name\}\}/gi, fullName)
             .replace(/\{\{email\}\}/gi, email)
-            .replace(/\{\{entreprise\}\}/gi, company)
-            .replace(/\{prenom\}/gi, firstName)
-            .replace(/\{nom\}/gi, fullName)
-            .replace(/\{email\}/gi, email)
-            .replace(/\{entreprise\}/gi, company);
+            .replace(/\{\{phone\}\}/gi, phone)
+            .replace(/\{\{company\}\}/gi, company);
 
           emailSubject = emailSubject
-            .replace(/\{\{prenom\}\}/gi, firstName)
-            .replace(/\{\{nom\}\}/gi, fullName)
-            .replace(/\{prenom\}/gi, firstName)
-            .replace(/\{nom\}/gi, fullName);
+            .replace(/\{\{full_name\}\}/gi, fullName)
+            .replace(/\{\{email\}\}/gi, email)
+            .replace(/\{\{phone\}\}/gi, phone)
+            .replace(/\{\{company\}\}/gi, company);
 
           // Send email
           const fromAddress = `${emailDomain.from_name} <${emailDomain.from_email}>`;
