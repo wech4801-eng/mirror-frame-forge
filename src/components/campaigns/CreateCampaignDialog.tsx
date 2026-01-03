@@ -249,30 +249,30 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                   selectionType={populationType}
                 />
                 
-                {populationType === 'groups' && selectedPopulation.length > 0 && (
-                  <div className="bg-muted/50 border rounded-lg p-4 mt-4">
-                    <div className="flex items-start space-x-3">
-                      <Checkbox
-                        id="auto-enroll"
-                        checked={autoEnrollNewProspects}
-                        onCheckedChange={(checked) => setAutoEnrollNewProspects(checked === true)}
-                      />
-                      <div className="space-y-1">
-                        <Label 
-                          htmlFor="auto-enroll" 
-                          className="text-sm font-medium cursor-pointer flex items-center gap-2"
-                        >
-                          <UserPlus className="h-4 w-4 text-primary" />
-                          Inclure automatiquement les nouveaux prospects
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Les nouveaux prospects ajoutés à ces groupes recevront automatiquement 
-                          le workflow et les emails de cette campagne.
-                        </p>
-                      </div>
+                <div className={`border rounded-lg p-4 mt-4 ${populationType === 'groups' && selectedPopulation.length > 0 ? 'bg-muted/50' : 'bg-muted/20 opacity-60'}`}>
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="auto-enroll"
+                      checked={autoEnrollNewProspects}
+                      onCheckedChange={(checked) => setAutoEnrollNewProspects(checked === true)}
+                      disabled={populationType !== 'groups' || selectedPopulation.length === 0}
+                    />
+                    <div className="space-y-1">
+                      <Label 
+                        htmlFor="auto-enroll" 
+                        className={`text-sm font-medium flex items-center gap-2 ${populationType === 'groups' && selectedPopulation.length > 0 ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                      >
+                        <UserPlus className={`h-4 w-4 ${populationType === 'groups' && selectedPopulation.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                        Inclure automatiquement les nouveaux prospects
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        {populationType === 'groups' 
+                          ? "Les nouveaux prospects ajoutés à ces groupes recevront automatiquement le workflow et les emails de cette campagne."
+                          : "Sélectionnez des groupes (au lieu de prospects individuels) pour activer cette option."}
+                      </p>
                     </div>
                   </div>
-                )}
+                </div>
               </TabsContent>
 
               <TabsContent value="template" className="space-y-6 py-4 mt-0">
