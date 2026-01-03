@@ -110,6 +110,47 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
+      // Build workflow steps from the selected workflow or create default step
+      let workflowSteps = [];
+      if (selectedWorkflow) {
+        const { data: workflow } = await supabase
+          .from("workflows")
+          .select("nodes, edges")
+          .eq("id", selectedWorkflow)
+          .single();
+        
+        if (workflow) {
+          // Parse workflow nodes to create steps
+          const nodes = workflow.nodes as Array<{ type: string; data?: { delay?: number; delayUnit?: string; templateId?: string; subject?: string; content?: string } }>;
+          workflowSteps = nodes
+            .filter((n: { type: string }) => n.type === 'action' || n.type === 'delay')
+            .map((n: { type: string; data?: { delay?: number; delayUnit?: string; templateId?: string; subject?: string; content?: string } }, index: number) => {
+              if (n.type === 'delay') {
+                return null; // We'll incorporate delays into the next action
+              }
+              return {
+                type: 'send_email',
+                template_id: n.data?.templateId || null,
+                subject: n.data?.subject || subject,
+                content: n.data?.content || content,
+                delay_days: index > 0 ? (n.data?.delay || 0) : 0,
+              };
+            })
+            .filter(Boolean);
+        }
+      }
+
+      // If no workflow steps, create a single step with the campaign email
+      if (workflowSteps.length === 0) {
+        workflowSteps = [{
+          type: 'send_email',
+          template_id: selectedTemplate?.isPredefined ? null : (selectedTemplate?.id || null),
+          subject,
+          content,
+          delay_days: 0,
+        }];
+      }
+
       // Create campaign
       const { data: campaign, error: campaignError } = await supabase
         .from("email_campaigns")
@@ -123,7 +164,8 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
           status: "brouillon",
           is_active: false,
           auto_enroll_new_prospects: populationType === 'groups' ? autoEnrollNewProspects : false,
-          target_groups: populationType === 'groups' && autoEnrollNewProspects ? selectedPopulation : [],
+          target_groups: populationType === 'groups' ? selectedPopulation : [],
+          workflow_steps: workflowSteps,
         })
         .select()
         .single();

@@ -81,18 +81,79 @@ const CampaignsList = () => {
 
   const handleToggleCampaign = async (campaign: any) => {
     try {
+      const newActiveState = !campaign.is_active;
+      
       const { error } = await supabase
         .from("email_campaigns")
-        .update({ is_active: !campaign.is_active })
+        .update({ is_active: newActiveState })
         .eq("id", campaign.id);
 
       if (error) throw error;
 
+      // If activating the campaign, create workflow executions for all recipients
+      if (newActiveState) {
+        // Get all recipients that don't have a workflow execution yet
+        const recipients = campaign.email_campaign_recipients || [];
+        const prospectIds = recipients.map((r: any) => r.prospect_id || r.id);
+        
+        if (prospectIds.length > 0) {
+          // Check existing executions
+          const { data: existingExecutions } = await supabase
+            .from("workflow_executions")
+            .select("prospect_id")
+            .eq("campaign_id", campaign.id);
+          
+          const existingProspectIds = new Set(existingExecutions?.map(e => e.prospect_id) || []);
+          
+          // Filter to only new prospects
+          const newProspectIds = prospectIds.filter((id: string) => !existingProspectIds.has(id));
+          
+          if (newProspectIds.length > 0) {
+            // Get workflow steps count
+            const workflowSteps = campaign.workflow_steps || [];
+            const totalSteps = workflowSteps.length || 1;
+            
+            // Calculate first execution time
+            const now = new Date();
+            let firstExecutionAt = now;
+            
+            if (workflowSteps.length > 0 && workflowSteps[0]) {
+              const firstStep = workflowSteps[0];
+              if (firstStep.delay_days) {
+                firstExecutionAt = new Date(now.getTime() + firstStep.delay_days * 24 * 60 * 60 * 1000);
+              }
+              if (firstStep.delay_hours) {
+                firstExecutionAt = new Date(firstExecutionAt.getTime() + firstStep.delay_hours * 60 * 60 * 1000);
+              }
+            }
+            
+            // Create workflow executions
+            const executions = newProspectIds.map((prospectId: string) => ({
+              campaign_id: campaign.id,
+              prospect_id: prospectId,
+              workflow_id: campaign.workflow_id,
+              current_step: 0,
+              total_steps: totalSteps,
+              status: "in_progress",
+              next_execution_at: firstExecutionAt.toISOString(),
+            }));
+            
+            const { error: execError } = await supabase
+              .from("workflow_executions")
+              .insert(executions);
+            
+            if (execError) {
+              console.error("Error creating workflow executions:", execError);
+            }
+          }
+        }
+      }
+
       toast({
         title: campaign.is_active ? "Campagne pausée" : "Campagne activée",
         description: campaign.is_active 
-          ? "La campagne a été mise en pause" 
-          : "La campagne est maintenant active",
+          ? "La campagne a été mise en pause. Les envois programmés sont suspendus." 
+          : "La campagne est maintenant active. Les workflows vont s'exécuter automatiquement.",
       });
       refetch();
     } catch (error: any) {

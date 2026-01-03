@@ -129,6 +129,7 @@ export type Database = {
           updated_at: string
           user_id: string
           workflow_id: string | null
+          workflow_steps: Json | null
         }
         Insert: {
           auto_enroll_new_prospects?: boolean | null
@@ -146,6 +147,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           workflow_id?: string | null
+          workflow_steps?: Json | null
         }
         Update: {
           auto_enroll_new_prospects?: boolean | null
@@ -163,6 +165,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           workflow_id?: string | null
+          workflow_steps?: Json | null
         }
         Relationships: [
           {
@@ -785,6 +788,73 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_executions: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          current_step: number
+          id: string
+          last_executed_at: string | null
+          metadata: Json | null
+          next_execution_at: string | null
+          prospect_id: string
+          status: string
+          total_steps: number
+          updated_at: string
+          workflow_id: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          current_step?: number
+          id?: string
+          last_executed_at?: string | null
+          metadata?: Json | null
+          next_execution_at?: string | null
+          prospect_id: string
+          status?: string
+          total_steps?: number
+          updated_at?: string
+          workflow_id?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          current_step?: number
+          id?: string
+          last_executed_at?: string | null
+          metadata?: Json | null
+          next_execution_at?: string | null
+          prospect_id?: string
+          status?: string
+          total_steps?: number
+          updated_at?: string
+          workflow_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_executions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_executions_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_executions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
             referencedColumns: ["id"]
           },
         ]
