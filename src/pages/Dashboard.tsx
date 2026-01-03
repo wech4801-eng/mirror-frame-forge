@@ -10,8 +10,7 @@ import ProspectsTable from "@/components/dashboard/ProspectsTable";
 import ProspectsChart from "@/components/dashboard/ProspectsChart";
 import CampaignsPerformance from "@/components/dashboard/CampaignsPerformance";
 import ActiveWorkflows from "@/components/dashboard/ActiveWorkflows";
-import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
-
+import ActiveCampaignsMetrics from "@/components/dashboard/ActiveCampaignsMetrics";
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,9 +50,10 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <OnboardingProgress />
         <WelcomeBanner />
         <StatsCards />
+        
+        <ActiveCampaignsMetrics />
         
         <div className="grid gap-6 lg:grid-cols-2">
           <ProspectsChart />
