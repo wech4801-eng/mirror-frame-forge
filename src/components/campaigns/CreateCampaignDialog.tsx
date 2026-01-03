@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import { WorkflowSelector } from "./WorkflowSelector";
 import { PopulationSelector } from "./PopulationSelector";
 import { applyBrandingToEmailContent } from "@/lib/emailBrandingUtils";
 import { CampaignValidationDialog } from "../validation/CampaignValidationDialog";
+import { UserPlus } from "@phosphor-icons/react";
 
 interface CreateCampaignDialogProps {
   open: boolean;
@@ -45,6 +47,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
   const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
   const [selectedPopulation, setSelectedPopulation] = useState<string[]>([]);
   const [populationType, setPopulationType] = useState<'prospects' | 'groups'>('prospects');
+  const [autoEnrollNewProspects, setAutoEnrollNewProspects] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "population" | "template">("info");
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
@@ -119,6 +122,8 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
           workflow_id: selectedWorkflow || null,
           status: "brouillon",
           is_active: false,
+          auto_enroll_new_prospects: populationType === 'groups' ? autoEnrollNewProspects : false,
+          target_groups: populationType === 'groups' && autoEnrollNewProspects ? selectedPopulation : [],
         })
         .select()
         .single();
@@ -179,6 +184,7 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
       setSelectedBranding(null);
       setSelectedWorkflow(null);
       setSelectedPopulation([]);
+      setAutoEnrollNewProspects(false);
       setActiveTab("info");
     } catch (error: any) {
       toast({
@@ -242,6 +248,31 @@ const CreateCampaignDialog = ({ open, onOpenChange }: CreateCampaignDialogProps)
                   selectedIds={selectedPopulation}
                   selectionType={populationType}
                 />
+                
+                {populationType === 'groups' && selectedPopulation.length > 0 && (
+                  <div className="bg-muted/50 border rounded-lg p-4 mt-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="auto-enroll"
+                        checked={autoEnrollNewProspects}
+                        onCheckedChange={(checked) => setAutoEnrollNewProspects(checked === true)}
+                      />
+                      <div className="space-y-1">
+                        <Label 
+                          htmlFor="auto-enroll" 
+                          className="text-sm font-medium cursor-pointer flex items-center gap-2"
+                        >
+                          <UserPlus className="h-4 w-4 text-primary" />
+                          Inclure automatiquement les nouveaux prospects
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Les nouveaux prospects ajoutés à ces groupes recevront automatiquement 
+                          le workflow et les emails de cette campagne.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="template" className="space-y-6 py-4 mt-0">
