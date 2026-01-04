@@ -72,17 +72,38 @@ const LandingPagePublic = () => {
 
     setSubmitting(true);
     try {
+      const email = formData.email || "";
+      const full_name = formData.full_name || formData.name || "";
+      const phone = formData.phone || "";
+
+      // Insert submission
       const { error } = await supabase
         .from("landing_page_submissions")
         .insert({
           landing_page_id: pageData.id,
-          email: formData.email || "",
-          full_name: formData.full_name || formData.name || "",
-          phone: formData.phone || "",
+          email,
+          full_name,
+          phone,
           additional_data: formData,
         });
 
       if (error) throw error;
+
+      // Call edge function to create prospect
+      try {
+        await supabase.functions.invoke("create-prospect-from-submission", {
+          body: {
+            landing_page_id: pageData.id,
+            email,
+            full_name,
+            phone,
+            additional_data: formData,
+          },
+        });
+      } catch (prospectError) {
+        console.error("Error creating prospect:", prospectError);
+        // Don't fail the submission if prospect creation fails
+      }
 
       setSubmitted(true);
       toast({
