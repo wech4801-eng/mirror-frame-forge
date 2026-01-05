@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -11,10 +12,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MagnifyingGlass, Trash, PencilSimple, UsersThree } from "@phosphor-icons/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MagnifyingGlass, Trash, PencilSimple, UsersThree, DotsThree, CheckSquare, CaretDown } from "@phosphor-icons/react";
 import { useToast } from "@/components/ui/use-toast";
 import EditProspectDialog from "./EditProspectDialog";
 import ManageGroupsDialog from "./ManageGroupsDialog";
+import BulkAddToGroupDialog from "./BulkAddToGroupDialog";
 
 interface Prospect {
   id: string;
@@ -37,6 +46,8 @@ const ProspectsList = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [groupsDialogOpen, setGroupsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkGroupDialogOpen, setBulkGroupDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -115,6 +126,72 @@ const ProspectsList = () => {
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectedIds.size === filteredProspects.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredProspects.map((p) => p.id)));
+    }
+  };
+
+  const handleSelectOne = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${selectedIds.size} prospect(s) ?`)) return;
+
+    const { error } = await supabase
+      .from("prospects")
+      .delete()
+      .in("id", Array.from(selectedIds));
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de supprimer les prospects",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: `${selectedIds.size} prospect(s) supprimé(s) avec succès`,
+      });
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedIds.size === 0) return;
+
+    const { error } = await supabase
+      .from("prospects")
+      .update({ status: newStatus })
+      .in("id", Array.from(selectedIds));
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de modifier le statut",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: `Statut mis à jour pour ${selectedIds.size} prospect(s)`,
+      });
+      setSelectedIds(new Set());
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       nouveau: "bg-primary/10 text-primary border-primary/20",
@@ -165,6 +242,58 @@ const ProspectsList = () => {
             </Select>
           </div>
 
+          {/* Barre d'actions groupées */}
+          {selectedIds.size > 0 && (
+            <div className="flex items-center gap-4 mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+              <span className="text-sm font-medium">
+                {selectedIds.size} prospect(s) sélectionné(s)
+              </span>
+              <div className="flex gap-2 ml-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBulkGroupDialogOpen(true)}
+                >
+                  <UsersThree className="mr-2 h-4 w-4" />
+                  Ajouter au groupe
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Changer le statut
+                      <CaretDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleBulkStatusChange("nouveau")}>
+                      Nouveau
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusChange("contacte")}>
+                      Contacté
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusChange("qualifie")}>
+                      Qualifié
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusChange("converti")}>
+                      Converti
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkStatusChange("perdu")}>
+                      Perdu
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Supprimer
+                </Button>
+              </div>
+            </div>
+          )}
+
           {filteredProspects.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground">
               <p>Aucun prospect trouvé</p>
@@ -174,6 +303,12 @@ const ProspectsList = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border/50">
+                    <th className="text-left p-4 w-12">
+                      <Checkbox
+                        checked={selectedIds.size === filteredProspects.length && filteredProspects.length > 0}
+                        onCheckedChange={handleSelectAll}
+                      />
+                    </th>
                     <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Nom</th>
                     <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
                     <th className="text-left p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Téléphone</th>
@@ -185,7 +320,13 @@ const ProspectsList = () => {
                 </thead>
                 <tbody>
                   {filteredProspects.map((prospect) => (
-                    <tr key={prospect.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                    <tr key={prospect.id} className={`border-b border-border/30 hover:bg-muted/30 transition-colors ${selectedIds.has(prospect.id) ? 'bg-primary/5' : ''}`}>
+                      <td className="p-4">
+                        <Checkbox
+                          checked={selectedIds.has(prospect.id)}
+                          onCheckedChange={() => handleSelectOne(prospect.id)}
+                        />
+                      </td>
                       <td className="p-4 font-medium">{prospect.full_name}</td>
                       <td className="p-4 text-muted-foreground text-sm">
                         {prospect.email}
@@ -260,6 +401,13 @@ const ProspectsList = () => {
           />
         </>
       )}
+
+      <BulkAddToGroupDialog
+        open={bulkGroupDialogOpen}
+        onOpenChange={setBulkGroupDialogOpen}
+        prospectIds={Array.from(selectedIds)}
+        onComplete={() => setSelectedIds(new Set())}
+      />
     </>
   );
 };
