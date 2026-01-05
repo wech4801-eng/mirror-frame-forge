@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ProspectsList from "@/components/prospects/ProspectsList";
+import ProspectsGroupsView from "@/components/prospects/ProspectsGroupsView";
 import AddProspectDialog from "@/components/prospects/AddProspectDialog";
 import CreateGroupWithProspectsDialog from "@/components/prospects/CreateGroupWithProspectsDialog";
 import ExportProspectsDialog from "@/components/prospects/ExportProspectsDialog";
 import ImportProspectsDialog from "@/components/prospects/ImportProspectsDialog";
 import { RoutingRulesDialog } from "@/components/prospects/RoutingRulesDialog";
 import { Button } from "@/components/ui/button";
-import { Plus, UsersThree, Download, Upload } from "@phosphor-icons/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, UsersThree, Download, Upload, Users, FolderSimple } from "@phosphor-icons/react";
 
 const Prospects = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -18,6 +20,7 @@ const Prospects = () => {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [routingDialogOpen, setRoutingDialogOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState("prospects");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +33,7 @@ const Prospects = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight mb-2">Gestion des Prospects</h1>
@@ -76,7 +79,29 @@ const Prospects = () => {
           </div>
         </div>
 
-        <ProspectsList key={refreshKey} />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="prospects" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Tous les Prospects
+            </TabsTrigger>
+            <TabsTrigger value="groups" className="flex items-center gap-2">
+              <FolderSimple className="h-4 w-4" />
+              Groupes
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="prospects" className="mt-6">
+            <ProspectsList key={refreshKey} />
+          </TabsContent>
+          
+          <TabsContent value="groups" className="mt-6">
+            <ProspectsGroupsView 
+              onCreateGroup={() => setGroupDialogOpen(true)}
+              refreshKey={refreshKey}
+            />
+          </TabsContent>
+        </Tabs>
         
         <AddProspectDialog 
           open={dialogOpen} 
@@ -86,6 +111,7 @@ const Prospects = () => {
         <CreateGroupWithProspectsDialog
           open={groupDialogOpen}
           onOpenChange={setGroupDialogOpen}
+          onGroupCreated={() => setRefreshKey((prev) => prev + 1)}
         />
         
         <ExportProspectsDialog
