@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -11,10 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, CircleNotch, FileArrowDown, MagicWand, CheckCircle, Warning } from "@phosphor-icons/react";
+import { Upload, CircleNotch, FileArrowDown, MagicWand, CheckCircle, Warning, UsersThree } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { notificationHelpers } from "@/lib/notificationsUtils";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface ImportProspectsDialogProps {
   open: boolean;
@@ -34,6 +37,12 @@ interface DetectionResult {
   headers: string[];
   previewRows: string[][];
   totalRows: number;
+}
+
+interface Group {
+  id: string;
+  name: string;
+  color: string;
 }
 
 // Patterns de détection pour chaque type de colonne
@@ -61,7 +70,6 @@ const DETECTION_PATTERNS = {
       /^identite$/i,
       /^personne$/i,
     ],
-    // Un nom contient généralement des lettres et espaces, pas de @
     valuePattern: /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/,
   },
   phone: {
@@ -76,7 +84,6 @@ const DETECTION_PATTERNS = {
       /^cell$/i,
       /^gsm$/i,
     ],
-    // Numéro de téléphone avec ou sans indicatif
     valuePattern: /^[\+]?[\d\s\-\.\(\)]{6,20}$/,
   },
   company: {
@@ -90,7 +97,6 @@ const DETECTION_PATTERNS = {
       /^etablissement$/i,
       /^raison[-_]?sociale$/i,
     ],
-    // Une entreprise peut contenir n'importe quoi
     valuePattern: null,
   },
 };
@@ -103,10 +109,36 @@ const ImportProspectsDialog = ({
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [addToGroup, setAddToGroup] = useState(false);
+  const [groupMode, setGroupMode] = useState<"existing" | "new">("existing");
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+  const [newGroupName, setNewGroupName] = useState("");
+  const [newGroupColor, setNewGroupColor] = useState("#6366f1");
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (open) {
+      fetchGroups();
+    }
+  }, [open]);
+
+  const fetchGroups = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("groups")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("name");
+
+    if (data) {
+      setGroups(data);
+    }
+  };
+
   const parseCSV = (text: string): string[][] => {
-    // Nettoyer les caractères BOM et normaliser les retours à la ligne
     const cleanedText = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     const lines = cleanedText.split("\n");
     const result: string[][] = [];
@@ -142,12 +174,10 @@ const ImportProspectsDialog = ({
     return result;
   };
 
-  // Détecte le type d'une colonne en analysant les en-têtes et les valeurs
   const detectColumnType = (
     header: string,
     values: string[]
   ): "email" | "fullName" | "phone" | "company" | null => {
-    // D'abord, vérifier les patterns d'en-tête
     for (const [type, patterns] of Object.entries(DETECTION_PATTERNS)) {
       for (const pattern of patterns.headerPatterns) {
         if (pattern.test(header.replace(/[^a-zA-Z]/g, ""))) {
@@ -156,11 +186,9 @@ const ImportProspectsDialog = ({
       }
     }
 
-    // Ensuite, analyser les valeurs pour détecter le type
     const nonEmptyValues = values.filter((v) => v && v.trim());
     if (nonEmptyValues.length === 0) return null;
 
-    // Compter combien de valeurs correspondent à chaque pattern
     const scores: Record<string, number> = { email: 0, phone: 0, fullName: 0 };
 
     for (const value of nonEmptyValues) {
@@ -175,7 +203,6 @@ const ImportProspectsDialog = ({
       }
     }
 
-    // Si plus de 70% des valeurs correspondent à un pattern, c'est ce type
     const threshold = nonEmptyValues.length * 0.7;
 
     if (scores.email >= threshold) return "email";
@@ -185,7 +212,6 @@ const ImportProspectsDialog = ({
     return null;
   };
 
-  // Analyse le contenu du fichier et détecte automatiquement les colonnes
   const analyzeFileContent = (text: string): DetectionResult => {
     const rows = parseCSV(text);
 
@@ -197,7 +223,6 @@ const ImportProspectsDialog = ({
     const dataRows = rows.slice(1);
     const previewRows = dataRows.slice(0, 3);
 
-    // Initialiser le mapping
     const mapping: ColumnMapping = {
       email: null,
       fullName: null,
@@ -205,7 +230,6 @@ const ImportProspectsDialog = ({
       company: null,
     };
 
-    // Analyser chaque colonne
     for (let colIndex = 0; colIndex < headers.length; colIndex++) {
       const header = headers[colIndex];
       const columnValues = dataRows.map((row) => row[colIndex] || "");
@@ -216,7 +240,6 @@ const ImportProspectsDialog = ({
       }
     }
 
-    // Si l'email n'est pas détecté par les patterns, chercher une colonne avec des @
     if (mapping.email === null) {
       for (let colIndex = 0; colIndex < headers.length; colIndex++) {
         const columnValues = dataRows.map((row) => row[colIndex] || "");
@@ -230,7 +253,6 @@ const ImportProspectsDialog = ({
       }
     }
 
-    // Si le nom n'est pas détecté, prendre la première colonne non utilisée avec du texte
     if (mapping.fullName === null) {
       for (let colIndex = 0; colIndex < headers.length; colIndex++) {
         if (
@@ -258,14 +280,10 @@ const ImportProspectsDialog = ({
     };
   };
 
-  // Lecture du fichier avec détection d'encodage
   const readFileWithEncoding = async (file: File): Promise<string> => {
-    // Essayer d'abord en UTF-8
     let text = await file.text();
     
-    // Si on détecte des caractères de remplacement (�), essayer avec un autre encodage
     if (text.includes("�") || text.includes("\uFFFD")) {
-      // Lire en tant que buffer et décoder en ISO-8859-1 (Latin-1)
       const buffer = await file.arrayBuffer();
       const decoder = new TextDecoder("iso-8859-1");
       text = decoder.decode(buffer);
@@ -331,12 +349,11 @@ const ImportProspectsDialog = ({
           const phone = mapping.phone !== null ? row[mapping.phone]?.trim() : null;
           const company = mapping.company !== null ? row[mapping.company]?.trim() : null;
 
-          // Email obligatoire
           if (!email || !DETECTION_PATTERNS.email.valuePattern.test(email)) return null;
 
           return {
             user_id: user.id,
-            full_name: fullName || email.split("@")[0], // Utiliser le début de l'email si pas de nom
+            full_name: fullName || email.split("@")[0],
             email,
             phone: phone || null,
             company: company || null,
@@ -350,19 +367,69 @@ const ImportProspectsDialog = ({
         throw new Error("Aucun prospect valide trouvé dans le fichier");
       }
 
-      const { error } = await supabase.from("prospects").insert(prospects);
+      const { data: insertedProspects, error } = await supabase
+        .from("prospects")
+        .insert(prospects)
+        .select("id");
 
       if (error) throw error;
 
+      // Ajouter au groupe si demandé
+      if (addToGroup && insertedProspects && insertedProspects.length > 0) {
+        let targetGroupId = selectedGroupId;
+
+        // Créer un nouveau groupe si nécessaire
+        if (groupMode === "new" && newGroupName.trim()) {
+          const { data: newGroup, error: groupError } = await supabase
+            .from("groups")
+            .insert({
+              user_id: user.id,
+              name: newGroupName.trim(),
+              color: newGroupColor,
+            })
+            .select()
+            .single();
+
+          if (groupError) throw groupError;
+          targetGroupId = newGroup.id;
+        }
+
+        if (targetGroupId) {
+          const associations = insertedProspects.map((p) => ({
+            prospect_id: p.id,
+            group_id: targetGroupId,
+          }));
+
+          const { error: assocError } = await supabase
+            .from("prospect_groups")
+            .insert(associations);
+
+          if (assocError) {
+            console.error("Erreur lors de l'ajout au groupe:", assocError);
+          }
+        }
+      }
+
       await notificationHelpers.csvImported(prospects.length);
+
+      const groupMessage = addToGroup
+        ? groupMode === "new"
+          ? ` et ajouté(s) au groupe "${newGroupName}"`
+          : ` et ajouté(s) au groupe`
+        : "";
 
       toast({
         title: "Import réussi",
-        description: `${prospects.length} prospect(s) importé(s) avec succès`,
+        description: `${prospects.length} prospect(s) importé(s)${groupMessage}`,
       });
 
+      // Reset
       setFile(null);
       setDetectionResult(null);
+      setAddToGroup(false);
+      setGroupMode("existing");
+      setSelectedGroupId("");
+      setNewGroupName("");
       onOpenChange(false);
       onImportComplete?.();
     } catch (error: any) {
@@ -411,16 +478,21 @@ const ImportProspectsDialog = ({
     return type === "email";
   };
 
+  const colors = [
+    "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316",
+    "#eab308", "#22c55e", "#14b8a6", "#06b6d4", "#3b82f6",
+  ];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MagicWand className="h-5 w-5 text-primary" />
             Importer des Prospects
           </DialogTitle>
           <DialogDescription>
-            Importez un fichier CSV ou Excel — les colonnes sont détectées automatiquement
+            Importez un fichier CSV — les colonnes sont détectées automatiquement
           </DialogDescription>
         </DialogHeader>
 
@@ -545,6 +617,99 @@ const ImportProspectsDialog = ({
                   </AlertDescription>
                 </Alert>
               )}
+
+              {/* Option d'ajout au groupe */}
+              <div className="border-t pt-4 mt-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <Checkbox
+                    id="add-to-group"
+                    checked={addToGroup}
+                    onCheckedChange={(checked) => setAddToGroup(checked === true)}
+                  />
+                  <Label htmlFor="add-to-group" className="flex items-center gap-2 cursor-pointer">
+                    <UsersThree className="h-4 w-4 text-primary" />
+                    Ajouter tous les prospects à un groupe
+                  </Label>
+                </div>
+
+                {addToGroup && (
+                  <div className="pl-6 space-y-4">
+                    <RadioGroup value={groupMode} onValueChange={(v) => setGroupMode(v as "existing" | "new")}>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="existing" id="existing" />
+                        <Label htmlFor="existing">Groupe existant</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="new" id="new" />
+                        <Label htmlFor="new">Créer un nouveau groupe</Label>
+                      </div>
+                    </RadioGroup>
+
+                    {groupMode === "existing" ? (
+                      <div className="space-y-2">
+                        {groups.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            Aucun groupe disponible. Créez-en un nouveau.
+                          </p>
+                        ) : (
+                          <ScrollArea className="h-32 border rounded-lg">
+                            <div className="p-2 space-y-1">
+                              {groups.map((group) => (
+                                <button
+                                  key={group.id}
+                                  type="button"
+                                  onClick={() => setSelectedGroupId(group.id)}
+                                  className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-colors ${
+                                    selectedGroupId === group.id
+                                      ? "bg-primary/10 border border-primary/30"
+                                      : "hover:bg-muted"
+                                  }`}
+                                >
+                                  <div
+                                    className="w-3 h-3 rounded-full flex-shrink-0"
+                                    style={{ backgroundColor: group.color }}
+                                  />
+                                  <span className="text-sm">{group.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="space-y-2">
+                          <Label htmlFor="new-group-name">Nom du groupe</Label>
+                          <Input
+                            id="new-group-name"
+                            value={newGroupName}
+                            onChange={(e) => setNewGroupName(e.target.value)}
+                            placeholder="Ex: Import janvier 2025"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Couleur</Label>
+                          <div className="flex flex-wrap gap-2">
+                            {colors.map((color) => (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() => setNewGroupColor(color)}
+                                className={`w-6 h-6 rounded-full transition-all ${
+                                  newGroupColor === color
+                                    ? "ring-2 ring-offset-2 ring-primary scale-110"
+                                    : "hover:scale-105"
+                                }`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -569,6 +734,10 @@ const ImportProspectsDialog = ({
               onClick={() => {
                 setFile(null);
                 setDetectionResult(null);
+                setAddToGroup(false);
+                setGroupMode("existing");
+                setSelectedGroupId("");
+                setNewGroupName("");
                 onOpenChange(false);
               }}
             >
@@ -576,7 +745,14 @@ const ImportProspectsDialog = ({
             </Button>
             <Button
               onClick={handleImport}
-              disabled={loading || !file || !detectionResult || detectionResult.mapping.email === null}
+              disabled={
+                loading ||
+                !file ||
+                !detectionResult ||
+                detectionResult.mapping.email === null ||
+                (addToGroup && groupMode === "existing" && !selectedGroupId) ||
+                (addToGroup && groupMode === "new" && !newGroupName.trim())
+              }
             >
               {loading ? (
                 <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
