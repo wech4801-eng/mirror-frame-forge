@@ -125,31 +125,30 @@ const handler = async (req: Request): Promise<Response> => {
         continue;
       }
 
-      // Replace variables in content (support both {var} and {{var}} syntax)
+      // Replace variables in content - using exact prospect field names
       let emailContent = campaign.content;
-      const firstName = prospect.full_name?.split(" ")[0] || "";
       const fullName = prospect.full_name || "";
       const email = prospect.email || "";
+      const phone = prospect.phone || "";
       const company = prospect.company || "";
 
-      // Double braces
-      emailContent = emailContent.replace(/\{\{prenom\}\}/gi, firstName);
-      emailContent = emailContent.replace(/\{\{nom\}\}/gi, fullName);
-      emailContent = emailContent.replace(/\{\{email\}\}/gi, email);
-      emailContent = emailContent.replace(/\{\{entreprise\}\}/gi, company);
-      // Single braces
-      emailContent = emailContent.replace(/\{prenom\}/gi, firstName);
-      emailContent = emailContent.replace(/\{nom\}/gi, fullName);
-      emailContent = emailContent.replace(/\{email\}/gi, email);
-      emailContent = emailContent.replace(/\{entreprise\}/gi, company);
+      console.log(`Replacing variables for ${prospect.email}: full_name=${fullName}, company=${company}, phone=${phone}`);
+
+      // Replace {{variable}} with actual prospect data
+      emailContent = emailContent
+        .replace(/\{\{full_name\}\}/gi, fullName)
+        .replace(/\{\{email\}\}/gi, email)
+        .replace(/\{\{phone\}\}/gi, phone)
+        .replace(/\{\{company\}\}/gi, company);
 
       let emailSubject = campaign.subject;
-      // Double braces
-      emailSubject = emailSubject.replace(/\{\{prenom\}\}/gi, firstName);
-      emailSubject = emailSubject.replace(/\{\{nom\}\}/gi, fullName);
-      // Single braces
-      emailSubject = emailSubject.replace(/\{prenom\}/gi, firstName);
-      emailSubject = emailSubject.replace(/\{nom\}/gi, fullName);
+      emailSubject = emailSubject
+        .replace(/\{\{full_name\}\}/gi, fullName)
+        .replace(/\{\{email\}\}/gi, email)
+        .replace(/\{\{phone\}\}/gi, phone)
+        .replace(/\{\{company\}\}/gi, company);
+
+      console.log(`Email subject after replacement: ${emailSubject}`);
 
       try {
         const emailPayload: Record<string, unknown> = {
