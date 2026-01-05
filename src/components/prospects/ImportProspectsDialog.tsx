@@ -106,7 +106,9 @@ const ImportProspectsDialog = ({
   const { toast } = useToast();
 
   const parseCSV = (text: string): string[][] => {
-    const lines = text.split("\n");
+    // Nettoyer les caractères BOM et normaliser les retours à la ligne
+    const cleanedText = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    const lines = cleanedText.split("\n");
     const result: string[][] = [];
 
     for (const line of lines) {
@@ -183,9 +185,8 @@ const ImportProspectsDialog = ({
     return null;
   };
 
-  // Analyse le fichier et détecte automatiquement les colonnes
-  const analyzeFile = async (csvFile: File) => {
-    const text = await csvFile.text();
+  // Analyse le contenu du fichier et détecte automatiquement les colonnes
+  const analyzeFileContent = (text: string): DetectionResult => {
     const rows = parseCSV(text);
 
     if (rows.length < 1) {
@@ -257,6 +258,22 @@ const ImportProspectsDialog = ({
     };
   };
 
+  // Lecture du fichier avec détection d'encodage
+  const readFileWithEncoding = async (file: File): Promise<string> => {
+    // Essayer d'abord en UTF-8
+    let text = await file.text();
+    
+    // Si on détecte des caractères de remplacement (�), essayer avec un autre encodage
+    if (text.includes("�") || text.includes("\uFFFD")) {
+      // Lire en tant que buffer et décoder en ISO-8859-1 (Latin-1)
+      const buffer = await file.arrayBuffer();
+      const decoder = new TextDecoder("iso-8859-1");
+      text = decoder.decode(buffer);
+    }
+    
+    return text;
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
@@ -264,7 +281,8 @@ const ImportProspectsDialog = ({
 
     if (selectedFile) {
       try {
-        const result = await analyzeFile(selectedFile);
+        const text = await readFileWithEncoding(selectedFile);
+        const result = analyzeFileContent(text);
         setDetectionResult(result);
       } catch (error: any) {
         toast({
@@ -300,7 +318,7 @@ const ImportProspectsDialog = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const text = await file.text();
+      const text = await readFileWithEncoding(file);
       const rows = parseCSV(text);
       const dataRows = rows.slice(1);
 
