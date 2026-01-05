@@ -138,16 +138,32 @@ const ImportProspectsDialog = ({
   };
 
   const downloadTemplate = () => {
-    const headers = ["full_name", "email", "phone", "company"];
-    const example1 = ["Jean Dupont", "jean.dupont@example.com", "+33612345678", "Entreprise ABC"];
-    const example2 = ["Marie Martin", "marie.martin@test.fr", "+33698765432", "Société XYZ"];
+    // La première ligne est ignorée à l'import : elle sert uniquement d'aide.
+    // On utilise donc des en-têtes "Colonne A/B/C/D" pour rendre le modèle plus simple.
+    const headers = [
+      "A - Nom complet",
+      "B - Email",
+      "C - Téléphone (optionnel)",
+      "D - Entreprise (optionnel)",
+    ];
 
-    const csvContent = [
-      headers.join(","),
-      example1.join(","),
-      example2.join(","),
-    ].join("\n");
-    
+    const example1 = [
+      "Jean Dupont",
+      "jean.dupont@example.com",
+      "+33612345678",
+      "Entreprise ABC",
+    ];
+    const example2 = [
+      "Marie Martin",
+      "marie.martin@test.fr",
+      "+33698765432",
+      "Société XYZ",
+    ];
+
+    const csvContent = [headers.join(","), example1.join(","), example2.join(",")].join(
+      "\n"
+    );
+
     const blob = new Blob(["\ufeff" + csvContent], {
       type: "text/csv;charset=utf-8;",
     });
@@ -176,23 +192,44 @@ const ImportProspectsDialog = ({
           <Alert>
             <FileArrowDown className="h-4 w-4" />
             <AlertDescription className="space-y-2">
-              <p className="font-medium">Format du fichier CSV :</p>
+              <p className="font-medium">Modèle CSV (très simple)</p>
+              <p className="text-xs text-muted-foreground">
+                La 1ère ligne sert uniquement d'aide (A/B/C/D) et n'est pas importée.
+              </p>
               <div className="overflow-x-auto">
                 <table className="text-xs border border-border rounded">
                   <thead>
                     <tr className="bg-muted">
-                      <th className="px-3 py-1 border-r border-border">full_name</th>
-                      <th className="px-3 py-1 border-r border-border">email</th>
-                      <th className="px-3 py-1 border-r border-border">phone</th>
-                      <th className="px-3 py-1">company</th>
+                      <th className="px-3 py-1 border-r border-border">Colonne</th>
+                      <th className="px-3 py-1 border-r border-border">Variable</th>
+                      <th className="px-3 py-1 border-r border-border">Type</th>
+                      <th className="px-3 py-1">Obligatoire</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="text-muted-foreground">
-                      <td className="px-3 py-1 border-r border-border">Jean Dupont</td>
-                      <td className="px-3 py-1 border-r border-border">jean@example.com</td>
-                      <td className="px-3 py-1 border-r border-border">+33612345678</td>
-                      <td className="px-3 py-1">Entreprise ABC</td>
+                      <td className="px-3 py-1 border-r border-border">A</td>
+                      <td className="px-3 py-1 border-r border-border">Nom complet</td>
+                      <td className="px-3 py-1 border-r border-border">Texte</td>
+                      <td className="px-3 py-1">Oui</td>
+                    </tr>
+                    <tr className="text-muted-foreground">
+                      <td className="px-3 py-1 border-r border-border">B</td>
+                      <td className="px-3 py-1 border-r border-border">Email</td>
+                      <td className="px-3 py-1 border-r border-border">Email</td>
+                      <td className="px-3 py-1">Oui</td>
+                    </tr>
+                    <tr className="text-muted-foreground">
+                      <td className="px-3 py-1 border-r border-border">C</td>
+                      <td className="px-3 py-1 border-r border-border">Téléphone</td>
+                      <td className="px-3 py-1 border-r border-border">Texte</td>
+                      <td className="px-3 py-1">Non</td>
+                    </tr>
+                    <tr className="text-muted-foreground">
+                      <td className="px-3 py-1 border-r border-border">D</td>
+                      <td className="px-3 py-1 border-r border-border">Entreprise</td>
+                      <td className="px-3 py-1 border-r border-border">Texte</td>
+                      <td className="px-3 py-1">Non</td>
                     </tr>
                   </tbody>
                 </table>
