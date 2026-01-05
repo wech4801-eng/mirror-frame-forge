@@ -101,9 +101,8 @@ const ImportProspectsDialog = ({
             email: row[1],
             phone: row[2] || null,
             company: row[3] || null,
-            status: row[4] || "nouveau",
-            source: row[5] || null,
-            notes: row[6] || null,
+            status: "nouveau",
+            source: "Import CSV",
           };
         })
         .filter((p) => p !== null);
@@ -139,26 +138,16 @@ const ImportProspectsDialog = ({
   };
 
   const downloadTemplate = () => {
-    const headers = [
-      "Nom complet",
-      "Email",
-      "Téléphone",
-      "Entreprise",
-      "Statut",
-      "Source",
-      "Notes",
-    ];
-    const example = [
-      '"Jean Dupont"',
-      '"jean.dupont@example.com"',
-      '"+33612345678"',
-      '"Entreprise ABC"',
-      '"nouveau"',
-      '"Site web"',
-      '"Intéressé par nos services"',
-    ];
+    const headers = ["full_name", "email", "phone", "company"];
+    const example1 = ["Jean Dupont", "jean.dupont@example.com", "+33612345678", "Entreprise ABC"];
+    const example2 = ["Marie Martin", "marie.martin@test.fr", "+33698765432", "Société XYZ"];
 
-    const csvContent = [headers.join(","), example.join(",")].join("\n");
+    const csvContent = [
+      headers.join(","),
+      example1.join(","),
+      example2.join(","),
+    ].join("\n");
+    
     const blob = new Blob(["\ufeff" + csvContent], {
       type: "text/csv;charset=utf-8;",
     });
@@ -185,16 +174,34 @@ const ImportProspectsDialog = ({
         <div className="space-y-4">
           <Alert>
             <FileArrowDown className="h-4 w-4" />
-            <AlertDescription>
-              Format du CSV : Nom complet, Email, Téléphone, Entreprise, Statut,
-              Source, Notes
-              <br />
+            <AlertDescription className="space-y-2">
+              <p className="font-medium">Format du fichier CSV :</p>
+              <div className="overflow-x-auto">
+                <table className="text-xs border border-border rounded">
+                  <thead>
+                    <tr className="bg-muted">
+                      <th className="px-3 py-1 border-r border-border">full_name</th>
+                      <th className="px-3 py-1 border-r border-border">email</th>
+                      <th className="px-3 py-1 border-r border-border">phone</th>
+                      <th className="px-3 py-1">company</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="text-muted-foreground">
+                      <td className="px-3 py-1 border-r border-border">Jean Dupont</td>
+                      <td className="px-3 py-1 border-r border-border">jean@example.com</td>
+                      <td className="px-3 py-1 border-r border-border">+33612345678</td>
+                      <td className="px-3 py-1">Entreprise ABC</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <Button
                 variant="link"
                 className="h-auto p-0 text-xs"
                 onClick={downloadTemplate}
               >
-                Télécharger un modèle de fichier CSV
+                Télécharger le modèle CSV
               </Button>
             </AlertDescription>
           </Alert>
